@@ -1,0 +1,53 @@
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  padding: 0.5em;
+  font: 1em sans-serif;
+  background: lightsteelblue;
+  border: 0.1em;
+  border-radius: 0.5em;
+  pointer-events: none;
+}
+.cloverleaf-circle {
+  stroke: #777777;
+  stroke-width: 2;
+  fill-opacity: 0.7;
+}
+.cloverleaf-highlight {
+  stroke: #ff0000;
+  stroke-width: 3;
+}
+h2.display-title {
+  height: 10em;
+  display: block;
+  vertical-align: middle;
+  padding: 1em;
+}
+div.vertical-align {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+}
+div.data-select-bar {
+  background: #eeeeee;
+}
+div.plot-select-bar {
+  background: #dddddd;
+}
+svg text.axis-text {
+  font-size: 1.2em;
+  fill: #000000;
+}
+svg text.axis-focus {
+  font-size: 1.5em;
+  font-weight: bold;
+  fill: #ff0000;
+}
+.loading-overlay {
+    position: fixed;
+    opacity: 0.5;
+    height: 100%;
+    width: 100%;
+    background: url('loading.gif') center center no-repeat;
+}
