@@ -131,7 +131,7 @@ STATICFILES_DIRS = (
 INTERNAL_IPS = ('0.0.0.0')
 
 DEBUG_TOOLBAR_CONFIG = {
-    'SHOW_TOOLBAR_CALLBACK': lambda x: False
+    'SHOW_TOOLBAR_CALLBACK': lambda x: True
 }
 
 # For import export
