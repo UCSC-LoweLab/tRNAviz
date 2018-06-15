@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
     'debug_toolbar',
+    'import_export',
     'explorer',
 ]
 
@@ -129,6 +131,9 @@ STATICFILES_DIRS = (
 INTERNAL_IPS = ('0.0.0.0')
 
 DEBUG_TOOLBAR_CONFIG = {
-    'SHOW_TOOLBAR_CALLBACK': lambda x: True
+    'SHOW_TOOLBAR_CALLBACK': lambda x: False
 }
 
+# For import export
+IMPORT_EXPORT_USE_TRANSACTIONS = True
+STATIC_ROOT = "/projects/lowelab/users/blin/tRNAviz/static/"
