@@ -23,29 +23,29 @@ class Taxonomy(models.Model):
 class tRNA(models.Model):
   seqname = models.CharField(primary_key = True, max_length = 100)
   ISOTYPES = (
-    ('Ala', 'Alanine'),
-    ('Arg', 'Arginine'),
-    ('Asn', 'Asparagine'),
-    ('Asp', 'Aspartate'),
-    ('Cys', 'Cysteine'),
-    ('Gln', 'Glutamine'),
-    ('Glu', 'Glutamate'),
-    ('Gly', 'Glycine'),
-    ('His', 'Histidine'),
-    ('Ile', 'Isoleucine'),
-    ('iMet', 'Initiator'),
-    ('Leu', 'Leucine'),
-    ('Lys', 'Lysine'),
-    ('Met', 'Methionine'),
-    ('Phe', 'Phenylalanine'),
-    ('Pro', 'Proline'),
-    ('Ser', 'Serine'),
-    ('SeC', 'Selenocysteine'),
-    ('Thr', 'Threonine'),
-    ('Trp', 'Tryptophan'),
-    ('Tyr', 'Tyrosine'),
-    ('Und', 'Undetermined'),
-    ('Val', 'Valine')
+    ('Ala', 'Ala'),
+    ('Arg', 'Arg'),
+    ('Asn', 'Asn'),
+    ('Asp', 'Asp'),
+    ('Cys', 'Cys'),
+    ('Gln', 'Gln'),
+    ('Glu', 'Glu'),
+    ('Gly', 'Gly'),
+    ('His', 'His'),
+    ('Ile', 'Ile'),
+    ('iMet', 'iMet'),
+    ('Leu', 'Leu'),
+    ('Lys', 'Lys'),
+    ('Met', 'Met'),
+    ('Phe', 'Phe'),
+    ('Pro', 'Pro'),
+    ('Ser', 'Ser'),
+    ('SeC', 'SeC'),
+    ('Thr', 'Thr'),
+    ('Trp', 'Trp'),
+    ('Tyr', 'Tyr'),
+    ('Und', 'Und'),
+    ('Val', 'Val')
   )
 
   isotype = models.CharField(max_length = 3, choices = ISOTYPES)
@@ -220,3 +220,15 @@ class tRNA(models.Model):
 
   class Meta:
     verbose_name = 'tRNA'
+
+
+
+class Consensus(models.Model):
+  consensus = models.CharField(max_length = 20)
+  position = models.CharField(max_length = 10)
+  isotype = models.CharField(max_length = 3)
+  clade = models.CharField(max_length = 50)
+  rank = models.CharField(max_length = 20)
+
+  def __str__(self):
+    return '{} - {} ({} {})'.format(self.position, self.consensus, self.rank, self.clade)

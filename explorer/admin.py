@@ -2,7 +2,7 @@ from django.contrib import admin
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from import_export.fields import Field
-from .models import Taxonomy, tRNA
+from .models import Taxonomy, tRNA, Consensus
 
 
 # For import export
@@ -11,6 +11,11 @@ class TaxonomyResource(resources.ModelResource):
   class Meta:
     model = Taxonomy
     import_id_fields = ('taxid',)
+
+class ConsensusResource(resources.ModelResource):
+  class Meta:
+    model = Consensus
+    import_id_fields = ('consensus', 'position', 'isotype', 'clade', 'rank')
 
 class tRNAResource(resources.ModelResource):
   taxclass = Field(attribute = 'taxclass', column_name = 'class')
@@ -160,8 +165,11 @@ class TaxonomyAdmin(ImportExportModelAdmin):
 class tRNAAdmin(ImportExportModelAdmin):
   resource_class = tRNAResource
 
+class ConsensusAdmin(ImportExportModelAdmin):
+  resource_class = ConsensusResource
 
 
 admin.site.register(Taxonomy, TaxonomyAdmin)
 admin.site.register(tRNA, tRNAAdmin)
+admin.site.register(Consensus, ConsensusAdmin)
 # admin.site.register(TaxonomyAdmin)
