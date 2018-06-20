@@ -2,7 +2,7 @@ from django.contrib import admin
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from import_export.fields import Field
-from .models import Taxonomy, tRNA, Consensus
+from .models import Taxonomy, tRNA, Consensus, Freq
 
 
 # For import export
@@ -11,11 +11,6 @@ class TaxonomyResource(resources.ModelResource):
   class Meta:
     model = Taxonomy
     import_id_fields = ('taxid',)
-
-class ConsensusResource(resources.ModelResource):
-  class Meta:
-    model = Consensus
-    import_id_fields = ('consensus', 'position', 'isotype', 'clade', 'rank')
 
 class tRNAResource(resources.ModelResource):
   taxclass = Field(attribute = 'taxclass', column_name = 'class')
@@ -159,6 +154,177 @@ class tRNAResource(resources.ModelResource):
     model = tRNA
     import_id_fields = ('seqname',)
 
+
+class ConsensusResource(resources.ModelResource):
+  p1_72 = Field(attribute = 'p1_72', column_name = '1:72')
+  p1 = Field(attribute = 'p1', column_name = '1')
+  p2_71 = Field(attribute = 'p2_71', column_name = '2:71')
+  p2 = Field(attribute = 'p2', column_name = '2')
+  p3_70 = Field(attribute = 'p3_70', column_name = '3:70')
+  p3 = Field(attribute = 'p3', column_name = '3')
+  p4_69 = Field(attribute = 'p4_69', column_name = '4:69')
+  p4 = Field(attribute = 'p4', column_name = '4')
+  p5_68 = Field(attribute = 'p5_68', column_name = '5:68')
+  p5 = Field(attribute = 'p5', column_name = '5')
+  p6_67 = Field(attribute = 'p6_67', column_name = '6:67')
+  p6 = Field(attribute = 'p6', column_name = '6')
+  p7_66 = Field(attribute = 'p7_66', column_name = '7:66')
+  p7 = Field(attribute = 'p7', column_name = '7')
+  p8 = Field(attribute = 'p8', column_name = '8')
+  p8_14 = Field(attribute = 'p8_14', column_name = '8:14')
+  p9 = Field(attribute = 'p9', column_name = '9')
+  p9_23 = Field(attribute = 'p9_23', column_name = '9:23')
+  p10_25 = Field(attribute = 'p10_25', column_name = '10:25')
+  p10 = Field(attribute = 'p10', column_name = '10')
+  p10_45 = Field(attribute = 'p10_45', column_name = '10:45')
+  p11_24 = Field(attribute = 'p11_24', column_name = '11:24')
+  p11 = Field(attribute = 'p11', column_name = '11')
+  p12_23 = Field(attribute = 'p12_23', column_name = '12:23')
+  p12 = Field(attribute = 'p12', column_name = '12')
+  p13_22 = Field(attribute = 'p13_22', column_name = '13:22')
+  p13 = Field(attribute = 'p13', column_name = '13')
+  p14 = Field(attribute = 'p14', column_name = '14')
+  p15 = Field(attribute = 'p15', column_name = '15')
+  p15_48 = Field(attribute = 'p15_48', column_name = '15:48')
+  p16 = Field(attribute = 'p16', column_name = '16')
+  p17 = Field(attribute = 'p17', column_name = '17')
+  p17a = Field(attribute = 'p17a', column_name = '17a')
+  p18 = Field(attribute = 'p18', column_name = '18')
+  p18_55 = Field(attribute = 'p18_55', column_name = '18:55')
+  p19 = Field(attribute = 'p19', column_name = '19')
+  p19_56 = Field(attribute = 'p19_56', column_name = '19:56')
+  p20 = Field(attribute = 'p20', column_name = '20')
+  p20a = Field(attribute = 'p20a', column_name = '20a')
+  p20b = Field(attribute = 'p20b', column_name = '20b')
+  p21 = Field(attribute = 'p21', column_name = '21')
+  p22 = Field(attribute = 'p22', column_name = '22')
+  p22_46 = Field(attribute = 'p22_46', column_name = '22:46')
+  p23 = Field(attribute = 'p23', column_name = '23')
+  p24 = Field(attribute = 'p24', column_name = '24')
+  p25 = Field(attribute = 'p25', column_name = '25')
+  p26 = Field(attribute = 'p26', column_name = '26')
+  p26_44 = Field(attribute = 'p26_44', column_name = '26:44')
+  p27_43 = Field(attribute = 'p27_43', column_name = '27:43')
+  p27 = Field(attribute = 'p27', column_name = '27')
+  p28_42 = Field(attribute = 'p28_42', column_name = '28:42')
+  p28 = Field(attribute = 'p28', column_name = '28')
+  p29_41 = Field(attribute = 'p29_41', column_name = '29:41')
+  p29 = Field(attribute = 'p29', column_name = '29')
+  p30_40 = Field(attribute = 'p30_40', column_name = '30:40')
+  p30 = Field(attribute = 'p30', column_name = '30')
+  p31_39 = Field(attribute = 'p31_39', column_name = '31:39')
+  p31 = Field(attribute = 'p31', column_name = '31')
+  p32 = Field(attribute = 'p32', column_name = '32')
+  p33 = Field(attribute = 'p33', column_name = '33')
+  p34 = Field(attribute = 'p34', column_name = '34')
+  p35 = Field(attribute = 'p35', column_name = '35')
+  p36 = Field(attribute = 'p36', column_name = '36')
+  p37 = Field(attribute = 'p37', column_name = '37')
+  p38 = Field(attribute = 'p38', column_name = '38')
+  p39 = Field(attribute = 'p39', column_name = '39')
+  p40 = Field(attribute = 'p40', column_name = '40')
+  p41 = Field(attribute = 'p41', column_name = '41')
+  p42 = Field(attribute = 'p42', column_name = '42')
+  p43 = Field(attribute = 'p43', column_name = '43')
+  p44 = Field(attribute = 'p44', column_name = '44')
+  p45 = Field(attribute = 'p45', column_name = '45')
+  pV11_V21 = Field(attribute = 'pV11_V21', column_name = 'V11:V21')
+  pV12_V22 = Field(attribute = 'pV12_V22', column_name = 'V12:V22')
+  pV13_V23 = Field(attribute = 'pV13_V23', column_name = 'V13:V23')
+  pV14_V24 = Field(attribute = 'pV14_V24', column_name = 'V14:V24')
+  pV15_V25 = Field(attribute = 'pV15_V25', column_name = 'V15:V25')
+  pV16_V26 = Field(attribute = 'pV16_V26', column_name = 'V16:V26')
+  pV17_V27 = Field(attribute = 'pV17_V27', column_name = 'V17:V27')
+  pV1 = Field(attribute = 'pV1', column_name = 'V1')
+  pV2 = Field(attribute = 'pV2', column_name = 'V2')
+  pV3 = Field(attribute = 'pV3', column_name = 'V3')
+  pV4 = Field(attribute = 'pV4', column_name = 'V4')
+  pV5 = Field(attribute = 'pV5', column_name = 'V5')
+  pV11 = Field(attribute = 'pV11', column_name = 'V11')
+  pV12 = Field(attribute = 'pV12', column_name = 'V12')
+  pV13 = Field(attribute = 'pV13', column_name = 'V13')
+  pV14 = Field(attribute = 'pV14', column_name = 'V14')
+  pV15 = Field(attribute = 'pV15', column_name = 'V15')
+  pV16 = Field(attribute = 'pV16', column_name = 'V16')
+  pV17 = Field(attribute = 'pV17', column_name = 'V17')
+  pV21 = Field(attribute = 'pV21', column_name = 'V21')
+  pV22 = Field(attribute = 'pV22', column_name = 'V22')
+  pV23 = Field(attribute = 'pV23', column_name = 'V23')
+  pV24 = Field(attribute = 'pV24', column_name = 'V24')
+  pV25 = Field(attribute = 'pV25', column_name = 'V25')
+  pV26 = Field(attribute = 'pV26', column_name = 'V26')
+  pV27 = Field(attribute = 'pV27', column_name = 'V27')
+  p46 = Field(attribute = 'p46', column_name = '46')
+  p47 = Field(attribute = 'p47', column_name = '47')
+  p48 = Field(attribute = 'p48', column_name = '48')
+  p49_65 = Field(attribute = 'p49_65', column_name = '49:65')
+  p49 = Field(attribute = 'p49', column_name = '49')
+  p50_64 = Field(attribute = 'p50_64', column_name = '50:64')
+  p50 = Field(attribute = 'p50', column_name = '50')
+  p51_63 = Field(attribute = 'p51_63', column_name = '51:63')
+  p51 = Field(attribute = 'p51', column_name = '51')
+  p52_62 = Field(attribute = 'p52_62', column_name = '52:62')
+  p52 = Field(attribute = 'p52', column_name = '52')
+  p53_61 = Field(attribute = 'p53_61', column_name = '53:61')
+  p53 = Field(attribute = 'p53', column_name = '53')
+  p54 = Field(attribute = 'p54', column_name = '54')
+  p54_58 = Field(attribute = 'p54_58', column_name = '54:58')
+  p55 = Field(attribute = 'p55', column_name = '55')
+  p56 = Field(attribute = 'p56', column_name = '56')
+  p57 = Field(attribute = 'p57', column_name = '57')
+  p58 = Field(attribute = 'p58', column_name = '58')
+  p59 = Field(attribute = 'p59', column_name = '59')
+  p60 = Field(attribute = 'p60', column_name = '60')
+  p61 = Field(attribute = 'p61', column_name = '61')
+  p62 = Field(attribute = 'p62', column_name = '62')
+  p63 = Field(attribute = 'p63', column_name = '63')
+  p64 = Field(attribute = 'p64', column_name = '64')
+  p65 = Field(attribute = 'p65', column_name = '65')
+  p66 = Field(attribute = 'p66', column_name = '66')
+  p67 = Field(attribute = 'p67', column_name = '67')
+  p68 = Field(attribute = 'p68', column_name = '68')
+  p69 = Field(attribute = 'p69', column_name = '69')
+  p70 = Field(attribute = 'p70', column_name = '70')
+  p71 = Field(attribute = 'p71', column_name = '71')
+  p72 = Field(attribute = 'p72', column_name = '72')
+  p73 = Field(attribute = 'p73', column_name = '73')
+
+  class Meta:
+    model = Consensus
+    import_id_fields = ('isotype', 'clade', 'rank')
+
+class FreqResource(resources.ModelResource):
+  absent = Field(attribute = 'absent', column_name = '-')
+  AU = Field(attribute = 'AU', column_name = 'A:U')
+  UA = Field(attribute = 'UA', column_name = 'U:A')
+  GC = Field(attribute = 'GC', column_name = 'G:C')
+  CG = Field(attribute = 'CG', column_name = 'C:G')
+  GU = Field(attribute = 'GU', column_name = 'G:U')
+  UG = Field(attribute = 'UG', column_name = 'U:G')
+  AA = Field(attribute = 'AA', column_name = 'A:A')
+  AC = Field(attribute = 'AC', column_name = 'A:C')
+  AG = Field(attribute = 'AG', column_name = 'A:G')
+  CA = Field(attribute = 'CA', column_name = 'C:A')
+  CC = Field(attribute = 'CC', column_name = 'C:C')
+  CU = Field(attribute = 'CU', column_name = 'C:U')
+  GA = Field(attribute = 'GA', column_name = 'G:A')
+  GG = Field(attribute = 'GG', column_name = 'G:G')
+  UC = Field(attribute = 'UC', column_name = 'U:C')
+  UU = Field(attribute = 'UU', column_name = 'U:U')
+  AM = Field(attribute = 'AM', column_name = 'A:-')
+  CM = Field(attribute = 'CM', column_name = 'C:-')
+  GM = Field(attribute = 'GM', column_name = 'G:-')
+  UM = Field(attribute = 'UM', column_name = 'U:-')
+  MA = Field(attribute = 'MA', column_name = '-:A')
+  MC = Field(attribute = 'MC', column_name = '-:C')
+  MG = Field(attribute = 'MG', column_name = '-:G')
+  MU = Field(attribute = 'MU', column_name = '-:U')
+  MM = Field(attribute = 'MM', column_name = '-:-')
+
+  class Meta:
+    model = Freq
+    import_id_fields = ('position', 'isotype', 'clade', 'rank')
+
 class TaxonomyAdmin(ImportExportModelAdmin):
   resource_class = TaxonomyResource
 
@@ -168,8 +334,10 @@ class tRNAAdmin(ImportExportModelAdmin):
 class ConsensusAdmin(ImportExportModelAdmin):
   resource_class = ConsensusResource
 
+class FreqAdmin(ImportExportModelAdmin):
+  resource_class = FreqResource
 
 admin.site.register(Taxonomy, TaxonomyAdmin)
 admin.site.register(tRNA, tRNAAdmin)
 admin.site.register(Consensus, ConsensusAdmin)
-# admin.site.register(TaxonomyAdmin)
+admin.site.register(Freq, FreqAdmin)

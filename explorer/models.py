@@ -1,5 +1,31 @@
 from django.db import models
+import numpy
 
+ISOTYPES = (
+  ('Ala', 'Ala'),
+  ('Arg', 'Arg'),
+  ('Asn', 'Asn'),
+  ('Asp', 'Asp'),
+  ('Cys', 'Cys'),
+  ('Gln', 'Gln'),
+  ('Glu', 'Glu'),
+  ('Gly', 'Gly'),
+  ('His', 'His'),
+  ('Ile', 'Ile'),
+  ('iMet', 'iMet'),
+  ('Leu', 'Leu'),
+  ('Lys', 'Lys'),
+  ('Met', 'Met'),
+  ('Phe', 'Phe'),
+  ('Pro', 'Pro'),
+  ('Ser', 'Ser'),
+  ('SeC', 'SeC'),
+  ('Thr', 'Thr'),
+  ('Trp', 'Trp'),
+  ('Tyr', 'Tyr'),
+  ('Und', 'Und'),
+  ('Val', 'Val')
+)
 
 class Taxonomy(models.Model):
   taxid = models.CharField(primary_key = True, max_length = 10)
@@ -19,36 +45,10 @@ class Taxonomy(models.Model):
   def __str__(self):
     return '{} ({})'.format(self.assembly, self.taxid)
 
-# Create your models here.
+
 class tRNA(models.Model):
   seqname = models.CharField(primary_key = True, max_length = 100)
-  ISOTYPES = (
-    ('Ala', 'Ala'),
-    ('Arg', 'Arg'),
-    ('Asn', 'Asn'),
-    ('Asp', 'Asp'),
-    ('Cys', 'Cys'),
-    ('Gln', 'Gln'),
-    ('Glu', 'Glu'),
-    ('Gly', 'Gly'),
-    ('His', 'His'),
-    ('Ile', 'Ile'),
-    ('iMet', 'iMet'),
-    ('Leu', 'Leu'),
-    ('Lys', 'Lys'),
-    ('Met', 'Met'),
-    ('Phe', 'Phe'),
-    ('Pro', 'Pro'),
-    ('Ser', 'Ser'),
-    ('SeC', 'SeC'),
-    ('Thr', 'Thr'),
-    ('Trp', 'Trp'),
-    ('Tyr', 'Tyr'),
-    ('Und', 'Und'),
-    ('Val', 'Val')
-  )
-
-  isotype = models.CharField(max_length = 3, choices = ISOTYPES)
+  isotype = models.CharField(max_length = 4, choices = ISOTYPES)
   anticodon = models.CharField(max_length = 3)
   score = models.FloatField()
   primary = models.BooleanField()
@@ -222,13 +222,184 @@ class tRNA(models.Model):
     verbose_name = 'tRNA'
 
 
-
 class Consensus(models.Model):
-  consensus = models.CharField(max_length = 20)
-  position = models.CharField(max_length = 10)
   isotype = models.CharField(max_length = 3)
   clade = models.CharField(max_length = 50)
   rank = models.CharField(max_length = 20)
 
+  p1_72 = models.CharField('1:72', default = 'N:N', max_length = 20)
+  p1 = models.CharField('1', default = 'N', max_length = 20)
+  p2_71 = models.CharField('2:71', default = 'N:N', max_length = 20)
+  p2 = models.CharField('2', default = 'N', max_length = 20)
+  p3_70 = models.CharField('3:70', default = 'N:N', max_length = 20)
+  p3 = models.CharField('3', default = 'N', max_length = 20)
+  p4_69 = models.CharField('4:69', default = 'N:N', max_length = 20)
+  p4 = models.CharField('4', default = 'N', max_length = 20)
+  p5_68 = models.CharField('5:68', default = 'N:N', max_length = 20)
+  p5 = models.CharField('5', default = 'N', max_length = 20)
+  p6_67 = models.CharField('6:67', default = 'N:N', max_length = 20)
+  p6 = models.CharField('6', default = 'N', max_length = 20)
+  p7_66 = models.CharField('7:66', default = 'N:N', max_length = 20)
+  p7 = models.CharField('7', default = 'N', max_length = 20)
+  p8 = models.CharField('8', default = 'N', max_length = 20)
+  p8_14 = models.CharField('8:14', default = 'N:N', max_length = 20)
+  p9 = models.CharField('9', default = 'N', max_length = 20)
+  p9_23 = models.CharField('9:23', default = 'N:N', max_length = 20)
+  p10_25 = models.CharField('10:25', default = 'N:N', max_length = 20)
+  p10 = models.CharField('10', default = 'N', max_length = 20)
+  p10_45 = models.CharField('10:45', default = 'N:N', max_length = 20)
+  p11_24 = models.CharField('11:24', default = 'N:N', max_length = 20)
+  p11 = models.CharField('11', default = 'N', max_length = 20)
+  p12_23 = models.CharField('12:23', default = 'N:N', max_length = 20)
+  p12 = models.CharField('12', default = 'N', max_length = 20)
+  p13_22 = models.CharField('13:22', default = 'N:N', max_length = 20)
+  p13 = models.CharField('13', default = 'N', max_length = 20)
+  p14 = models.CharField('14', default = 'N', max_length = 20)
+  p15 = models.CharField('15', default = 'N', max_length = 20)
+  p15_48 = models.CharField('15:48', default = 'N:N', max_length = 20)
+  p16 = models.CharField('16', default = 'N', max_length = 20)
+  p17 = models.CharField('17', default = 'N', max_length = 20)
+  p17a = models.CharField('17a', default = 'N', max_length = 20)
+  p18 = models.CharField('18', default = 'N', max_length = 20)
+  p18_55 = models.CharField('18:55', default = 'N:N', max_length = 20)
+  p19 = models.CharField('19', default = 'N', max_length = 20)
+  p19_56 = models.CharField('19:56', default = 'N:N', max_length = 20)
+  p20 = models.CharField('20', default = 'N', max_length = 20)
+  p20a = models.CharField('20a', default = 'N', max_length = 20)
+  p20b = models.CharField('20b', default = 'N', max_length = 20)
+  p21 = models.CharField('21', default = 'N', max_length = 20)
+  p22 = models.CharField('22', default = 'N', max_length = 20)
+  p22_46 = models.CharField('22:46', default = 'N:N', max_length = 20)
+  p23 = models.CharField('23', default = 'N', max_length = 20)
+  p24 = models.CharField('24', default = 'N', max_length = 20)
+  p25 = models.CharField('25', default = 'N', max_length = 20)
+  p26 = models.CharField('26', default = 'N', max_length = 20)
+  p26_44 = models.CharField('26:44', default = 'N:N', max_length = 20)
+  p27_43 = models.CharField('27:43', default = 'N:N', max_length = 20)
+  p27 = models.CharField('27', default = 'N', max_length = 20)
+  p28_42 = models.CharField('28:42', default = 'N:N', max_length = 20)
+  p28 = models.CharField('28', default = 'N', max_length = 20)
+  p29_41 = models.CharField('29:41', default = 'N:N', max_length = 20)
+  p29 = models.CharField('29', default = 'N', max_length = 20)
+  p30_40 = models.CharField('30:40', default = 'N:N', max_length = 20)
+  p30 = models.CharField('30', default = 'N', max_length = 20)
+  p31_39 = models.CharField('31:39', default = 'N:N', max_length = 20)
+  p31 = models.CharField('31', default = 'N', max_length = 20)
+  p32 = models.CharField('32', default = 'N', max_length = 20)
+  p33 = models.CharField('33', default = 'N', max_length = 20)
+  p34 = models.CharField('34', default = 'N', max_length = 20)
+  p35 = models.CharField('35', default = 'N', max_length = 20)
+  p36 = models.CharField('36', default = 'N', max_length = 20)
+  p37 = models.CharField('37', default = 'N', max_length = 20)
+  p38 = models.CharField('38', default = 'N', max_length = 20)
+  p39 = models.CharField('39', default = 'N', max_length = 20)
+  p40 = models.CharField('40', default = 'N', max_length = 20)
+  p41 = models.CharField('41', default = 'N', max_length = 20)
+  p42 = models.CharField('42', default = 'N', max_length = 20)
+  p43 = models.CharField('43', default = 'N', max_length = 20)
+  p44 = models.CharField('44', default = 'N', max_length = 20)
+  p45 = models.CharField('45', default = 'N', max_length = 20)
+  pV11_V21 = models.CharField('V11:V21', default = 'N:N', max_length = 20)
+  pV12_V22 = models.CharField('V12:V22', default = 'N:N', max_length = 20)
+  pV13_V23 = models.CharField('V13:V23', default = 'N:N', max_length = 20)
+  pV14_V24 = models.CharField('V14:V24', default = 'N:N', max_length = 20)
+  pV15_V25 = models.CharField('V15:V25', default = 'N:N', max_length = 20)
+  pV16_V26 = models.CharField('V16:V26', default = 'N:N', max_length = 20)
+  pV17_V27 = models.CharField('V17:V27', default = 'N:N', max_length = 20)
+  pV1 = models.CharField('V1', default = 'N', max_length = 20)
+  pV2 = models.CharField('V2', default = 'N', max_length = 20)
+  pV3 = models.CharField('V3', default = 'N', max_length = 20)
+  pV4 = models.CharField('V4', default = 'N', max_length = 20)
+  pV5 = models.CharField('V5', default = 'N', max_length = 20)
+  pV11 = models.CharField('V11', default = 'N', max_length = 20)
+  pV12 = models.CharField('V12', default = 'N', max_length = 20)
+  pV13 = models.CharField('V13', default = 'N', max_length = 20)
+  pV14 = models.CharField('V14', default = 'N', max_length = 20)
+  pV15 = models.CharField('V15', default = 'N', max_length = 20)
+  pV16 = models.CharField('V16', default = 'N', max_length = 20)
+  pV17 = models.CharField('V17', default = 'N', max_length = 20)
+  pV21 = models.CharField('V21', default = 'N', max_length = 20)
+  pV22 = models.CharField('V22', default = 'N', max_length = 20)
+  pV23 = models.CharField('V23', default = 'N', max_length = 20)
+  pV24 = models.CharField('V24', default = 'N', max_length = 20)
+  pV25 = models.CharField('V25', default = 'N', max_length = 20)
+  pV26 = models.CharField('V26', default = 'N', max_length = 20)
+  pV27 = models.CharField('V27', default = 'N', max_length = 20)
+  p46 = models.CharField('46', default = 'N', max_length = 20)
+  p47 = models.CharField('47', default = 'N', max_length = 20)
+  p48 = models.CharField('48', default = 'N', max_length = 20)
+  p49_65 = models.CharField('49:65', default = 'N:N', max_length = 20)
+  p49 = models.CharField('49', default = 'N', max_length = 20)
+  p50_64 = models.CharField('50:64', default = 'N:N', max_length = 20)
+  p50 = models.CharField('50', default = 'N', max_length = 20)
+  p51_63 = models.CharField('51:63', default = 'N:N', max_length = 20)
+  p51 = models.CharField('51', default = 'N', max_length = 20)
+  p52_62 = models.CharField('52:62', default = 'N:N', max_length = 20)
+  p52 = models.CharField('52', default = 'N', max_length = 20)
+  p53_61 = models.CharField('53:61', default = 'N:N', max_length = 20)
+  p53 = models.CharField('53', default = 'N', max_length = 20)
+  p54 = models.CharField('54', default = 'N', max_length = 20)
+  p54_58 = models.CharField('54:58', default = 'N:N', max_length = 20)
+  p55 = models.CharField('55', default = 'N', max_length = 20)
+  p56 = models.CharField('56', default = 'N', max_length = 20)
+  p57 = models.CharField('57', default = 'N', max_length = 20)
+  p58 = models.CharField('58', default = 'N', max_length = 20)
+  p59 = models.CharField('59', default = 'N', max_length = 20)
+  p60 = models.CharField('60', default = 'N', max_length = 20)
+  p61 = models.CharField('61', default = 'N', max_length = 20)
+  p62 = models.CharField('62', default = 'N', max_length = 20)
+  p63 = models.CharField('63', default = 'N', max_length = 20)
+  p64 = models.CharField('64', default = 'N', max_length = 20)
+  p65 = models.CharField('65', default = 'N', max_length = 20)
+  p66 = models.CharField('66', default = 'N', max_length = 20)
+  p67 = models.CharField('67', default = 'N', max_length = 20)
+  p68 = models.CharField('68', default = 'N', max_length = 20)
+  p69 = models.CharField('69', default = 'N', max_length = 20)
+  p70 = models.CharField('70', default = 'N', max_length = 20)
+  p71 = models.CharField('71', default = 'N', max_length = 20)
+  p72 = models.CharField('72', default = 'N', max_length = 20)
+  p73 = models.CharField('73', default = 'N', max_length = 20)
+  
   def __str__(self):
-    return '{} - {} ({} {})'.format(self.position, self.consensus, self.rank, self.clade)
+    return '{} / {} consensus set'.format(self.clade, self.isotype)
+
+
+class Freq(models.Model):
+  position = models.CharField(max_length = 10)
+  isotype = models.CharField(max_length = 3)
+  clade = models.CharField(max_length = 50)
+  rank = models.CharField(max_length = 20)
+  feature = models.CharField(max_length = 3)
+  A = models.IntegerField(default = 0)
+  C = models.IntegerField(default = 0)
+  G = models.IntegerField(default = 0)
+  U = models.IntegerField(default = 0)
+  absent = models.IntegerField(default = 0, db_column = '-')
+  AU = models.IntegerField('A:U', db_column = 'A:U')
+  UA = models.IntegerField('U:A', db_column = 'U:A')
+  GC = models.IntegerField('G:C', db_column = 'G:C')
+  CG = models.IntegerField('C:G', db_column = 'C:G')
+  GU = models.IntegerField('G:U', db_column = 'G:U')
+  UG = models.IntegerField('U:G', db_column = 'U:G')
+  AA = models.IntegerField('A:A', db_column = 'A:A')
+  AC = models.IntegerField('A:C', db_column = 'A:C')
+  AG = models.IntegerField('A:G', db_column = 'A:G')
+  CA = models.IntegerField('C:A', db_column = 'C:A')
+  CC = models.IntegerField('C:C', db_column = 'C:C')
+  CU = models.IntegerField('C:U', db_column = 'C:U')
+  GA = models.IntegerField('G:A', db_column = 'G:A')
+  GG = models.IntegerField('G:G', db_column = 'G:G')
+  UC = models.IntegerField('U:C', db_column = 'U:C')
+  UU = models.IntegerField('U:U', db_column = 'U:U')
+  AM = models.IntegerField('A:-', db_column = 'A:-')
+  CM = models.IntegerField('C:-', db_column = 'C:-')
+  GM = models.IntegerField('G:-', db_column = 'G:-')
+  UM = models.IntegerField('U:-', db_column = 'U:-')
+  MA = models.IntegerField('-:A', db_column = '-:A')
+  MC = models.IntegerField('-:C', db_column = '-:C')
+  MG = models.IntegerField('-:G', db_column = '-:G')
+  MU = models.IntegerField('-:U', db_column = '-:U')
+  MM = models.IntegerField('-:-', db_column = '-:-')
+
+  def __str__(self):
+    return '{} - {}/{}/{}/{} ({} {})'.format(self.position, self.A, self.C, self.G, self.U, self.rank, self.clade)

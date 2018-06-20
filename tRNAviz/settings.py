@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
-    'django_pandas',
+    'rest_framework',
     'numpy',
     'debug_toolbar',
     'import_export',

@@ -4,66 +4,7 @@
 {% block static %}<link rel="stylesheet" href="{% static 'explorer/css/explorer.css' %}">{% endblock %}
 {% block title %}tRNAviz | Summary{% endblock %}
 
-{% block plotjs %}
-
-
-{% endblock %}
-
-{% block filter %}
-<div class='row vertical-align select-bar data-select-bar'>
-	<div class='col-md-2 p-3'>
-		<h4>Select tRNAs</h4>
-	</div>
-	<div class='col-md-10 p-3'>
-		<form id='data-select-form' action='#'>
-			Include <br>
-			<select class='multiselect' id="phylo-include" multiple="multiple">
-				<option value="All species" selected='selected'>All species</option>
-			</select>
-
-			but exclude <br>
-			<select class='multiselect' id="phylo-exclude" multiple="multiple">
-			</select>
-
-			Include isotypes <br>
-			<select class='multiselect' id="isotypes-include" multiple="multiple">
-				<option value="All species" selected='selected'>All isotypes</option>
-			</select>
-
-			Filter for positions <br>
-			<select class='multiselect' id="positions-include" multiple="multiple">
-			</select>
-
-			<br><br>
-			<button class='btn btn-primary' type='submit' onclick='data_select_submit()'>Submit</button>
-		</form>
-	</div>
-</div>
-
-<div class='row vertical-align select-bar plot-select-bar'>
-	<div class='col-md-2 p-3'>
-		<h4>Select plot</h4>
-	</div>
-	<div class='col-md-10 p-3'>
-		<div class="btn-group btn-group-toggle" data-toggle="buttons">
-			<label class="btn btn-lg btn-secondary active" onclick='plot_select()'>
-				<input type="radio" id="button-cloverleaf" checked>Cloverleaf
-			</label>
-			<label class="btn btn-lg btn-secondary" onclick='plot_select()'>
-				<input type="radio" id="button-tilemap">Tilemap
-			</label>
-		</div>
-	</div>
-</div>
-
-<div class="row">
-	<ul>
-  {% for consensus in plot_data %}
-    <li>{{ consensus }}</li>
-  {% endfor %}
-  </ul>
-</div>
-
+{% block filterjs %}
 
 <script src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous'></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
@@ -80,6 +21,75 @@ $(document).ready(function() {
 
 {% endblock %}
 
+
+{% block plotjs %}
+
+
+{% endblock %}
+
+
+
+{% block filter %}
+<div class='p-3'>
+	<div class='row vertical-align select-bar data-select-bar'>
+		<div class='col-md-2 p-3'>
+			<h4>Select tRNAs</h4>
+		</div>
+		<div class='col-md-10 p-3'>
+			<form id='data-select-form' action='#'>
+				Include <br>
+				<select class='multiselect' id="phylo-include" multiple="multiple">
+					<option value="All species" selected='selected'>All species</option>
+				</select>
+
+				but exclude <br>
+				<select class='multiselect' id="phylo-exclude" multiple="multiple">
+				</select>
+
+				Include isotypes <br>
+				<select class='multiselect' id="isotypes-include" multiple="multiple">
+					<option value="All species" selected='selected'>All isotypes</option>
+				</select>
+
+				Filter for positions <br>
+				<select class='multiselect' id="positions-include" multiple="multiple">
+				</select>
+
+				<br><br>
+				<button class='btn btn-primary' type='submit' onclick='data_select_submit()'>Submit</button>
+			</form>
+		</div>
+	</div>
+
+	<div class='row vertical-align select-bar plot-select-bar'>
+		<div class='col-md-2 p-3'>
+			<h4>Select plot</h4>
+		</div>
+		<div class='col-md-10 p-3'>
+			<div class="btn-group btn-group-toggle" data-toggle="buttons">
+				<label class="btn btn-lg btn-secondary active" onclick='plot_select()'>
+					<input type="radio" id="button-cloverleaf" checked>Cloverleaf
+				</label>
+				<label class="btn btn-lg btn-secondary" onclick='plot_select()'>
+					<input type="radio" id="button-tilemap">Tilemap
+				</label>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
 {% block plots %}
-Cloverleaf goes here!
+
+
+<div class="p-3" id="svg-area">
+<script>
+	var data = 
+</script>
+		<li>{{ plot_data.cloverleaf }}</li>
+		<li>{{ plot_data.freqs }}</li>
+  </ul>
+</div>
+
 {% endblock %}
