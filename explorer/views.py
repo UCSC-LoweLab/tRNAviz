@@ -20,11 +20,11 @@ def summary(request):
     'rank': 'genus',
     'isotypes': 'All'
   }
-  consensus_qs = models.Consensus.objects.filter(clade = 'Saccharomyces', isotype = 'All')
+  # consensus_qs = models.Consensus.objects.filter(clade = 'Saccharomyces', isotype = 'All')
   plot_data = {}
-  plot_data['cloverleaf'] = process_cloverleaf_data_to_json(consensus_qs)
+  # plot_data['cloverleaf'] = process_cloverleaf_data_to_json(consensus_qs, freqs_qs)
   # plot_data['freqs'] = serializers.serialize("json", models.Freq.objects.filter(clade = 'Saccharomyces', isotype = 'All'))
-  plot_data['freqs'] = process_freqs_to_json()
+  # plot_data['freqs'] = process_freqs_to_json()
   return render(request, 'explorer/summary.html', {
     'filter_info': filter_info,
     'plot_data': plot_data,
@@ -60,17 +60,46 @@ FEATURE_LABELS = {
   'Paired': ('Paired', 'Paired'), 'Bulge': ('Bulge', 'Bulge'), 'Mismatched': ('Mismatched', 'Mismatched'), 'NN': ('N', 'N')
 }
 
-def process_cloverleaf_data_to_json(queryset):
+SINGLE_FEATURES = ['A', 'C', 'G', 'U']
+PAIRED_FEATURES = {
+  'AU': 'A:U', 'UA': 'U:A', 'GC': 'G:C', 'CG': 'C:G', 'GU': 'G:U', 'UG': 'U:G', 
+  'AA': 'A:A', 'AC': 'A:C', 'AG': 'A:G', 'CA': 'C:A', 'CC': 'C:C', 'CU': 'C:U', 'GA': 'G:A', 'GG': 'G:G', 'UC': 'U:C', 'UU': 'U:U',
+  'AM': 'A:-', 'CM': 'C:-', 'GM': 'G:-', 'UM': 'U:-', 'MA': '-:A', 'MC': '-:C', 'MG': '-:G', 'MU': '-:U', 'MM': '-:-'
+}
+
+def process_cloverleaf_data_to_json(consensus_qs, freqs_qs):
   plot_data = {}
-  consensus = queryset.values()[0] 
+
+  # preprocess freqs so Django doesn't submit separate queries per filter
+  freqs = {}
+  for freq in freqs_qs.values():
+    position = freq['position']
+    if position in SINGLE_POSITIONS:
+      freqs[position] = {base: freq[base] for base in SINGLE_FEATURES}
+    elif position in PAIRED_POSITIONS:
+      position5, position3 = position.split(':')
+      freqs[position5] = {PAIRED_FEATURES[pair]: freq[pair] for pair in PAIRED_FEATURES}
+      freqs[position3] = {PAIRED_FEATURES[pair]: freq[pair] for pair in PAIRED_FEATURES}
+
+  consensus = consensus_qs.values()[0]
   for colname in consensus:
     position = colname.replace('p', '').replace('_', ':')
     if position in SINGLE_POSITIONS:
-      plot_data[position] = FEATURE_LABELS[consensus[colname]]
+      position_consensus = FEATURE_LABELS[consensus[colname]]
+      plot_data[position] = {
+        'consensus': position_consensus,
+        'freqs': freqs[position]
+      }
     if position in PAIRED_POSITIONS:
       position5, position3 = position.split(':')
-      plot_data[position5], plot_data[position3] = FEATURE_LABELS[consensus[colname]]
-  
+      plot_data[position5] = {
+        'consensus': FEATURE_LABELS[consensus[colname]][0],
+        'freqs': freqs[position5]
+      }
+      plot_data[position3] = {
+        'consensus': FEATURE_LABELS[consensus[colname]][1],
+        'freqs': freqs[position3]
+      }
   return json.dumps(plot_data)
 
 def process_freqs_to_json(clade = 'Saccharomyces'):
@@ -88,4 +117,5 @@ def get_coords(request):
 
 def cloverleaf(request):
   consensus_qs = models.Consensus.objects.filter(clade = 'Saccharomyces', isotype = 'All')
-  return JsonResponse(process_cloverleaf_data_to_json(consensus_qs), safe = False)
+  freqs_qs = models.Freq.objects.filter(clade = 'Saccharomyces', isotype = 'All')
+  return JsonResponse(process_cloverleaf_data_to_json(consensus_qs, freqs_qs), safe = False)
