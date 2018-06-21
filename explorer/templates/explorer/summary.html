@@ -23,9 +23,44 @@ $(document).ready(function() {
 {% block plotjs %}
 <script src='https://d3js.org/d3.v4.min.js'></script>
 <script type = "text/javascript">
+    // d3 data load with promise
+    (function (global, factory) {
+      typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('d3-request')) :
+      typeof define === 'function' && define.amd ? define(['d3-request'], factory) :
+      (global.d3 = global.d3 || {}, global.d3.promise = factory(global.d3));
+    }(this, (function (d3) { 'use strict';
 
-var draw = function(coords) {
+    function promisify(caller, fn) {
+      return function () {
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
+        }
 
+        return new Promise(function (resolve, reject) {
+          var callback = function callback(error, data) {
+            if (error) {
+              reject(Error(error));
+              return;
+            }
+            resolve(data);
+          };
+          fn.apply(caller, args.concat(callback));
+        });
+      };
+    }
+
+    var module$1 = {};
+
+    ['csv', 'tsv', 'json', 'xml', 'text', 'html'].forEach(function (fnName) {
+      module$1[fnName] = promisify(d3, d3[fnName]);
+    });
+
+    return module$1;
+
+    })));
+
+var draw_cloverleaf = function(consensus) {
+  consensus = JSON.parse(consensus)
   var window_scale_factor = 2;
   var svg_width = 1200;
   var svg_height = 1200;
@@ -36,36 +71,119 @@ var draw = function(coords) {
       tilemap_width = 1200,
       tilemap_height = 700;
 
-  var svg = d3.select('#svg-area')
+  d3.select('#svg-area')
     .append('svg')
     .attr('width', svg_width)
     .attr('height', svg_height)
-
-  svg.append('g')
+    .append('g')
     .attr('id', 'cloverleaf')
     .attr('class', 'current-plot')
     .attr('width', cloverleaf_width + cloverleaf_margin * 2)
     .attr('height', cloverleaf_height + cloverleaf_margin * 2)
 
-  var cloverleaf = d3.select('#cloverleaf');
+  d3.select('body')
+    .append('div')
+    .attr('class', 'tooltip')  
+    .style('opacity', 0);
 
-  var circles = cloverleaf.selectAll('circle')
-    .data(coords, d => 'circle' + d['position'])
-    .enter()
-    .append('circle')
-    .attr('id', d => 'circle' + d['position'])
-    .attr('cx', d => d['x'] * 1.5)
-    .attr('cy', d => d['y'] * 1.5)
-    .attr('r', d => d['radius'] * 1.5)
+  var coords_loaded = d3.promise.json('{% url "explorer:coords" %}');
+  coords_loaded.then(function(coords) {
+	  
+	  var circles = d3.select('#cloverleaf').selectAll('circle')
+	    .data(coords, d => 'circle' + d['position'])
+	    .enter()
+	    .append('circle')
+      .attr('class', 'cloverleaf-circle')
+	    .attr('id', d => 'circle' + d['position'])
+	    .attr('cx', d => d['x'])
+	    .attr('cy', d => d['y'])
+	    .attr('r', d => d['radius'])
+
+    var circle_text = d3.select('#cloverleaf').selectAll('text')
+      .data(coords, d => 'feature' + d['position'])
+      .enter()
+      .append('text');
+  }).then(function() {
+  	update_cloverleaf(consensus)
+  });
+
 };
 
+var update_cloverleaf = function(consensus) {
+	new Promise(function(resolve, reject) {
+	  var coords = d3.select('#cloverleaf').selectAll('circle').data();
+	  for (var index in coords) {
+	  	coords[index]['feature'] = consensus[coords[index]['position']];
+	  }
+	  resolve(coords);
+  }).then(function(updated_coords) {
+  	set_cloverleaf_circle_attributes(updated_coords);
+    set_cloverleaf_text_attributes(updated_coords);
+  })
+};
 
-// var parse_data = function(d) {
-// 	console.log(d);
-// 	return d;
-// }
+var set_cloverleaf_circle_attributes = function(coords) {
+  var tooltip = d3.select('.tooltip');
+  var feature_scale = d3.scaleOrdinal()
+    .domain(['', 'A', 'C', 'G', 'U', '-', 'Purine', 'Pyrimidine', 'Weak', 'Strong','Amino','Keto','B','D','H','V','N','Absent','Mismatched','Paired','High mismatch rate'])
+    .range(['#ffffff', '#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#dddddd', '#ff8300','#66c2a5','#b3de69','#fb72b2','#c1764a','#b26cbd','#e5c494','#ccebd5','#ffa79d','#a6cdea','white','#ffffff','#cccccc','#ffffcc','#222222']);
 
-d3.json('{% url "explorer:cloverleaf" %}', draw)
+  d3.select('#cloverleaf').selectAll('circle')
+    .data(coords)
+    .attr('id', d => 'circle' + d['position'])
+    .attr('cx', d => d['x'])
+    .attr('cy', d => d['y'])
+    .attr('r', d => d['radius'])
+    .attr('fill', d => feature_scale(d['feature']))
+    .on('mouseover', function(d) {
+      tooltip.transition()
+        .duration(100)
+        .style('opacity', .9)
+        .text('Position ' + d['position'])
+        .style('left', d3.event.pageX + 'px')
+        .style('top', d3.event.pageY + 'px');
+      d3.select(this)
+        .transition()
+        .duration(100)
+        .attr('class', 'cloverleaf-highlight');
+
+      d3.selectAll('#base_distro g').remove();
+      // draw_base_distro(d);
+    })
+    .on('mousemove', function() {  
+      tooltip.style('left', d3.event.pageX + 'px')
+        .style('top', d3.event.pageY + 'px');
+    })
+    .on('mouseout', function(d) {   
+      tooltip.transition()    
+        .duration(100)    
+        .style('opacity', 0); 
+      d3.select(this)
+        .transition()
+        .duration(100)
+        .attr('class', 'cloverleaf-circle');
+    });
+}
+
+var set_cloverleaf_text_attributes = function(coords) {
+  d3.select('#cloverleaf').selectAll('text')
+    .data(coords)
+    .attr('id', d => 'feature' + d['position'])
+    .attr('x', d => d['x'])
+    .attr('y', d => { 
+      if (d['position'].search('V') == -1) return d['y'] + 6;
+      else return d['y'] + 4;
+    })
+    .attr('text-anchor', 'middle')
+    .attr('font-size', d => {
+      if (d['position'].search('V') == -1) return '15px';
+      else return '10px';
+    })
+    .text(d => d['feature'])
+    .style('pointer-events', 'none');
+}
+
+d3.json('{% url "explorer:cloverleaf" %}', draw_cloverleaf)
 </script>
 
 {% endblock %}

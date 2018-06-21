@@ -81,7 +81,11 @@ def process_freqs_to_json(clade = 'Saccharomyces'):
   return plot_data
 
 
-def cloverleaf(request):
+def get_coords(request):
   data = models.Coord.objects.all()
   serializer = serializers.CoordSerializer(data, many = True)
   return JsonResponse(serializer.data, safe = False)
+
+def cloverleaf(request):
+  consensus_qs = models.Consensus.objects.filter(clade = 'Saccharomyces', isotype = 'All')
+  return JsonResponse(process_cloverleaf_data_to_json(consensus_qs), safe = False)
