@@ -15,19 +15,23 @@ from . import serializers
 
 
 def summary(request):
-  filter_info = {
-    'clade': 'Saccharomyces',
-    'rank': 'genus',
-    'isotypes': 'All'
-  }
-  # consensus_qs = models.Consensus.objects.filter(clade = 'Saccharomyces', isotype = 'All')
-  plot_data = {}
-  # plot_data['cloverleaf'] = process_cloverleaf_data_to_json(consensus_qs, freqs_qs)
-  # plot_data['freqs'] = serializers.serialize("json", models.Freq.objects.filter(clade = 'Saccharomyces', isotype = 'All'))
-  # plot_data['freqs'] = process_freqs_to_json()
+  filter_clade = 'Saccharomyces'
+  filter_rank = 'genus'
+  filter_isotype = 'All'
+
+  clades_qs = models.Consensus.objects.values('clade', 'rank')
+  clades = {pair['clade']: pair['rank'] for pair in clades_qs}
+
+  if request.method == "POST":
+    filter_clade = request.POST.get('clade')
+    filter_rank = clades[filter_clade]
+    filter_isotype = request.POST.get('isotype')
+
   return render(request, 'explorer/summary.html', {
-    'filter_info': filter_info,
-    'plot_data': plot_data,
+    'clade': filter_clade,
+    'rank': filter_rank,
+    'isotype': filter_isotype,
+    'clades': clades
   })
 
 
@@ -115,7 +119,7 @@ def get_coords(request):
   serializer = serializers.CoordSerializer(data, many = True)
   return JsonResponse(serializer.data, safe = False)
 
-def cloverleaf(request):
-  consensus_qs = models.Consensus.objects.filter(clade = 'Saccharomyces', isotype = 'All')
-  freqs_qs = models.Freq.objects.filter(clade = 'Saccharomyces', isotype = 'All')
+def cloverleaf(request, clade, isotype):
+  consensus_qs = models.Consensus.objects.filter(clade = clade, isotype = isotype)
+  freqs_qs = models.Freq.objects.filter(clade = clade, isotype = isotype)
   return JsonResponse(process_cloverleaf_data_to_json(consensus_qs, freqs_qs), safe = False)
