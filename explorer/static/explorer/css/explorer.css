@@ -35,6 +35,17 @@ div.data-select-bar {
 div.plot-select-bar {
   background: #dddddd;
 }
+
+div.cloverleaf-svg {
+  background: #eeeeee;
+}
+
+div.tilemap-svg {
+  background: #dddddd;
+
+}
+
+
 svg text.axis-text {
   font-size: 1.2em;
   fill: #000000;
@@ -51,3 +62,4 @@ svg text.axis-focus {
     width: 100%;
     background: url('loading.gif') center center no-repeat;
 }
+
