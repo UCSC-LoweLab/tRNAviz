@@ -2,7 +2,7 @@ from django.contrib import admin
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from import_export.fields import Field
-from .models import Taxonomy, tRNA, Consensus, Freq
+from .models import Taxonomy, tRNA, Consensus, Freq, Coord
 
 
 # For import export
@@ -325,6 +325,11 @@ class FreqResource(resources.ModelResource):
     model = Freq
     import_id_fields = ('position', 'isotype', 'clade', 'rank')
 
+class CoordResource(resources.ModelResource):
+  class Meta:
+    model = Coord
+    import_id_fields = ('position', )
+
 class TaxonomyAdmin(ImportExportModelAdmin):
   resource_class = TaxonomyResource
 
@@ -337,7 +342,12 @@ class ConsensusAdmin(ImportExportModelAdmin):
 class FreqAdmin(ImportExportModelAdmin):
   resource_class = FreqResource
 
+class CoordAdmin(ImportExportModelAdmin):
+  resource_class = CoordResource
+
+
 admin.site.register(Taxonomy, TaxonomyAdmin)
 admin.site.register(tRNA, tRNAAdmin)
 admin.site.register(Consensus, ConsensusAdmin)
 admin.site.register(Freq, FreqAdmin)
+admin.site.register(Coord, CoordAdmin)

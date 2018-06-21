@@ -2,13 +2,16 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.db.models import Count
 from django.core import serializers
+from rest_framework.renderers import JSONRenderer
 from collections import defaultdict
+from django.http import JsonResponse
 import json
 
 import pdb
 
 from . import models
 from . import filters
+from . import serializers
 
 
 def summary(request):
@@ -70,10 +73,15 @@ def process_cloverleaf_data_to_json(queryset):
   
   return json.dumps(plot_data)
 
-
 def process_freqs_to_json(clade = 'Saccharomyces'):
   queryset = models.Freq.objects.filter(clade = clade).values('position', 'isotype', 'A', 'G', 'C', 'U', 'absent')
   plot_data = defaultdict(dict)
   for row in queryset:
     plot_data[row['isotype']][row['position']] = {key:row[key] for key in row}
   return plot_data
+
+
+def cloverleaf(request):
+  data = models.Coord.objects.all()
+  serializer = serializers.CoordSerializer(data, many = True)
+  return JsonResponse(serializer.data, safe = False)

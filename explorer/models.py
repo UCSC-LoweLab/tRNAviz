@@ -403,3 +403,12 @@ class Freq(models.Model):
 
   def __str__(self):
     return '{} - {}/{}/{}/{} ({} {})'.format(self.position, self.A, self.C, self.G, self.U, self.rank, self.clade)
+
+class Coord(models.Model):
+  position = models.CharField(primary_key = True, max_length = 5)
+  x = models.FloatField()
+  y = models.FloatField()
+  radius = models.FloatField()
+
+  def __str__(self):
+    return '{} - ({}, {})'.format(self.position, self.x, self.y)

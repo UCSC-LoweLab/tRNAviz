@@ -11,4 +11,5 @@ def redirect_home(request):
 urlpatterns = [
   path('', redirect_home),
   path('summary/', views.summary, name = 'summary'),
+  path('api/cloverleaf', views.cloverleaf, name = 'cloverleaf')
 ]
