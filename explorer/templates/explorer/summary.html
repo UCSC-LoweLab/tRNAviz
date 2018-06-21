@@ -12,7 +12,7 @@
 <script>	
 $(document).ready(function() {
 	$('#clade-select').select2({width: "100%", allowClear: true, placeholder: "Select a clade"});
-	$('#isotypes-select').select2({width: "100%", allowClear: true, placeholder: "Select isotype(s) to include"});
+	$('#isotypes-select').select2({width: "100%", allowClear: true, placeholder: "Select an isotype"});
 })
 </script>
 {% endblock %}
@@ -272,7 +272,7 @@ d3.json('{% url "explorer:cloverleaf" clade=clade isotype=isotype %}', draw_clov
 				{% csrf_token %}
 				<div class='my-2'>
 					<select class='multiselect' name="clade" id="clade-select">
-						<option value="Eukaryota" selected='selected'>All eukaryotes</option>
+						<option value="Eukaryota" selected="selected">All eukaryotes<option>
 						{% for clade, rank in clades.items %}
 						<option value="{{ clade }}">{{ rank|title }} {{ clade }}<option>
 						{% endfor %}
@@ -280,7 +280,7 @@ d3.json('{% url "explorer:cloverleaf" clade=clade isotype=isotype %}', draw_clov
 				</div>
 				<div class='my-2'>
 					<select class='multiselect' name="isotype" id="isotypes-select">
-						<option value="All" selected='selected'>All isotypes</option>
+						<option value="All" selected="selected">All isotypes</option>
 						<option value="Ala">Ala</option>
 						<option value="Arg">Arg</option>
 						<option value="Asn">Asn</option>
@@ -331,7 +331,10 @@ d3.json('{% url "explorer:cloverleaf" clade=clade isotype=isotype %}', draw_clov
 
 
 {% block plots %}
-<div class="p-3" id="svg-area">
+<div class="p-3">
+	<h4>Consensus features for {{ rank|title }} {{ clade }} ({{ isotype }}{% if isotype == "All" %} isotypes{% endif %})</h4>
+	<div class="p-3" id="svg-area">
+	</div>
 </div>
 {{ clades }}
 {% endblock %}
