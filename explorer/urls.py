@@ -13,4 +13,5 @@ urlpatterns = [
   path('summary/', views.summary, name = 'summary'),
   path('api/coords', views.get_coords, name = 'coords'),
   path('api/cloverleaf/<str:clade>/<str:isotype>/', views.cloverleaf, name = 'cloverleaf'),
+  path('api/tilemap/<str:clade>/', views.tilemap, name = 'tilemap'),
 ]

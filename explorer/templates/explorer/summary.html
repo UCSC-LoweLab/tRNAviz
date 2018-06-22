@@ -25,6 +25,7 @@ $(document).ready(function() {
 <script type = "text/javascript">
 var coords_path = "{% url 'explorer:coords' %}"
 d3.json('{% url "explorer:cloverleaf" clade=clade isotype=isotype %}', draw_cloverleaf)
+d3.json('{% url "explorer:tilemap" clade=clade %}', draw_tilemap)
 </script>
 {% endblock %}
 
@@ -87,7 +88,14 @@ d3.json('{% url "explorer:cloverleaf" clade=clade isotype=isotype %}', draw_clov
 {% block plots %}
 <div class="p-3">
 	<h4>Consensus features for {{ rank|title }} {{ clade }} ({{ isotype }}{% if isotype == "All" %} isotypes{% endif %})</h4>
-	<div class="p-3" id="svg-area">
+	<div class="p-3" id="cloverleaf-area">
+		<div class="loading-overlay">
+		</div>
+	</div>
+	<h4>Isotype-specific consensus features for {{ rank|title }} {{ clade }}</h4>
+	<div class="p-3" id="tilemap-area">
+		<div class="loading-overlay">
+		</div>
 	</div>
 </div>
 {% endblock %}

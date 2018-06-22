@@ -55,11 +55,18 @@ svg text.axis-focus {
   font-weight: bold;
   fill: #ff0000;
 }
-.loading-overlay {
-    position: fixed;
-    opacity: 0.5;
-    height: 100%;
-    width: 100%;
-    background: url('loading.gif') center center no-repeat;
+
+div.loading-overlay {
+    margin: auto;
+    display: block;
+    z-index: 1000;
+    background-position: left;
+    background: url('../img/loading.gif');
+    width: 30%;
+    height: 300px;
+    background-repeat: no-repeat;
+    -moz-background-size: cover;
+    -webkit-background-size: cover;
+    cursor: wait;
 }
 
