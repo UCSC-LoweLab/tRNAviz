@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
-from django.db.models import Count
+from django.db.models import Count, Max
 from django.core import serializers
 from rest_framework.renderers import JSONRenderer
 from collections import defaultdict
@@ -180,4 +180,30 @@ def tilemap(request, clade):
 
   return JsonResponse(json.dumps(plot_data), safe = False)
 
+def variation(request):
+  filter_clades = {'8994': ('Saccharomyces', 'genus')}
+  filter_isotypes = ['All']
+  filter_positions = ['single']
 
+  clade_list_qs = models.Consensus.objects.values('clade', 'rank').annotate(Max('id'))
+  clade_list = {str(row['id__max']): (row['clade'], row['rank']) for row in clade_list_qs}
+
+  if request.method == "POST":
+    filter_clades = {str(row['id__max']): (row['clade'], row['rank']) for row in clade_list_qs.filter(id__max__in = request.POST.get('clades'))}
+    filter_isotype = request.POST.get('isotypes')
+    filter_positions = request.POST.get('positions')
+
+  print(filter_isotypes)
+  return render(request, 'explorer/variation.html', {
+    'clades': filter_clades,
+    'isotypes': filter_isotypes,
+    'positions': filter_positions,
+    'clade_list': clade_list
+  })
+
+
+def distribution(request, clades, isotypes, positions):
+  pass
+
+def compare(request):
+  pass
