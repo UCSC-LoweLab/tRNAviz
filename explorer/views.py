@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
-from django.db.models import Count, Max
+from django.db.models import Count, Max, Q
 from django.core import serializers
 from rest_framework.renderers import JSONRenderer
 from collections import defaultdict
@@ -32,6 +32,27 @@ def summary(request):
     'rank': filter_rank,
     'isotype': filter_isotype,
     'clades': clades
+  })
+
+def variation(request):
+  filter_clades = {'4895': ('Saccharomyces', 'genus')}
+  filter_isotypes = ['All']
+  filter_positions = ['single']
+
+  clade_list = {}
+  for taxonomy in models.Taxonomy.objects.values():
+    clade_list[taxonomy['taxid']] = taxonomy['name'], taxonomy['rank']
+  print(request.POST)
+  if request.method == "POST":
+    filter_clades = {taxid: clade_list[taxid] for taxid in request.POST.get('clades')}
+    filter_isotype = request.POST.get('isotypes')
+    filter_positions = request.POST.get('positions')
+
+  return render(request, 'explorer/variation.html', {
+    'clades': filter_clades,
+    'isotypes': filter_isotypes,
+    'positions': filter_positions,
+    'clade_list': clade_list
   })
 
 
@@ -180,30 +201,37 @@ def tilemap(request, clade):
 
   return JsonResponse(json.dumps(plot_data), safe = False)
 
-def variation(request):
-  filter_clades = {'8994': ('Saccharomyces', 'genus')}
-  filter_isotypes = ['All']
-  filter_positions = ['single']
-
-  clade_list_qs = models.Consensus.objects.values('clade', 'rank').annotate(Max('id'))
-  clade_list = {str(row['id__max']): (row['clade'], row['rank']) for row in clade_list_qs}
-
-  if request.method == "POST":
-    filter_clades = {str(row['id__max']): (row['clade'], row['rank']) for row in clade_list_qs.filter(id__max__in = request.POST.get('clades'))}
-    filter_isotype = request.POST.get('isotypes')
-    filter_positions = request.POST.get('positions')
-
-  print(filter_isotypes)
-  return render(request, 'explorer/variation.html', {
-    'clades': filter_clades,
-    'isotypes': filter_isotypes,
-    'positions': filter_positions,
-    'clade_list': clade_list
-  })
-
-
 def distribution(request, clades, isotypes, positions):
-  pass
+  # reconstruct clade dict based on ids
+  clades = [int(taxid) for taxid in clades.split(',')]
+  clade_list = [(clade['name'], clade['rank']) for clade in models.Taxonomy.objects.filter(taxid__in = clades).values()]
+
+  # print(clades)
+  # print(models.Taxonomy.objects.filter(taxid__in = clades))
+
+  isotypes = ISOTYPES if 'All' in isotypes else isotypes
+
+  if 'single' in positions:
+    positions = SINGLE_POSITIONS
+  elif 'paired' in positions:
+    positions = PAIRED_POSITIONS
+  query_positions = ['p{}'.format(position.replace(':', '_')) for position in positions] + ['seqname', 'isotype']
+
+  # grab tRNA set
+  # Clade filter is a series of or'd Q statements, e.g. Q('Genus' = 'Saccharomyces') 
+
+  q_list = [Q(**{str(rank): name}) for name, rank in clade_list]
+  query_filter_args = Q()
+  for q in q_list:
+    query_filter_args = query_filter_args | q
+  trna_qs = models.tRNA.objects.filter(*(query_filter_args,)).filter(isotype__in = isotypes).values(*query_positions)[0:5]
+  
+  # trnas
+  plot_data = defaultdict(dict)
+  for row in trna_qs:
+    for position in query_positions:
+      plot_data[row['seqname']][position] = row[position]
+  return JsonResponse(json.dumps(plot_data), safe = False)
 
 def compare(request):
   pass

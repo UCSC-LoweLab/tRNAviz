@@ -14,6 +14,7 @@
 $(document).ready(function() {
 	$('#clade-select').select2({width: "100%", allowClear: true, placeholder: "Select a clade"});
 	$('#isotypes-select').select2({width: "100%", allowClear: true, placeholder: "Select an isotype"});
+	$('#positions-select').select2({width: "100%", allowClear: true, placeholder: "Select an isotype"});
 })
 </script>
 {% endblock %}
@@ -40,15 +41,15 @@ d3.json('{% url "explorer:distribution" clades=clades|clade_dict_to_url_string i
 			<form id='data-select-form' action='{% url "explorer:variation" %}' method="POST">
 				{% csrf_token %}
 				<div class='my-2'>
-					<select class='multiselect' name="clade" id="clade-select">
+					<select class='multiselect' name="clades" multiple="multiple" id="clade-select">
 						<option value="Eukaryota" selected="selected">All eukaryotes<option>
-						{% for clade, rank in clades.items %}
-						<option value="{{ clade }}">{{ rank|title }} {{ clade }}<option>
+						{% for taxid, clade in clade_list.items %}
+						<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})<option>
 						{% endfor %}
 					</select>
 				</div>
 				<div class='my-2'>
-					<select class='multiselect' name="isotype" id="isotypes-select">
+					<select class='multiselect' name="isotypes" multipel="multiple" id="isotypes-select">
 						<option value="All" selected="selected">All isotypes</option>
 						<option value="Ala">Ala</option>
 						<option value="Arg">Arg</option>
@@ -74,7 +75,7 @@ d3.json('{% url "explorer:distribution" clades=clades|clade_dict_to_url_string i
 					</select>
 				</div>
 				<div class='my-2'>
-					<select class='multiselect' name="positions" id="isotypes-select">
+					<select class='multiselect' name="positions" multiple="multiple" id="isotypes-select">
 						<option value="single" selected="selected">Single bases</option>
 						<option value="paired">Base pairs</option>
 						<option value="tertiary">Tertiary interactions</option>

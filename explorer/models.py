@@ -29,21 +29,11 @@ ISOTYPES = (
 
 class Taxonomy(models.Model):
   taxid = models.CharField(primary_key = True, max_length = 10)
-  assembly = models.CharField(max_length = 100)
-  varietas = models.CharField(max_length = 100)
-  species = models.CharField(max_length = 100)
-  genus = models.CharField(max_length = 50)
-  subclass = models.CharField(max_length = 50)
-  taxclass = models.CharField('class', db_column = 'class', max_length = 50)
-  order = models.CharField(max_length = 50)
-  subphylum = models.CharField(max_length = 50)
-  phylum = models.CharField(max_length = 50)
-  subkingdom = models.CharField(max_length = 50)
-  kingdom = models.CharField(max_length = 50)
-  domain = models.CharField(max_length = 10)
+  name = models.CharField(max_length = 100)
+  rank = models.CharField(max_length = 20)
 
   def __str__(self):
-    return '{} ({})'.format(self.assembly, self.taxid)
+    return '{} ({})'.format(self.name, self.rank)
 
 
 class tRNA(models.Model):

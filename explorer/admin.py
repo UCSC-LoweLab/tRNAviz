@@ -7,7 +7,6 @@ from .models import Taxonomy, tRNA, Consensus, Freq, Coord
 
 # For import export
 class TaxonomyResource(resources.ModelResource):
-  taxclass = Field(attribute = 'taxclass', column_name = 'class')
   class Meta:
     model = Taxonomy
     import_id_fields = ('taxid',)

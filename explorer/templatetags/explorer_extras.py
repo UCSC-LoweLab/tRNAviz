@@ -13,7 +13,7 @@ register = template.Library()
 
 @register.filter('clade_dict_to_url_string')
 def clade_dict_to_url_string(clade_dict):
-  return ','.join([clade_id for clade_id in clade_dict])
+  return ','.join([tax_id for tax_id in clade_dict])
 
 @register.filter('clade_dict_to_pretty_string')
 def clade_dict_to_pretty_string(clade_dict):
