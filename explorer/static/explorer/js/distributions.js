@@ -1,6 +1,6 @@
 var isotypes, positions, parent;
 var stacked;
-var adata, isotype_scale, position_scale, distro_data;
+var adata, idata, isotype_scale, position_scale, distro_data;
 
 var draw_distribution = function(plot_data) {
   distro_data = JSON.parse(plot_data);
@@ -30,11 +30,13 @@ var draw_distribution = function(plot_data) {
     .style('opacity', 0);
   var tooltip_position = tooltip.append('div')
   var tooltip_isotype = tooltip.append('div')
+  var tooltip_group = tooltip.append('div')
 
 	var draw_facet = function(isotype, position, data) {
 
-		var num_groups = data.length;
     var current_facet = isotype + '-' + position;
+		var stacked = d3.stack().keys(['A', 'C', 'G', 'U', '-'])
+		  .offset(d3.stackOffsetExpand)(data);
 
 	  var feature_scale = d3.scaleOrdinal()
 	    .domain(['A', 'C', 'G', 'U', '-', 'Purine','Pyrimidine','Weak','Strong','Amino','Keto','B','D','H','V','N','Absent','Mismatched','Paired','High mismatch rate'])
@@ -48,23 +50,22 @@ var draw_distribution = function(plot_data) {
 	    .domain([0, positions.length - 1])
 	    .range([10, plot_height]);
 
-	  var bar_x_scale = d3.scaleLinear()
-	  	.domain([0, num_groups])
-	  	.range([0, facet_width])
+	  var bar_x_scale = d3.scaleBand()
+	  	.domain(data.map(function(d) { return d.group; }))
+	  	.rangeRound([0, facet_width])
+	  	.padding(0.1);
 
 	  var bar_y_scale = d3.scaleLinear()
-			.domain([0, 1])
-			.range([0, facet_height]);
+    	.domain([d3.min(stacked, stackMin), d3.max(stacked, stackMax)])
+    	.range([0, facet_height]);
 
-		var bar_width_scale = d3.scaleLinear()
-			.domain([1, num_groups])
-			.range([facet_width - 10, 10]);
+		function stackMin(stacked) {
+		  return d3.min(stacked, function(d) { return d[0]; });
+		}
 
-
-
-		var stack = d3.stack().keys(['A', 'C', 'G', 'U', '-'])
-		  .offset(d3.stackOffsetExpand);
-	  stacked = stack(data);
+		function stackMax(stacked) {
+		  return d3.max(stacked, function(d) { return d[1]; });
+		}
 
 	  var facet = d3.select('#distribution-plots')
 	    .append('g')
@@ -80,18 +81,26 @@ var draw_distribution = function(plot_data) {
 	    // .attr('width', plot_width)
 	    // .attr('height', plot_height);
 
-	  var g = 0;
-	  var bars = facet.selectAll('rect')
+	  var bars = facet.append('g')
+	  	.selectAll('g')
 	  	.data(stacked)
 	  	.enter()
+	  	.append('g')
+      .attr("fill", d => feature_scale(d.key))
+	  	.selectAll('rect')
+	  	.data(d => d)
+	  	.enter()
 	  	.append('rect')
-	  	.attr("y", d => bar_y_scale(d[g][0]))
-			.attr("height", d => bar_y_scale(d[g][1] - d[g][0]))
-      .attr("width", d => bar_width_scale(g))
-	    .style("fill", (d, i) => feature_scale(i))
+	  	.attr("x", d => bar_x_scale(d.data.group))
+	  	.attr("y", d => bar_y_scale(d[0]))
+			.attr("height", d => bar_y_scale(d[1] - d[0]))
+      .attr("width", bar_x_scale.bandwidth)
+      .attr("stroke-width", 1)
+      .attr("stroke", "black")
 			.on('mouseover', function(d) {
-	      tooltip_position.html('Isotype: ' + d3.select(this.parentNode).attr('isotype'));
-	      tooltip_isotype.html('Position: ' + d3.select(this.parentNode).attr('position'));
+	      tooltip_position.html('Isotype: ' + d.data.isotype);
+	      tooltip_isotype.html('Position: ' + d.data.position);
+	      tooltip_group.html('Group: ' + d.data.group)
 	      tooltip.transition()
 	        .duration(100)
 	        .style('opacity', .9)

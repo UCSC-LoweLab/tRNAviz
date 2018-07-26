@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load static from staticfiles %}
 {% load explorer_extras %}
+{% debug %}
 
 {% block static %}
 <link rel="stylesheet" href="{% static 'explorer/css/explorer.css' %}">
@@ -16,9 +17,13 @@
 
 <script>	
 $(document).ready(function() {
-	$('#clade-select').select2({width: "100%", allowClear: true, placeholder: "Select a clade"});
-	$('#isotypes-select').select2({width: "100%", allowClear: true, placeholder: "Select an isotype"});
-	$('#positions-select').select2({width: "100%", allowClear: true, placeholder: "Select an isotype"});
+	$('#clade-select-1').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
+	$('#clade-select-2').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
+	$('#clade-select-3').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
+	$('#clade-select-4').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
+	$('#clade-select-5').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
+	$('#isotypes-select').select2({width: "100%", allowClear: true, placeholder: "Select isotype(s)"});
+	$('#positions-select').select2({width: "100%", allowClear: true, placeholder: "Select position(s)"});
 })
 </script>
 {% endblock %}
@@ -30,7 +35,8 @@ $(document).ready(function() {
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.2/nv.d3.css" />
 <script src="{% static 'explorer/js/distributions.js' %}"></script>
 <script type = "text/javascript">
-d3.json('{% url "explorer:distribution" clades=clades|clade_dict_to_url_string isotypes=isotypes|list_to_url_string positions=positions|list_to_url_string %}', draw_distribution);
+
+d3.json('{% url "explorer:distribution" clades=plot_clades|clade_dicts_to_url_string isotypes=isotypes|list_to_url_string positions=positions|list_to_url_string %}', draw_distribution);
 </script>
 {% endblock %}
 
@@ -47,15 +53,39 @@ d3.json('{% url "explorer:distribution" clades=clades|clade_dict_to_url_string i
 			<form id='data-select-form' action='{% url "explorer:variation" %}' method="POST">
 				{% csrf_token %}
 				<div class='my-2'>
-					<select class='multiselect' name="clades" multiple="multiple" id="clade-select">
-						<option value="Eukaryota" selected="selected">All eukaryotes<option>
+					<select class='multiselect' name="form_clades_1" multiple="multiple" id="clade-select-1">
+						<option value="Eukaryota" selected="selected">All eukaryotes</option>
 						{% for taxid, clade in clade_list.items %}
-						<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})<option>
+						<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
+						{% endfor %}
+					</select>
+					<select class='multiselect' name="form_clades_2" multiple="multiple" id="clade-select-2">
+						<option value="Eukaryota">All eukaryotes</option>
+						{% for taxid, clade in clade_list.items %}
+						<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
+						{% endfor %}
+					</select>
+					<select class='multiselect' name="form_clades_3" multiple="multiple" id="clade-select-3">
+						<option value="Eukaryota">All eukaryotes</option>
+						{% for taxid, clade in clade_list.items %}
+						<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
+						{% endfor %}
+					</select>
+					<select class='multiselect' name="form_clades_4" multiple="multiple" id="clade-select-4">
+						<option value="Eukaryota">All eukaryotes</option>
+						{% for taxid, clade in clade_list.items %}
+						<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
+						{% endfor %}
+					</select>
+					<select class='multiselect' name="form_clades_5" multiple="multiple" id="clade-select-5">
+						<option value="Eukaryota">All eukaryotes</option>
+						{% for taxid, clade in clade_list.items %}
+						<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
 						{% endfor %}
 					</select>
 				</div>
 				<div class='my-2'>
-					<select class='multiselect' name="isotypes" multiple="multiple" id="isotypes-select">
+					<select class='multiselect' name="form_isotypes" multiple="multiple" id="isotypes-select">
 						<option value="All" selected="selected">All isotypes</option>
 						<option value="Ala">Ala</option>
 						<option value="Arg">Arg</option>
@@ -81,7 +111,7 @@ d3.json('{% url "explorer:distribution" clades=clades|clade_dict_to_url_string i
 					</select>
 				</div>
 				<div class='my-2'>
-					<select class='multiselect' name="positions" multiple="multiple" id="isotypes-select">
+					<select class='multiselect' name="form_positions" id="positions-select">
 						<option value="single" selected="selected">Single bases</option>
 						<option value="paired">Base pairs</option>
 						<option value="tertiary">Tertiary interactions</option>
@@ -110,7 +140,7 @@ d3.json('{% url "explorer:distribution" clades=clades|clade_dict_to_url_string i
 		</thead>
 		<tbody>
 			<tr>
-				<td>{{ clades|clade_dict_to_pretty_string }}</td>
+				<td>{{ plot_clades|clade_dicts_to_pretty_string|linebreaks }}</td>
 				<td>{{ isotypes|list_to_pretty_string }}</td>
 				<td>{{ positions|list_to_pretty_string }}</td>
 			</tr>
