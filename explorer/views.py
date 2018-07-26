@@ -7,6 +7,7 @@ from collections import defaultdict
 from django.http import JsonResponse
 import json
 
+from django_pandas.io import read_frame
 import pdb
 
 from . import models
@@ -42,11 +43,11 @@ def variation(request):
   clade_list = {}
   for taxonomy in models.Taxonomy.objects.values():
     clade_list[taxonomy['taxid']] = taxonomy['name'], taxonomy['rank']
-  print(request.POST)
+
   if request.method == "POST":
-    filter_clades = {taxid: clade_list[taxid] for taxid in request.POST.get('clades')}
-    filter_isotype = request.POST.get('isotypes')
-    filter_positions = request.POST.get('positions')
+    filter_clades = {taxid: clade_list[taxid] for taxid in request.POST.getlist('clades')}
+    filter_isotype = request.POST.getlist('isotypes')
+    filter_positions = request.POST.getlist('positions')
 
   return render(request, 'explorer/variation.html', {
     'clades': filter_clades,
@@ -204,9 +205,10 @@ def tilemap(request, clade):
 def distribution(request, clades, isotypes, positions):
   # reconstruct clade dict based on ids
   clades = [int(taxid) for taxid in clades.split(',')]
+  groups = 1
   clade_list = [(clade['name'], clade['rank']) for clade in models.Taxonomy.objects.filter(taxid__in = clades).values()]
 
-  # print(clades)
+  print(clades)
   # print(models.Taxonomy.objects.filter(taxid__in = clades))
 
   isotypes = ISOTYPES if 'All' in isotypes else isotypes
@@ -215,22 +217,45 @@ def distribution(request, clades, isotypes, positions):
     positions = SINGLE_POSITIONS
   elif 'paired' in positions:
     positions = PAIRED_POSITIONS
-  query_positions = ['p{}'.format(position.replace(':', '_')) for position in positions] + ['seqname', 'isotype']
+  query_positions = ['p{}'.format(position.replace(':', '_')) for position in positions]
+  query_positions = query_positions + ['isotype']
 
-  # grab tRNA set
-  # Clade filter is a series of or'd Q statements, e.g. Q('Genus' = 'Saccharomyces') 
-
+  # Filter tRNA set with user query
+  # For filtering clades, the query is a series of or'd Q statements, e.g. Q('Genus' = 'Saccharomyces') 
   q_list = [Q(**{str(rank): name}) for name, rank in clade_list]
   query_filter_args = Q()
   for q in q_list:
     query_filter_args = query_filter_args | q
-  trna_qs = models.tRNA.objects.filter(*(query_filter_args,)).filter(isotype__in = isotypes).values(*query_positions)[0:5]
+  trna_qs = models.tRNA.objects.filter(*(query_filter_args,)).filter(isotype__in = isotypes).values(*query_positions)
   
-  # trnas
+  # migrate to pandas to count freqs and munge
+  trnas = read_frame(trna_qs)
+  trnas = trnas.groupby('isotype').apply(lambda position_counts: position_counts.drop('isotype', axis = 1).apply(lambda x: x.value_counts(normalize = True, dropna = True)).fillna(0))
+  freqs = trnas.unstack().stack(0)
+  freqs.index = freqs.index.rename(['isotype', 'position']).set_levels(level = 'position', levels = freqs.index.levels[1].map(lambda x: x[1:].replace('_', ':')))
+
+  # plot_data = {}
+  # for isotype in freqs.index.levels[0]:
+  #   # dict is { isotype : { position : { base: freq, base2: freq}}}
+  #   # example: 'Thr': {'20': {'U': 57.0, 'G': 0.0, 'A': 0.0, 'C': 0.0, '-': 0.0}
+  #   plot_data[isotype] = freqs.loc[isotype].to_dict(orient = 'index')
+  # return JsonResponse(json.dumps(plot_data), safe = False)
+
+  freqs = freqs.reset_index().set_index(['isotype', 'position'], drop = False)
   plot_data = defaultdict(dict)
-  for row in trna_qs:
-    for position in query_positions:
-      plot_data[row['seqname']][position] = row[position]
+  for isotype in freqs.index.levels[0]:
+    for position in freqs.index.levels[1]:
+      if groups == 1:
+        plot_data[isotype][position] = [freqs.loc[isotype, position].to_dict()]
+        # '17': [{'position': '17', 'isotype': 'Ala', 'A': 0, 'U': 34, ...}], '17a': [...]
+      else:
+        plot_data[isotype][position] = list(pd.DataFrame(freqs.loc[isotype, position]).to_dict().values())
+      # [{'position': '17', 'isotype': 'Ala', 'A': 0, 'U': 34, ...}, {'position': '17', ...}]
+
+  # freqs = freqs.rename(columns = {'level_1': 'position'})
+  # freqs['position'] = freqs['position'].apply(lambda x: x[1:].replace('_', ':'))
+
+  # plot_data = list(freqs.head().T.to_dict().values())
   return JsonResponse(json.dumps(plot_data), safe = False)
 
 def compare(request):

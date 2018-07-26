@@ -2,7 +2,11 @@
 {% load static from staticfiles %}
 {% load explorer_extras %}
 
-{% block static %}<link rel="stylesheet" href="{% static 'explorer/css/explorer.css' %}">{% endblock %}
+{% block static %}
+<link rel="stylesheet" href="{% static 'explorer/css/explorer.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.6/nv.d3.min.css" integrity="sha256-bmrwGjHOoD7azP+ZpGcOOitUNUGNRjwzjK1bZeTK6fI=" crossorigin="anonymous" />
+{% endblock %}
+
 {% block title %}tRNAviz | Variation{% endblock %}
 
 {% block filterjs %}
@@ -22,6 +26,8 @@ $(document).ready(function() {
 
 {% block plotjs %}
 <script src='https://d3js.org/d3.v4.min.js'></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.6/nv.d3.min.js" integrity="sha256-Eg29ohiE9Hzc/t5whG/QK/B8MGmrO4wkF6WGuSsx0VU=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.2/nv.d3.css" />
 <script src="{% static 'explorer/js/distributions.js' %}"></script>
 <script type = "text/javascript">
 d3.json('{% url "explorer:distribution" clades=clades|clade_dict_to_url_string isotypes=isotypes|list_to_url_string positions=positions|list_to_url_string %}', draw_distribution);
@@ -49,7 +55,7 @@ d3.json('{% url "explorer:distribution" clades=clades|clade_dict_to_url_string i
 					</select>
 				</div>
 				<div class='my-2'>
-					<select class='multiselect' name="isotypes" multipel="multiple" id="isotypes-select">
+					<select class='multiselect' name="isotypes" multiple="multiple" id="isotypes-select">
 						<option value="All" selected="selected">All isotypes</option>
 						<option value="Ala">Ala</option>
 						<option value="Arg">Arg</option>
