@@ -230,7 +230,7 @@ def distribution(request, clades, isotypes, positions):
   
   # migrate to pandas to count freqs and munge
   trnas = read_frame(trna_qs)
-  trnas = trnas.groupby('isotype').apply(lambda position_counts: position_counts.drop('isotype', axis = 1).apply(lambda x: x.value_counts(normalize = True, dropna = True)).fillna(0))
+  trnas = trnas.groupby('isotype').apply(lambda position_counts: position_counts.drop('isotype', axis = 1).apply(lambda x: x.value_counts()).fillna(0))
   freqs = trnas.unstack().stack(0)
   freqs.index = freqs.index.rename(['isotype', 'position']).set_levels(level = 'position', levels = freqs.index.levels[1].map(lambda x: x[1:].replace('_', ':')))
 
