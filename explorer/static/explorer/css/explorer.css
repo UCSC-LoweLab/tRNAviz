@@ -1,12 +1,17 @@
 div.tooltip {
   position: absolute;
-  text-align: center;
-  padding: 0.5em;
+  padding: 0.1em;
   font: 1em sans-serif;
-  background: lightsteelblue;
+  /*background: lightsteelblue;*/
   border: 0.1em;
   border-radius: 0.5em;
   pointer-events: none;
+}
+div.tooltip table {
+  margin-bottom: 0;
+}
+div.tooltip th {
+  text-align: left;
 }
 .cloverleaf-circle {
   stroke: #777777;

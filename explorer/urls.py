@@ -17,6 +17,7 @@ urlpatterns = [
 
   path('variation/', views.variation, name = 'variation'),
   path('api/distribution/<str:clades>/<str:isotypes>/<str:positions>/', views.distribution, name = 'distribution'),
+  path('api/position/<str:clades>/<str:isotypes>/<str:positions>/', views.position_distribution, name = 'position'),
 
   path('compare/', views.compare, name = 'compare'),
 ]

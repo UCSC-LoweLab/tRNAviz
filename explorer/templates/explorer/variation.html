@@ -152,5 +152,31 @@ d3.json('{% url "explorer:distribution" clades=plot_clades|clade_dicts_to_url_st
 		</div>
 	</div>
 
+	<div class="tooltip" style="opacity:0">
+		<table class="table table-sm table-striped table-bordered table-light">
+			<tbody>
+				<tr>
+					<th scope="col">Position</th>
+					<td id="tooltip-position"></td>
+				</tr>
+				<tr>
+					<th scope="col">Isotype</th>
+					<td id="tooltip-isotype"></td>
+				</tr>
+				<tr>
+					<th scope="col">Group</th>
+					<td id="tooltip-group"></td>
+				</tr>
+				<tr>
+					<th scope="col">Feature</th>
+					<td id="tooltip-feature"></td>
+				</tr>
+				<tr>
+					<th scope="col">Frequency</th>
+					<td id="tooltip-freq"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 </div>
 {% endblock %}

@@ -9,6 +9,7 @@ import json
 
 from django_pandas.io import read_frame
 import pandas as pd
+from itertools import product
 
 from . import models
 from . import filters
@@ -209,12 +210,10 @@ def tilemap(request, clade):
 def distribution(request, clades, isotypes, positions):
   # reconstruct clade dict based on ids
   clade_groups = [[taxid for taxid in clade_group.split(',')] for clade_group in clades.split(';')]
-  print(clade_groups)
   clades = []
   for clade_group in clade_groups: clades.extend([taxid for taxid in clade_group])
   
   clade_info = {clade['taxid']: (clade['name'], clade['rank']) for clade in models.Taxonomy.objects.filter(taxid__in = clades).values()}
-  print(clade_info)
   isotypes = ISOTYPES if 'All' in isotypes else isotypes
 
   if 'single' in positions:
@@ -262,8 +261,9 @@ def distribution(request, clades, isotypes, positions):
   freqs = trnas.groupby(['isotype', 'group']).apply(lambda position_counts: position_counts.drop(['isotype', 'group'], axis = 1).apply(lambda x: x.value_counts()).fillna(0))
   freqs = freqs.unstack().stack(0).reset_index().rename(columns = {'level_2': 'position'})
   freqs['position'] = freqs['position'].apply(lambda position: position[1:].replace('_', ':'))
-  freqs = freqs.loc[:, ['isotype', 'position', 'group', 'A', 'C', 'G', 'U', '-']].set_index(['isotype', 'position', 'group'], drop = False)
-  print(freqs.shape)
+  cols = ['isotype', 'position', 'group', 'A', 'C', 'G', 'U', '-', 'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'A:A', 'A:C', 'A:G', 'C:A', 'C:C', 'C:U', 'G:A', 'G:G', 'U:C', 'U:U', '-:A', '-:C', '-:G', '-:U']
+  freqs = freqs.loc[:, freqs.columns.intersection(cols)]
+  freqs = freqs.set_index(['isotype', 'position', 'group'], drop = False)
 
   # convert to d3-friendly format
   plot_data = defaultdict(dict)
@@ -277,6 +277,59 @@ def distribution(request, clades, isotypes, positions):
 
   # plot_data = list(freqs.head().T.to_dict().values())
   return JsonResponse(json.dumps(plot_data), safe = False)
+
+
+def position_distribution(request, clades, isotypes, positions):
+  # reconstruct clade dict based on ids
+  clade_groups = [[taxid for taxid in clade_group.split(',')] for clade_group in clades.split(';')]
+  clades = []
+  for clade_group in clade_groups: clades.extend([taxid for taxid in clade_group])
+  
+  clade_info = {clade['taxid']: (clade['name'], clade['rank']) for clade in models.Taxonomy.objects.filter(taxid__in = clades).values()}
+  isotypes = ISOTYPES if 'All' in isotypes else isotypes
+
+  if 'single' in positions:
+    positions = SINGLE_POSITIONS
+  elif 'paired' in positions:
+    positions = PAIRED_POSITIONS
+  query_positions = ['p{}'.format(position.replace(':', '_')) for position in positions]
+  query_positions = query_positions + ['isotype', 'species']
+
+  # Filter tRNA set with user queries
+  # For filtering clades, the query is a series of or'd Q statements, e.g. Q('Genus' = 'Saccharomyces') 
+  trnas = []
+  for i, clade_group in enumerate(clade_groups):
+    q_list = []
+    for taxid in clade_info:
+      if taxid not in clade_group: continue
+      name, rank = clade_info[taxid]
+      if rank == 'class':
+        rank = 'taxclass'
+      q_list.append(Q(**{str(rank): name}))
+    query_filter_args = Q()
+    for q in q_list:
+      query_filter_args = query_filter_args | q
+    trna_qs = models.tRNA.objects.filter(*(query_filter_args,)).filter(isotype__in = isotypes).values(*query_positions)
+    df = read_frame(trna_qs)
+    df['group'] = str(i + 1)
+    trnas.append(df)
+  trnas = pd.concat(trnas)
+
+  freqs = trnas.groupby(['isotype', 'group', 'species']).apply(lambda position_counts: position_counts.drop(['isotype', 'group', 'species'], axis = 1).apply(lambda x: x.value_counts()).fillna(0))
+  freqs = freqs.unstack().stack(0).reset_index().rename(columns = {'level_2': 'position'})
+  freqs['position'] = freqs['position'].apply(lambda position: position[1:].replace('_', ':'))
+  columns = ['isotype', 'position', 'group', 'species', 'A', 'C', 'G', 'U', '-', 'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'A:A', 'A:C', 'A:G', 'C:A', 'C:C', 'C:U', 'G:A', 'G:G', 'U:C', 'U:U', '-:A', '-:C', '-:G', '-:U']
+  freqs = freqs.loc[freqs.index.intersection(columns)]
+  freqs = freqs.set_index(['isotype', 'position', 'group', 'species'], drop = False)
+
+  # convert to d3-friendly format
+  plot_data = defaultdict(dict)
+  for isotype, position in itertools.product(freqs.index.levels[0], freqs.index.levels[1]):
+    plot_data[isotype + '-' + position] = list(pd.DataFrame(freqs.loc[isotype, position]).to_dict(orient = 'index').values())
+
+  return JsonResponse(json.dumps(plot_data), safe = False)
+
+
 
 def compare(request):
   pass
