@@ -108,7 +108,6 @@ def process_freqs_to_json(clade = 'Saccharomyces'):
     plot_data[row['isotype']][row['position']] = {key:row[key] for key in row}
   return plot_data
 
-
 def get_coords(request):
   data = models.Coord.objects.all()
   serializer = serializers.CoordSerializer(data, many = True)
@@ -329,7 +328,17 @@ def position_distribution(request, clades, isotypes, positions):
 
   return JsonResponse(json.dumps(plot_data), safe = False)
 
-
-
 def compare(request):
-  pass
+  clade_list = {}
+  for taxonomy in models.Taxonomy.objects.values():
+    clade_list[taxonomy['taxid']] = taxonomy['name'], taxonomy['rank']
+
+  return render(request, 'explorer/compare.html', {
+    'clade_list': clade_list
+  })
+
+def render_bitchart(request):
+  if request.method != "POST":
+    return compare(request)
+
+  return render(request, 'explorer/render-bitchart.html')

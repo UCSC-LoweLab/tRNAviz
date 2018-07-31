@@ -20,4 +20,5 @@ urlpatterns = [
   path('api/position/<str:clades>/<str:isotypes>/<str:positions>/', views.position_distribution, name = 'position'),
 
   path('compare/', views.compare, name = 'compare'),
+  path('compare/render', views.render_bitchart, name = 'render'),
 ]
