@@ -30,12 +30,10 @@ $(document).ready(function() {
 
 {% block plotjs %}
 <script src='https://d3js.org/d3.v4.min.js'></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.6/nv.d3.min.js" integrity="sha256-Eg29ohiE9Hzc/t5whG/QK/B8MGmrO4wkF6WGuSsx0VU=" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.2/nv.d3.css" />
 <script src="{% static 'explorer/js/distributions.js' %}"></script>
 <script type = "text/javascript">
 
-d3.json('{% url "explorer:distribution" clades=plot_clades|clade_dicts_to_url_string isotypes=isotypes|list_to_url_string positions=positions|list_to_url_string %}', draw_distribution);
+d3.json('{% url "explorer:distribution" clade_txids=plot_clades|clade_dicts_to_url_string isotypes=isotypes|list_to_url_string positions=positions|list_to_url_string %}', draw_distribution);
 </script>
 {% endblock %}
 
@@ -53,9 +51,12 @@ d3.json('{% url "explorer:distribution" clades=plot_clades|clade_dicts_to_url_st
 				{% csrf_token %}
 				<div class='my-2'>
 					<select class='multiselect' name="form_clades_1" multiple="multiple" id="clade-select-1">
-						<option value="Eukaryota" selected="selected">All eukaryotes</option>
 						{% for taxid, clade in clade_list.items %}
-						<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
+							{% if clade.0 == "Eukaryota" %}
+							<option value="{{ taxid }}" selected="selected">{{ clade.0 }} ({{ clade.1 }})</option>
+							{% else %}
+							<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
+							{% endif %}
 						{% endfor %}
 					</select>
 					<select class='multiselect' name="form_clades_2" multiple="multiple" id="clade-select-2">

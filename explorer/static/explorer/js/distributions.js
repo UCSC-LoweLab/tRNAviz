@@ -12,8 +12,8 @@ var draw_distribution = function(plot_data) {
   var isotypes = Object.keys(distro_data).sort();
   var positions = Object.keys(distro_data[isotypes[0]]).sort((position1, position2) => sorted_positions.indexOf(position1) - sorted_positions.indexOf(position2));
 
-  var plot_width = 1200;
-  var plot_height = 2000;
+  var plot_width = 60 * isotypes.length;
+  var plot_height = 2400;
   var plot_margin = 100; // extra for placing axes
   var facet_width = plot_width / isotypes.length - 5;
   var facet_height = plot_height / positions.length - 10; 
@@ -26,13 +26,12 @@ var draw_distribution = function(plot_data) {
     .append('g')
     .attr('id', 'distribution-plots');
 
-  var isotype_scale = d3.scaleLinear()
-    .domain([0, isotypes.length - 1])
-    .range([0, plot_width - 20]);
+  var isotype_scale = d3.scaleBand()
+    .domain(isotypes)
+    .rangeRound([10, plot_width - 10])
+    .padding(0);
 
-  var isotype_axis = d3.axisTop(isotype_scale)
-  	.ticks(isotypes.length)
-    .tickFormat(d => isotypes[d]);
+  var isotype_axis = d3.axisTop(isotype_scale);
 
   var position_scale = d3.scaleLinear()
     .domain([0, positions.length - 1])
@@ -46,7 +45,7 @@ var draw_distribution = function(plot_data) {
 
   svg.append('g')
     .attr('class', 'xaxis')
-    .attr('transform', 'translate(78, 20)')
+    .attr('transform', 'translate(40, 20)')
     .call(isotype_axis);
 
   svg.append('g')
@@ -71,10 +70,6 @@ var draw_distribution = function(plot_data) {
     var feature_scale = d3.scaleOrdinal()
       .domain(['A', 'C', 'G', 'U', '-', 'Purine','Pyrimidine','Weak','Strong','Amino','Keto','B','D','H','V','N','Absent','Mismatched','Paired','High mismatch rate'])
       .range(['#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#dddddd', '#ff8300','#66c2a5','#b3de69','#fb72b2','#c1764a','#b26cbd','#e5c494','#ccebd5','#ffa79d','#a6cdea','white','#ffffff','#cccccc','#ffffcc','#222222']);
-
-    var isotype_scale = d3.scaleLinear()
-      .domain([0, isotypes.length - 1])
-      .range([10, plot_width - 10]);
 
     var position_scale = d3.scaleLinear()
       .domain([0, positions.length - 1])
@@ -104,7 +99,7 @@ var draw_distribution = function(plot_data) {
       .attr('isotype', isotype)
       .attr('position', position)
       .attr('transform', d => {
-        x = isotype_scale(isotypes.indexOf(isotype)) + 40;
+        x = isotype_scale(isotype) + 40;
         y = position_scale(positions.indexOf(position)) + 20;
         return "translate(" + x + "," + y + ")";
       })
@@ -137,7 +132,7 @@ var draw_distribution = function(plot_data) {
         tooltip_position.html(d.data.position);
         tooltip_isotype.html(d.data.isotype);
         tooltip_group.html(d.data.group);
-        tooltip_freq.html(d[1] - d[0])
+        tooltip_freq.html(Math.round((d[1] - d[0]) * 100) / 100)
         // feature = d3.select('#tooltip-feature').html()
         // tooltip_count.html(distro_data[d.data.isotype][d.data.position].map(x => x['group'] == d.data.group)[feature])
         tooltip.transition()

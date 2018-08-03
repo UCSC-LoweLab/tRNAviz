@@ -16,7 +16,7 @@ urlpatterns = [
   path('api/tilemap/<str:clade_txid>/', views.tilemap, name = 'tilemap'),
 
   path('variation/', views.variation, name = 'variation'),
-  path('api/distribution/<str:clades>/<str:isotypes>/<str:positions>/', views.distribution, name = 'distribution'),
+  path('api/distribution/<str:clade_txids>/<str:isotypes>/<str:positions>/', views.distribution, name = 'distribution'),
   path('api/position/<str:clades>/<str:isotypes>/<str:positions>/', views.position_distribution, name = 'position'),
 
   path('compare/', views.compare, name = 'compare'),

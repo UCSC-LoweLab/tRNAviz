@@ -16,6 +16,47 @@ from . import filters
 from . import serializers
 
 
+
+SINGLE_POSITIONS = [
+  '8', '9',
+  '14', '15', '16', '17', '17a', '18', '19', '20', '20a', '20b', '21',
+  '26',
+  '32', '33', '34', '35', '36', '37', '38', 
+  '44', '45', '46', '47', '48', 
+  'V1', 'V2', 'V3', 'V4', 'V5',
+  '54', '55', '56', '57', '58', '59', '60', 
+  '73'
+]
+PAIRED_POSITIONS = [
+  '1:72', '2:71', '3:70', '4:69', '5:68', '6:67', '7:66',
+  '10:25', '11:24', '12:23', '13:22', 
+  '27:43', '28:42', '29:41', '30:40', '31:39', 
+  'V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27', 
+  '49:65', '50:64', '51:63', '52:62', '53:61', 
+]
+
+FEATURE_LABELS = {
+  'A': 'A', 'G': 'G', 'C': 'C', 'U': 'U', 'Absent': '-', '': '',
+  'Purine': 'Purine', 'Pyrimidine': 'Pyrimidine',
+  'Amino': 'A / C', 'Keto': 'G / U', 'Weak': 'A / U', 'Strong': 'G / C', 
+  'B': 'C / G / U', 'H': 'A / C / U', 'D': 'A / G / U', 'V': 'A / C / G', 'N': 'N', 
+  'GC': ('G', 'C'), 'AU': ('A', 'U'), 'UA': ('U', 'A'), 'CG': ('C', 'G'), 'GU': ('G', 'U'), 'UG': ('U', 'G'),
+  'PurinePyrimidine': ('Purine', 'Pyrimidine'), 'PyrimidinePurine': ('Pyrimidine', 'Purine'), 'WobblePair': ('G / U', 'G / U'),
+  'StrongPair': ('G / C', 'G / C'), 'WeakPair': ('A / U', 'A / U'), 'AminoKeto': ('A / C', 'G / U'), 'KetoAmino': ('G / U', 'A / C'),
+  'Paired': ('Paired', 'Paired'), 'Bulge': ('Bulge', 'Bulge'), 'Mismatched': ('Mismatched', 'Mismatched'), 'NN': ('N', 'N')
+}
+
+SINGLE_FEATURES = ['A', 'C', 'G', 'U', 'absent']
+
+PAIRED_FEATURES = {
+  'AU': 'A:U', 'UA': 'U:A', 'GC': 'G:C', 'CG': 'C:G', 'GU': 'G:U', 'UG': 'U:G', 
+  'AA': 'A:A', 'AC': 'A:C', 'AG': 'A:G', 'CA': 'C:A', 'CC': 'C:C', 'CU': 'C:U', 'GA': 'G:A', 'GG': 'G:G', 'UC': 'U:C', 'UU': 'U:U',
+  'AM': 'A:-', 'CM': 'C:-', 'GM': 'G:-', 'UM': 'U:-', 'MA': '-:A', 'MC': '-:C', 'MG': '-:G', 'MU': '-:U', 'MM': '-:-'
+}
+
+ISOTYPES = ['Ala', 'Arg', 'Asn', 'Asp', 'Cys', 'Gln', 'Glu', 'Gly', 'His', 'Ile', 'iMet', 'Leu', 'Lys', 'Met', 'Phe', 'Pro', 'Ser', 'Thr', 'Trp', 'Tyr', 'Val']
+
+
 def summary(request):
   filter_clade = {'4930': ('Saccharomyces', 'genus')}
   filter_isotype = 'All'
@@ -50,7 +91,7 @@ def variation(request):
     for clade_group in clade_groups:
       if len(clade_group) == 0: continue
       filter_clades.append({taxid: clade_list[taxid] for taxid in clade_group})
-    filter_isotype = request.POST.getlist('form_isotypes')
+    filter_isotypes = request.POST.getlist('form_isotypes')
     filter_positions = request.POST.getlist('form_positions')
 
   return render(request, 'explorer/variation.html', {
@@ -59,53 +100,6 @@ def variation(request):
     'positions': filter_positions,
     'clade_list': clade_list
   })
-
-
-SINGLE_POSITIONS = [
-  '8', '9',
-  '14', '15', '16', '17', '17a', '18', '19', '20', '20a', '20b', '21',
-  '26',
-  '32', '33', '34', '35', '36', '37', '38', 
-  '44', '45', '46', '47', '48', 
-  'V1', 'V2', 'V3', 'V4', 'V5',
-  '54', '55', '56', '57', '58', '59', '60', 
-  '73'
-]
-PAIRED_POSITIONS = [
-  '1:72', '2:71', '3:70', '4:69', '5:68', '6:67', '7:66',
-  '10:25', '11:24', '12:23', '13:22', 
-  '27:43', '28:42', '29:41', '30:40', '31:39', 
-  'V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27', 
-  '49:65', '50:64', '51:63', '52:62', '53:61', 
-]
-
-FEATURE_LABELS = {
-  'A': 'A', 'G': 'G', 'C': 'C', 'U': 'U', 'Absent': '-', '': '',
-  'Purine': 'Purine', 'Pyrimidine': 'Pyrimidine',
-  'Amino': 'A / C', 'Keto': 'G / U', 'Weak': 'A / U', 'Strong': 'G / C', 
-  'B': 'C / G / U', 'H': 'A / C / U', 'D': 'A / G / U', 'V': 'A / C / G', 'N': 'N', 
-  'GC': ('G', 'C'), 'AU': ('A', 'U'), 'UA': ('U', 'A'), 'CG': ('C', 'G'), 'GU': ('G', 'U'), 'UG': ('U', 'G'),
-  'PurinePyrimidine': ('Purine', 'Pyrimidine'), 'PyrimidinePurine': ('Pyrimidine', 'Purine'), 'WobblePair': ('G / U', 'G / U'),
-  'StrongPair': ('G / C', 'G / C'), 'WeakPair': ('A / U', 'A / U'), 'AminoKeto': ('A / C', 'G / U'), 'KetoAmino': ('G / U', 'A / C'),
-  'Paired': ('Paired', 'Paired'), 'Bulge': ('Bulge', 'Bulge'), 'Mismatched': ('Mismatched', 'Mismatched'), 'NN': ('N', 'N')
-}
-
-SINGLE_FEATURES = ['A', 'C', 'G', 'U', 'absent']
-PAIRED_FEATURES = {
-  'AU': 'A:U', 'UA': 'U:A', 'GC': 'G:C', 'CG': 'C:G', 'GU': 'G:U', 'UG': 'U:G', 
-  'AA': 'A:A', 'AC': 'A:C', 'AG': 'A:G', 'CA': 'C:A', 'CC': 'C:C', 'CU': 'C:U', 'GA': 'G:A', 'GG': 'G:G', 'UC': 'U:C', 'UU': 'U:U',
-  'AM': 'A:-', 'CM': 'C:-', 'GM': 'G:-', 'UM': 'U:-', 'MA': '-:A', 'MC': '-:C', 'MG': '-:G', 'MU': '-:U', 'MM': '-:-'
-}
-
-ISOTYPES = ['Ala', 'Arg', 'Asn', 'Asp', 'Cys', 'Gln', 'Glu', 'Gly', 'His', 'Ile', 'iMet', 'Leu', 'Lys', 'Met', 'Phe', 'Pro', 'Ser', 'Thr', 'Trp', 'Tyr', 'Val']
-
-
-def process_freqs_to_json(clade = 'Saccharomyces'):
-  queryset = models.Freq.objects.filter(clade = clade).values('position', 'isotype', 'A', 'G', 'C', 'U', 'absent')
-  plot_data = defaultdict(dict)
-  for row in queryset:
-    plot_data[row['isotype']][row['position']] = {key:row[key] for key in row}
-  return plot_data
 
 def get_coords(request):
   data = models.Coord.objects.all()
@@ -213,14 +207,15 @@ def tilemap(request, clade_txid):
 
   return JsonResponse(json.dumps(plot_data), safe = False)
 
-def distribution(request, clades, isotypes, positions):
+def distribution(request, clade_txids, isotypes, positions):
+  
   # reconstruct clade dict based on ids
-  clade_groups = [[taxid for taxid in clade_group.split(',')] for clade_group in clades.split(';')]
+  clade_groups = [[taxid for taxid in clade_group.split(',')] for clade_group in clade_txids.split(';')]
   clades = []
   for clade_group in clade_groups: clades.extend([taxid for taxid in clade_group])
   
   clade_info = {clade['taxid']: (clade['name'], clade['rank']) for clade in models.Taxonomy.objects.filter(taxid__in = clades).values()}
-  isotypes = ISOTYPES if 'All' in isotypes else isotypes
+  isotypes = ISOTYPES if 'All' in isotypes else isotypes.split(',')
 
   if 'single' in positions:
     positions = SINGLE_POSITIONS
@@ -248,22 +243,6 @@ def distribution(request, clades, isotypes, positions):
     df['group'] = str(i + 1)
     trnas.append(df)
   trnas = pd.concat(trnas)
-
-  # q_list = [Q(**{str(rank): name}) for name, rank in clade_info.values()]
-  # query_filter_args = Q()
-  # for q in q_list:
-  #   query_filter_args = query_filter_args | q
-  # trna_qs = models.tRNA.objects.filter(*(query_filter_args,)).filter(isotype__in = isotypes).values(*query_positions)
-
-  # trnas = read_frame(trna_qs)
-  # df_list = []
-  # for i, clade_group in enumerate(clade_groups):
-  #   df = trnas.loc[trnas.taxid.isin(clade_group)]
-  #   df['group'] = str(i + 1)
-  #   df_list.append(df)
-  #   print(df.shape)
-  # trnas = pd.concat(df_list)
-
   freqs = trnas.groupby(['isotype', 'group']).apply(lambda position_counts: position_counts.drop(['isotype', 'group'], axis = 1).apply(lambda x: x.value_counts()).fillna(0))
   freqs = freqs.unstack().stack(0).reset_index().rename(columns = {'level_2': 'position'})
   freqs['position'] = freqs['position'].apply(lambda position: position[1:].replace('_', ':'))
@@ -276,12 +255,7 @@ def distribution(request, clades, isotypes, positions):
   for isotype in freqs.index.levels[0]:
     for position in freqs.index.levels[1]:
       plot_data[isotype][position] = list(pd.DataFrame(freqs.loc[isotype, position]).to_dict(orient = 'index').values())
-      # [{'position': '17', 'isotype': 'Ala', 'A': 0, 'U': 34, ...}, {'position': '17', ...}]
 
-  # freqs = freqs.rename(columns = {'level_1': 'position'})
-  # freqs['position'] = freqs['position'].apply(lambda x: x[1:].replace('_', ':'))
-
-  # plot_data = list(freqs.head().T.to_dict().values())
   return JsonResponse(json.dumps(plot_data), safe = False)
 
 
