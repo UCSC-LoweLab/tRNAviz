@@ -12,8 +12,8 @@ urlpatterns = [
   path('', redirect_home),
   path('summary/', views.summary, name = 'summary'),
   path('api/coords', views.get_coords, name = 'coords'),
-  path('api/cloverleaf/<str:clade>/<str:isotype>/', views.cloverleaf, name = 'cloverleaf'),
-  path('api/tilemap/<str:clade>/', views.tilemap, name = 'tilemap'),
+  path('api/cloverleaf/<str:clade_txid>/<str:isotype>/', views.cloverleaf, name = 'cloverleaf'),
+  path('api/tilemap/<str:clade_txid>/', views.tilemap, name = 'tilemap'),
 
   path('variation/', views.variation, name = 'variation'),
   path('api/distribution/<str:clades>/<str:isotypes>/<str:positions>/', views.distribution, name = 'distribution'),

@@ -13,7 +13,7 @@
 <script>	
 $(document).ready(function() {
 	$('#clade-select').select2({width: "100%", allowClear: true, placeholder: "Select a clade"});
-	$('#isotypes-select').select2({width: "100%", allowClear: true, placeholder: "Select an isotype"});
+	$('#isotype-select').select2({width: "100%", allowClear: true, placeholder: "Select an isotype"});
 })
 </script>
 {% endblock %}
@@ -24,8 +24,8 @@ $(document).ready(function() {
 <script src="{% static 'explorer/js/consensus.js' %}"></script>
 <script type = "text/javascript">
 var coords_path = "{% url 'explorer:coords' %}"
-d3.json('{% url "explorer:cloverleaf" clade=clade isotype=isotype %}', draw_cloverleaf)
-d3.json('{% url "explorer:tilemap" clade=clade %}', draw_tilemap)
+d3.json('{% url "explorer:cloverleaf" clade_txid=clade_txid isotype=isotype %}', draw_cloverleaf)
+d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', draw_tilemap)
 </script>
 {% endblock %}
 
@@ -42,15 +42,15 @@ d3.json('{% url "explorer:tilemap" clade=clade %}', draw_tilemap)
 			<form id='data-select-form' action='{% url "explorer:summary" %}' method="POST">
 				{% csrf_token %}
 				<div class='my-2'>
-					<select class='multiselect' name="clade" id="clade-select">
+					<select class='multiselect' name="clade_txid" id="clade-select">
 						<option value="Eukaryota" selected="selected">All eukaryotes<option>
-						{% for clade, rank in clade_list.items %}
-						<option value="{{ clade }}">{{ rank|title }} {{ clade }}<option>
+						{% for taxid, clade in clade_list.items %}
+						<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
 						{% endfor %}
 					</select>
 				</div>
 				<div class='my-2'>
-					<select class='multiselect' name="isotype" id="isotypes-select">
+					<select class='multiselect' name="isotype" id="isotype-select">
 						<option value="All" selected="selected">All isotypes</option>
 						<option value="Ala">Ala</option>
 						<option value="Arg">Arg</option>
@@ -87,12 +87,28 @@ d3.json('{% url "explorer:tilemap" clade=clade %}', draw_tilemap)
 
 {% block plots %}
 <div class="p-3">
-	<h4>Consensus features for {{ rank|title }} {{ clade }} ({{ isotype }}{% if isotype == "All" %} isotypes{% endif %})</h4>
+	<table class="table">
+		<thead>
+			<tr>
+				<th scope="col">Clade</th>
+				<th scope="col">Rank</th>
+				<th scope="col">Isotype</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>{{ clade|get_single_clade_name }}</td>
+				<td>{{ clade|get_single_clade_rank|title }}</td>
+				<td>{{ isotype }}</td>
+			</tr>
+		</tbody>
+	</table>
+
 	<div class="p-3" id="cloverleaf-area">
 		<div class="loading-overlay">
 		</div>
 	</div>
-	<h4>Isotype-specific consensus features for {{ rank|title }} {{ clade }}</h4>
+
 	<div class="p-3" id="tilemap-area">
 		<div class="loading-overlay">
 		</div>

@@ -17,27 +17,26 @@ from . import serializers
 
 
 def summary(request):
-  filter_clade = 'Saccharomyces'
-  filter_rank = 'genus'
+  filter_clade = {'4930': ('Saccharomyces', 'genus')}
   filter_isotype = 'All'
 
-  clades_qs = models.Consensus.objects.values('clade', 'rank')
-  clades = {pair['clade']: pair['rank'] for pair in clades_qs}
+  clade_list = {}
+  for taxonomy in models.Taxonomy.objects.values():
+    clade_list[taxonomy['taxid']] = taxonomy['name'], taxonomy['rank']
 
   if request.method == "POST":
-    filter_clade = request.POST.get('clade')
-    filter_rank = clades[filter_clade]
+    filter_clade = clade_list[request.POST.get('clade_txid')]
     filter_isotype = request.POST.get('isotype')
 
   return render(request, 'explorer/summary.html', {
     'clade': filter_clade,
-    'rank': filter_rank,
+    'clade_txid': list(filter_clade.keys())[0],
     'isotype': filter_isotype,
-    'clades': clades
+    'clade_list': clade_list
   })
 
 def variation(request):
-  filter_clades = [{'4895': ('Saccharomyces', 'genus')}]
+  filter_clades = [{'4930': ('Saccharomyces', 'genus')}]
   filter_isotypes = ['All']
   filter_positions = ['single']
 
@@ -113,9 +112,13 @@ def get_coords(request):
   serializer = serializers.CoordSerializer(data, many = True)
   return JsonResponse(serializer.data, safe = False)
 
-def cloverleaf(request, clade, isotype):
-  consensus_qs = models.Consensus.objects.filter(clade = clade, isotype = isotype)
-  freqs_qs = models.Freq.objects.filter(clade = clade, isotype = isotype)
+def cloverleaf(request, clade_txid, isotype):
+  clade_qs = models.Taxonomy.objects.filter(taxid = clade_txid).values().first()
+  clade = clade_qs['name']
+  rank = clade_qs['rank']
+
+  consensus_qs = models.Consensus.objects.filter(clade = clade, rank = rank, isotype = isotype)
+  freqs_qs = models.Freq.objects.filter(clade = clade, rank = rank, isotype = isotype)
   plot_data = {}
 
   # preprocess freqs so Django doesn't submit separate queries per filter
@@ -154,8 +157,12 @@ def cloverleaf(request, clade, isotype):
 
   return JsonResponse(json.dumps(plot_data), safe = False)
 
-def tilemap(request, clade):
-  consensus_qs = models.Consensus.objects.filter(clade = clade).exclude(isotype = 'All')
+def tilemap(request, clade_txid):
+  clade_qs = models.Taxonomy.objects.filter(taxid = clade_txid).values().first()
+  clade = clade_qs['name']
+  rank = clade_qs['rank']
+
+  consensus_qs = models.Consensus.objects.filter(clade = clade, rank = rank).exclude(isotype = 'All')
   freqs_qs = models.Freq.objects.filter(clade = clade).exclude(isotype = 'All')
   plot_data = [] # use a list instead of dict - don't need to map positions to coords like for cloverleaf
 
