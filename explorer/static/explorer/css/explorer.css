@@ -7,6 +7,11 @@ div.tooltip {
   border-radius: 0.5em;
   pointer-events: none;
 }
+div.tooltip-cloverleaf {
+  padding: 0.5em;
+  font: 1em sans-serif;
+  background: lightsteelblue;
+}
 div.tooltip table {
   margin-bottom: 0;
 }

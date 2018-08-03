@@ -69,7 +69,7 @@ var draw_cloverleaf = function(cloverleaf_data) {
 
   d3.select('body')
     .append('div')
-    .attr('class', 'tooltip cloverleaf')  
+    .attr('class', 'tooltip tooltip-cloverleaf')  
     .style('opacity', 0);
 
   var coords_loaded = d3.promise.json(coords_path);
@@ -112,7 +112,7 @@ var update_cloverleaf = function(cloverleaf_data) {
 };
 
 var set_cloverleaf_circle_attributes = function(coords) {
-  var tooltip = d3.select('.tooltip .cloverleaf');
+  var tooltip = d3.select('.tooltip-cloverleaf');
   var tooltip_position = tooltip.append('div')
   var tooltip_consensus = tooltip.append('div')
 
@@ -124,7 +124,6 @@ var set_cloverleaf_circle_attributes = function(coords) {
     .attr('r', d => d['radius'])
     .attr('fill', d => feature_scale(d['consensus']))
     .on('mouseover', function(d) {
-      // tooltip.html()
       tooltip_position.html('Position ' + d['position'])
       tooltip_consensus.html(d['consensus'])
       tooltip.transition()
@@ -136,7 +135,6 @@ var set_cloverleaf_circle_attributes = function(coords) {
         .transition()
         .duration(100)
         .attr('class', 'cloverleaf-highlight');
-
       d3.selectAll('#base_distro g').remove();
       draw_base_distro(d);
     })
@@ -243,12 +241,6 @@ var draw_tilemap = function(tilemap_data) {
     .attr('id', 'tilemap')
     .attr('width', tilemap_width + tilemap_margin * 2)
     .attr('height', tilemap_height + tilemap_margin * 2)
-
-  d3.select('body')
-    .append('div')
-    .attr('class', 'tooltip tilemap')  
-    .style('opacity', 0);
-
 
   // build scales and axes
   var position_scale = d3.scaleLinear()
