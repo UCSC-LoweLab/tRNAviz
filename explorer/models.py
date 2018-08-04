@@ -359,8 +359,6 @@ class Consensus(models.Model):
 class Freq(models.Model):
   position = models.CharField(max_length = 10)
   isotype = models.CharField(max_length = 3)
-  clade = models.CharField(max_length = 50)
-  rank = models.CharField(max_length = 20)
   taxid = models.CharField(max_length = 10)
   feature = models.CharField(max_length = 3)
   total = models.IntegerField(default = 0)

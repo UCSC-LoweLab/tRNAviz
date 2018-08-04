@@ -290,7 +290,7 @@ class ConsensusResource(resources.ModelResource):
 
   class Meta:
     model = Consensus
-    import_id_fields = ('isotype', 'clade', 'rank')
+    import_id_fields = ('isotype', 'taxid')
 
 class FreqResource(resources.ModelResource):
   absent = Field(attribute = 'absent', column_name = '-')
@@ -322,7 +322,7 @@ class FreqResource(resources.ModelResource):
 
   class Meta:
     model = Freq
-    import_id_fields = ('position', 'isotype', 'clade', 'rank')
+    import_id_fields = ('position', 'isotype', 'taxid')
 
 class CoordResource(resources.ModelResource):
   class Meta:
