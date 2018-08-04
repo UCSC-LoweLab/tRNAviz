@@ -2,7 +2,7 @@ var isotypes, positions, parent;
 var stacked;
 var adata, idata, isotype_scale, position_scale, distro_data;
 var isotype_axis, position_axis, svg;
-var features = ['A', 'C', 'G', 'U', '-', 'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'A:A', 'A:C', 'A:G', 'C:A', 'C:C', 'C:U', 'G:A', 'G:G', 'U:C', 'U:U', '-:A', '-:C', '-:G', '-:U']
+var all_features = ['A', 'C', 'G', 'U', '-', 'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'A:A', 'A:C', 'A:G', 'C:A', 'C:C', 'C:U', 'G:A', 'G:G', 'U:C', 'U:U', '-:A', '-:C', '-:G', '-:U']
 var sorted_positions = ['1:72', '2:71', '3:70', '4:69', '5:68', '6:67', '7:66', '8', '9', '10:25', '11:24', '12:23', '13:22', '14', '15', '16', '17', '17a', '18', '19', '20', '20a', '20b', '21', '26', '27:43', '28:42', '29:41', '30:40', '31:39', '32', '33', '34', '35', '36', '37', '38', '44', '45', '46', '47', '48', 'V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27', 'V1', 'V2', 'V3', 'V4', 'V5', '49:65', '50:64', '51:63', '52:62', '53:61', '54', '55', '56', '57', '58', '59', '60', '73']
 
 var draw_distribution = function(plot_data) {
@@ -11,11 +11,13 @@ var draw_distribution = function(plot_data) {
 
   var isotypes = Object.keys(distro_data).sort();
   var positions = Object.keys(distro_data[isotypes[0]]).sort((position1, position2) => sorted_positions.indexOf(position1) - sorted_positions.indexOf(position2));
+  var features = Object.keys(distro_data[isotypes[0]][positions[0]][0]).filter(d => all_features.includes(d))
+  var num_groups = distro_data[isotypes[0]][positions[0]].length;
 
   var plot_width = 60 * isotypes.length;
-  var plot_height = 2400;
-  var plot_margin = 100; // extra for placing axes
-  var facet_width = plot_width / isotypes.length - 5;
+  var plot_height = 65 * positions.length;
+  var plot_margin = 100; // extra for placing axes and tooltips
+  var facet_width = (plot_width - 30) / isotypes.length - 5;
   var facet_height = plot_height / positions.length - 10; 
 
   d3.select('#distribution-area')
@@ -28,29 +30,32 @@ var draw_distribution = function(plot_data) {
 
   var isotype_scale = d3.scaleBand()
     .domain(isotypes)
-    .rangeRound([10, plot_width - 10])
-    .padding(0);
+    .rangeRound([10, plot_width - 30])
+    .padding(0.1);
 
   var isotype_axis = d3.axisTop(isotype_scale);
 
-  var position_scale = d3.scaleLinear()
-    .domain([0, positions.length - 1])
-    .range([0, plot_height - 20]);
+  var position_scale = d3.scaleBand()
+    .domain(positions)
+    .rangeRound([10, plot_height - 30])
+    .paddingInner(0.1);
 
-  var position_axis = d3.axisLeft(position_scale)
-    .ticks(positions.length)
-    .tickFormat(d => positions[d]);
+  var position_axis = d3.axisLeft(position_scale);
+
+  var feature_scale = d3.scaleOrdinal()
+    .domain(['A', 'C', 'G', 'U', '-', 'A:A', 'A:C', 'A:G', 'A:U', 'C:A', 'C:C', 'C:G', 'C:U', 'G:A', 'G:C', 'G:G', 'G:U', 'U:A', 'U:C', 'U:G', 'U:U'])
+    .range(['#ffd92f', '#4daf4a', '#e41a1c', '#377eb8'].concat(d3.schemeCategory20));
 
   var svg = d3.select('#distribution-svg');
 
   svg.append('g')
     .attr('class', 'xaxis')
-    .attr('transform', 'translate(40, 20)')
+    .attr('transform', 'translate(60, 20)')
     .call(isotype_axis);
 
   svg.append('g')
     .attr('class', 'yaxis')
-    .attr('transform', 'translate(40, 50)')
+    .attr('transform', 'translate(60, 20)')
     .call(position_axis);
 
   svg.selectAll('.xaxis text')
@@ -64,19 +69,11 @@ var draw_distribution = function(plot_data) {
   var draw_facet = function(isotype, position, data) {
 
     var current_facet = isotype + '-' + position;
-    stacked = d3.stack().keys(['A', 'C', 'G', 'U', '-'])
+    stacked = d3.stack().keys(features)
       .offset(d3.stackOffsetExpand)(data);    
 
-    var feature_scale = d3.scaleOrdinal()
-      .domain(['A', 'C', 'G', 'U', '-', 'Purine','Pyrimidine','Weak','Strong','Amino','Keto','B','D','H','V','N','Absent','Mismatched','Paired','High mismatch rate'])
-      .range(['#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#dddddd', '#ff8300','#66c2a5','#b3de69','#fb72b2','#c1764a','#b26cbd','#e5c494','#ccebd5','#ffa79d','#a6cdea','white','#ffffff','#cccccc','#ffffcc','#222222']);
-
-    var position_scale = d3.scaleLinear()
-      .domain([0, positions.length - 1])
-      .range([10, plot_height - 10]);
-
     var bar_x_scale = d3.scaleBand()
-      .domain(data.map(function(d) { return d.group; }))
+      .domain(data.map(function(d) { return d.group; }).sort())
       .rangeRound([0, facet_width])
       .padding(0.1);
 
@@ -99,8 +96,8 @@ var draw_distribution = function(plot_data) {
       .attr('isotype', isotype)
       .attr('position', position)
       .attr('transform', d => {
-        x = isotype_scale(isotype) + 40;
-        y = position_scale(positions.indexOf(position)) + 20;
+        x = isotype_scale(isotype) + 60;
+        y = position_scale(position) + 20;
         return "translate(" + x + "," + y + ")";
       })
       // .attr('width', plot_width)
@@ -113,7 +110,6 @@ var draw_distribution = function(plot_data) {
       .append('g')
       .attr("fill", d => feature_scale(d.key))
       .on('mouseover', d => {
-        idata = d;
         tooltip_feature.html(d.key);
         tooltip_feature.style('text-color', feature_scale(d.key));
         // tooltip_count.html(distro_data)
@@ -122,6 +118,7 @@ var draw_distribution = function(plot_data) {
       .data(d => d)
       .enter()
       .append('rect')
+      .attr('class', 'distro-rect')
       .attr("x", d => bar_x_scale(d.data.group))
       .attr("y", d => bar_y_scale(d[0]))
       .attr("height", d => bar_y_scale(d[1] - d[0]))
@@ -129,34 +126,37 @@ var draw_distribution = function(plot_data) {
       .attr("stroke-width", 1)
       .attr("stroke", "black")
       .on('mouseover', function(d, i) {
-        tooltip_position.html(d.data.position);
-        tooltip_isotype.html(d.data.isotype);
+        tooltip_position.html(position);
+        tooltip_isotype.html(isotype);
         tooltip_group.html(d.data.group);
         tooltip_freq.html(Math.round((d[1] - d[0]) * 100) / 100)
-        // feature = d3.select('#tooltip-feature').html()
-        // tooltip_count.html(distro_data[d.data.isotype][d.data.position].map(x => x['group'] == d.data.group)[feature])
+        var feature = d3.select('#tooltip-feature').html()
+        tooltip_count.html(distro_data[isotype][position].filter(x => x['group'] == d.data.group)[0][feature]);
         tooltip.transition()
           .duration(100)
           .style('opacity', .9)
           .style('left', d3.event.pageX + 'px')
           .style('top', d3.event.pageY + 'px');
-        // d3.select(this)
-        //   .transition()
-        //   .duration(100)
-        //   .attr('class', 'cloverleaf-highlight');
+        d3.select(this)
+          .transition()
+          .duration(100)
+          .attr('class', 'distro-rect-highlight');
       })
-      .on('mousemove', function() {  
-      tooltip.style('left', d3.event.pageX + 'px')
-        .style('top', d3.event.pageY + 'px');
-      })
+      .on('mousemove', function(d, i) {  
+        tooltip_freq.html(Math.round((d[1] - d[0]) * 100) / 100)
+        var feature = d3.select('#tooltip-feature').html()
+        tooltip_count.html(distro_data[isotype][position].filter(x => x['group'] == d.data.group)[0][feature]);
+        tooltip.style('left', d3.event.pageX + 'px')
+          .style('top', d3.event.pageY + 'px');
+        })
       .on('mouseout', function(d) {   
         tooltip.transition()    
           .duration(100)    
           .style('opacity', 0); 
-        // d3.select(this)
-        //   .transition()
-        //   .duration(100)
-        //   .attr('class', 'cloverleaf-circle');
+        d3.select(this)
+          .transition()
+          .duration(100)
+          .attr('class', 'distro-rect');
       });
 
   };
@@ -167,6 +167,7 @@ var draw_distribution = function(plot_data) {
   var tooltip_group = tooltip.select('#tooltip-group');
   var tooltip_feature = tooltip.select('#tooltip-feature');
   var tooltip_freq = tooltip.select('#tooltip-freq');
+  var tooltip_count = tooltip.select('#tooltip-count');
 
   for (isotype of isotypes) {
     for (position of positions) {

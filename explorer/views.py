@@ -208,7 +208,7 @@ def tilemap(request, clade_txid):
   return JsonResponse(json.dumps(plot_data), safe = False)
 
 def distribution(request, clade_txids, isotypes, positions):
-  
+
   # reconstruct clade dict based on ids
   clade_groups = [[taxid for taxid in clade_group.split(',')] for clade_group in clade_txids.split(';')]
   clades = []
@@ -244,7 +244,7 @@ def distribution(request, clade_txids, isotypes, positions):
     trnas.append(df)
   trnas = pd.concat(trnas)
   freqs = trnas.groupby(['isotype', 'group']).apply(lambda position_counts: position_counts.drop(['isotype', 'group'], axis = 1).apply(lambda x: x.value_counts()).fillna(0))
-  freqs = freqs.unstack().stack(0).reset_index().rename(columns = {'level_2': 'position'})
+  freqs = freqs.unstack(fill_value = 0).stack(0).reset_index().rename(columns = {'level_2': 'position'})
   freqs['position'] = freqs['position'].apply(lambda position: position[1:].replace('_', ':'))
   cols = ['isotype', 'position', 'group', 'A', 'C', 'G', 'U', '-', 'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'A:A', 'A:C', 'A:G', 'C:A', 'C:C', 'C:U', 'G:A', 'G:G', 'U:C', 'U:U', '-:A', '-:C', '-:G', '-:U']
   freqs = freqs.loc[:, freqs.columns.intersection(cols)]
