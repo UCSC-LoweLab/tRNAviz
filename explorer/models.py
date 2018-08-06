@@ -29,7 +29,7 @@ ISOTYPES = (
 
 class Taxonomy(models.Model):
   taxid = models.CharField(primary_key = True, max_length = 10)
-  name = models.CharField(max_length = 100)
+  name = models.CharField(max_length = 200)
   rank = models.CharField(max_length = 20)
 
   def __str__(self):
@@ -37,17 +37,17 @@ class Taxonomy(models.Model):
 
 
 class tRNA(models.Model):
-  seqname = models.CharField(primary_key = True, max_length = 100)
+  seqname = models.CharField(primary_key = True, max_length = 200)
   isotype = models.CharField(max_length = 5, choices = ISOTYPES)
   anticodon = models.CharField(max_length = 3)
   score = models.FloatField()
   primary = models.BooleanField()
-  best_model = models.CharField(max_length = 3, choices = ISOTYPES)
+  best_model = models.CharField(max_length = 5, choices = ISOTYPES)
   isoscore = models.FloatField()
   isoscore_ac = models.FloatField()
-  dbname = models.CharField(max_length = 100)
-  assembly = models.CharField(max_length = 100)
-  varietas = models.CharField(max_length = 100)
+  dbname = models.CharField(max_length = 150)
+  assembly = models.CharField(max_length = 150)
+  varietas = models.CharField(max_length = 150)
   species = models.CharField(max_length = 100)
   genus = models.CharField(max_length = 50)
   family = models.CharField(max_length = 50)
@@ -214,7 +214,7 @@ class tRNA(models.Model):
 
 
 class Consensus(models.Model):
-  isotype = models.CharField(max_length = 3)
+  isotype = models.CharField(max_length = 5)
   clade = models.CharField(max_length = 50)
   rank = models.CharField(max_length = 20)
   taxid = models.CharField(max_length = 10)
@@ -358,7 +358,7 @@ class Consensus(models.Model):
 
 class Freq(models.Model):
   position = models.CharField(max_length = 10)
-  isotype = models.CharField(max_length = 3)
+  isotype = models.CharField(max_length = 5)
   taxid = models.CharField(max_length = 10)
   total = models.IntegerField(default = 0)
   A = models.IntegerField(default = 0)
