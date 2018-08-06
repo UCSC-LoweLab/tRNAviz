@@ -38,7 +38,7 @@ class Taxonomy(models.Model):
 
 class tRNA(models.Model):
   seqname = models.CharField(primary_key = True, max_length = 100)
-  isotype = models.CharField(max_length = 4, choices = ISOTYPES)
+  isotype = models.CharField(max_length = 5, choices = ISOTYPES)
   anticodon = models.CharField(max_length = 3)
   score = models.FloatField()
   primary = models.BooleanField()
@@ -85,7 +85,7 @@ class tRNA(models.Model):
   p7_66 = models.CharField('7:66', default = '-:-', max_length = 3)
   p7 = models.CharField('7', default = '-', max_length = 1)
   p8 = models.CharField('8', default = '-', max_length = 1)
-  p8_14 = models.CharField('8:14', default = '-:-', max_length = 1)
+  p8_14 = models.CharField('8:14', default = '-:-', max_length = 3)
   p9 = models.CharField('9', default = '-', max_length = 1)
   p9_23 = models.CharField('9:23', default = '-:-', max_length = 3)
   p10_25 = models.CharField('10:25', default = '-:-', max_length = 3)
@@ -360,7 +360,6 @@ class Freq(models.Model):
   position = models.CharField(max_length = 10)
   isotype = models.CharField(max_length = 3)
   taxid = models.CharField(max_length = 10)
-  feature = models.CharField(max_length = 3)
   total = models.IntegerField(default = 0)
   A = models.IntegerField(default = 0)
   C = models.IntegerField(default = 0)
@@ -392,8 +391,9 @@ class Freq(models.Model):
   MG = models.IntegerField('-:G', db_column = '-:G', default = 0)
   MU = models.IntegerField('-:U', db_column = '-:U', default = 0)
   MM = models.IntegerField('-:-', db_column = '-:-', default = 0)
+  
   def __str__(self):
-    return '{} - {}/{}/{}/{} ({} {})'.format(self.position, self.A, self.C, self.G, self.U, self.rank, self.clade)
+    return '{} {} - {}/{}/{}/{}'.format(self.taxid, self.position, self.A, self.C, self.G, self.U)
 
 class Coord(models.Model):
   position = models.CharField(primary_key = True, max_length = 5)
