@@ -357,9 +357,9 @@ class Consensus(models.Model):
 
 
 class Freq(models.Model):
-  position = models.CharField(max_length = 10)
-  isotype = models.CharField(max_length = 5)
   taxid = models.CharField(max_length = 10)
+  isotype = models.CharField(max_length = 5)
+  position = models.CharField(max_length = 10)
   total = models.IntegerField(default = 0)
   A = models.IntegerField(default = 0)
   C = models.IntegerField(default = 0)
@@ -372,6 +372,7 @@ class Freq(models.Model):
   CG = models.IntegerField('C:G', db_column = 'C:G', default = 0)
   GU = models.IntegerField('G:U', db_column = 'G:U', default = 0)
   UG = models.IntegerField('U:G', db_column = 'U:G', default = 0)
+  MM = models.IntegerField('-:-', db_column = '-:-', default = 0)
   AA = models.IntegerField('A:A', db_column = 'A:A', default = 0)
   AC = models.IntegerField('A:C', db_column = 'A:C', default = 0)
   AG = models.IntegerField('A:G', db_column = 'A:G', default = 0)
@@ -383,14 +384,13 @@ class Freq(models.Model):
   UC = models.IntegerField('U:C', db_column = 'U:C', default = 0)
   UU = models.IntegerField('U:U', db_column = 'U:U', default = 0)
   AM = models.IntegerField('A:-', db_column = 'A:-', default = 0)
-  CM = models.IntegerField('C:-', db_column = 'C:-', default = 0)
-  GM = models.IntegerField('G:-', db_column = 'G:-', default = 0)
-  UM = models.IntegerField('U:-', db_column = 'U:-', default = 0)
   MA = models.IntegerField('-:A', db_column = '-:A', default = 0)
+  CM = models.IntegerField('C:-', db_column = 'C:-', default = 0)
   MC = models.IntegerField('-:C', db_column = '-:C', default = 0)
+  GM = models.IntegerField('G:-', db_column = 'G:-', default = 0)
   MG = models.IntegerField('-:G', db_column = '-:G', default = 0)
+  UM = models.IntegerField('U:-', db_column = 'U:-', default = 0)
   MU = models.IntegerField('-:U', db_column = '-:U', default = 0)
-  MM = models.IntegerField('-:-', db_column = '-:-', default = 0)
   
   def __str__(self):
     return '{} {} - {}/{}/{}/{}'.format(self.taxid, self.position, self.A, self.C, self.G, self.U)
