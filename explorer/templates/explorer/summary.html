@@ -44,7 +44,7 @@ d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', draw_tilemap)
 				<div class='my-2'>
 					<select class='multiselect' name="clade_txid" id="clade-select">
 						<option value="Eukaryota" selected="selected">All eukaryotes<option>
-						{% for taxid, clade in clade_list.items %}
+						{% for taxid, clade in clade_dict.items %}
 						<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
 						{% endfor %}
 					</select>
@@ -97,8 +97,8 @@ d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', draw_tilemap)
 		</thead>
 		<tbody>
 			<tr>
-				<td>{{ clade|get_single_clade_name }}</td>
-				<td>{{ clade|get_single_clade_rank|title }}</td>
+				<td>{{ clade.0 }}</td>
+				<td>{{ clade.1|title }}</td>
 				<td>{{ isotype }}</td>
 			</tr>
 		</tbody>

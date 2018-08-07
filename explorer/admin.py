@@ -2,8 +2,7 @@ from django.contrib import admin
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from import_export.fields import Field
-# from .models import Taxonomy, tRNA, Consensus, Freq, Coord
-from .models import Taxonomy, tRNA, Consensus, Coord
+from .models import Taxonomy, tRNA, Consensus, Freq, Coord
 
 
 # For import export
@@ -291,39 +290,39 @@ class ConsensusResource(resources.ModelResource):
 
   class Meta:
     model = Consensus
-    import_id_fields = ('isotype', 'taxid')
+    import_id_fields = ('isotype', 'clade', 'rank')
 
-# class FreqResource(resources.ModelResource):
-#   absent = Field(attribute = 'absent', column_name = '-')
-#   AU = Field(attribute = 'AU', column_name = 'A:U')
-#   UA = Field(attribute = 'UA', column_name = 'U:A')
-#   GC = Field(attribute = 'GC', column_name = 'G:C')
-#   CG = Field(attribute = 'CG', column_name = 'C:G')
-#   GU = Field(attribute = 'GU', column_name = 'G:U')
-#   UG = Field(attribute = 'UG', column_name = 'U:G')
-#   AA = Field(attribute = 'AA', column_name = 'A:A')
-#   AC = Field(attribute = 'AC', column_name = 'A:C')
-#   AG = Field(attribute = 'AG', column_name = 'A:G')
-#   CA = Field(attribute = 'CA', column_name = 'C:A')
-#   CC = Field(attribute = 'CC', column_name = 'C:C')
-#   CU = Field(attribute = 'CU', column_name = 'C:U')
-#   GA = Field(attribute = 'GA', column_name = 'G:A')
-#   GG = Field(attribute = 'GG', column_name = 'G:G')
-#   UC = Field(attribute = 'UC', column_name = 'U:C')
-#   UU = Field(attribute = 'UU', column_name = 'U:U')
-#   AM = Field(attribute = 'AM', column_name = 'A:-')
-#   CM = Field(attribute = 'CM', column_name = 'C:-')
-#   GM = Field(attribute = 'GM', column_name = 'G:-')
-#   UM = Field(attribute = 'UM', column_name = 'U:-')
-#   MA = Field(attribute = 'MA', column_name = '-:A')
-#   MC = Field(attribute = 'MC', column_name = '-:C')
-#   MG = Field(attribute = 'MG', column_name = '-:G')
-#   MU = Field(attribute = 'MU', column_name = '-:U')
-#   MM = Field(attribute = 'MM', column_name = '-:-')
+class FreqResource(resources.ModelResource):
+  absent = Field(attribute = 'absent', column_name = '-')
+  AU = Field(attribute = 'AU', column_name = 'A:U')
+  UA = Field(attribute = 'UA', column_name = 'U:A')
+  GC = Field(attribute = 'GC', column_name = 'G:C')
+  CG = Field(attribute = 'CG', column_name = 'C:G')
+  GU = Field(attribute = 'GU', column_name = 'G:U')
+  UG = Field(attribute = 'UG', column_name = 'U:G')
+  AA = Field(attribute = 'AA', column_name = 'A:A')
+  AC = Field(attribute = 'AC', column_name = 'A:C')
+  AG = Field(attribute = 'AG', column_name = 'A:G')
+  CA = Field(attribute = 'CA', column_name = 'C:A')
+  CC = Field(attribute = 'CC', column_name = 'C:C')
+  CU = Field(attribute = 'CU', column_name = 'C:U')
+  GA = Field(attribute = 'GA', column_name = 'G:A')
+  GG = Field(attribute = 'GG', column_name = 'G:G')
+  UC = Field(attribute = 'UC', column_name = 'U:C')
+  UU = Field(attribute = 'UU', column_name = 'U:U')
+  AM = Field(attribute = 'AM', column_name = 'A:-')
+  CM = Field(attribute = 'CM', column_name = 'C:-')
+  GM = Field(attribute = 'GM', column_name = 'G:-')
+  UM = Field(attribute = 'UM', column_name = 'U:-')
+  MA = Field(attribute = 'MA', column_name = '-:A')
+  MC = Field(attribute = 'MC', column_name = '-:C')
+  MG = Field(attribute = 'MG', column_name = '-:G')
+  MU = Field(attribute = 'MU', column_name = '-:U')
+  MM = Field(attribute = 'MM', column_name = '-:-')
 
-#   class Meta:
-#     model = Freq
-#     import_id_fields = ('position', 'isotype', 'taxid')
+  class Meta:
+    model = Freq
+    import_id_fields = ('position', 'isotype', 'clade', 'rank')
 
 class CoordResource(resources.ModelResource):
   class Meta:
@@ -339,8 +338,8 @@ class tRNAAdmin(ImportExportModelAdmin):
 class ConsensusAdmin(ImportExportModelAdmin):
   resource_class = ConsensusResource
 
-# class FreqAdmin(ImportExportModelAdmin):
-#   resource_class = FreqResource
+class FreqAdmin(ImportExportModelAdmin):
+  resource_class = FreqResource
 
 class CoordAdmin(ImportExportModelAdmin):
   resource_class = CoordResource
@@ -349,5 +348,5 @@ class CoordAdmin(ImportExportModelAdmin):
 admin.site.register(Taxonomy, TaxonomyAdmin)
 admin.site.register(tRNA, tRNAAdmin)
 admin.site.register(Consensus, ConsensusAdmin)
-# admin.site.register(Freq, FreqAdmin)
+admin.site.register(Freq, FreqAdmin)
 admin.site.register(Coord, CoordAdmin)

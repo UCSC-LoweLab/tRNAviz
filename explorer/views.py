@@ -58,22 +58,24 @@ ISOTYPES = ['Ala', 'Arg', 'Asn', 'Asp', 'Cys', 'Gln', 'Glu', 'Gly', 'His', 'Ile'
 
 
 def summary(request):
-  filter_clade = {'4930': ('Saccharomyces', 'genus')}
+  filter_taxid = '4930'
+  filter_clade = ('Saccharomyces', 'genus')
   filter_isotype = 'All'
 
-  clade_list = {}
+  clade_dict = {}
   for taxonomy in models.Taxonomy.objects.values():
-    clade_list[taxonomy['taxid']] = taxonomy['name'], taxonomy['rank']
+    clade_dict[taxonomy['taxid']] = taxonomy['name'], taxonomy['rank']
 
   if request.method == "POST":
-    filter_clade = clade_list[request.POST.get('clade_txid')]
+    filter_taxid = request.POST.get('clade_txid')
+    filter_clade = clade_dict[filter_taxid]
     filter_isotype = request.POST.get('isotype')
 
   return render(request, 'explorer/summary.html', {
     'clade': filter_clade,
-    'clade_txid': list(filter_clade.keys())[0],
+    'clade_txid': filter_taxid,
     'isotype': filter_isotype,
-    'clade_list': clade_list
+    'clade_dict': clade_dict
   })
 
 def variation(request):
@@ -107,12 +109,8 @@ def get_coords(request):
   return JsonResponse(serializer.data, safe = False)
 
 def cloverleaf(request, clade_txid, isotype):
-  clade_qs = models.Taxonomy.objects.filter(taxid = clade_txid).values().first()
-  clade = clade_qs['name']
-  rank = clade_qs['rank']
-
-  consensus_qs = models.Consensus.objects.filter(clade = clade, rank = rank, isotype = isotype)
-  freqs_qs = models.Freq.objects.filter(clade = clade, rank = rank, isotype = isotype)
+  consensus_qs = models.Consensus.objects.filter(taxid = clade_txid, isotype = isotype)
+  freqs_qs = models.Freq.objects.filter(taxid = clade_txid, isotype = isotype)
   plot_data = {}
 
   # preprocess freqs so Django doesn't submit separate queries per filter
@@ -152,12 +150,8 @@ def cloverleaf(request, clade_txid, isotype):
   return JsonResponse(json.dumps(plot_data), safe = False)
 
 def tilemap(request, clade_txid):
-  clade_qs = models.Taxonomy.objects.filter(taxid = clade_txid).values().first()
-  clade = clade_qs['name']
-  rank = clade_qs['rank']
-
-  consensus_qs = models.Consensus.objects.filter(clade = clade, rank = rank).exclude(isotype = 'All')
-  freqs_qs = models.Freq.objects.filter(clade = clade).exclude(isotype = 'All')
+  consensus_qs = models.Consensus.objects.filter(taxid = clade_txid).exclude(isotype = 'All')
+  freqs_qs = models.Freq.objects.filter(taxid = clade_txid).exclude(isotype = 'All')
   plot_data = [] # use a list instead of dict - don't need to map positions to coords like for cloverleaf
 
   # preprocess freqs so Django doesn't submit separate queries per filter
