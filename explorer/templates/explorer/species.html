@@ -1,0 +1,151 @@
+{% extends "explorer/variation.html" %}
+{% load static from staticfiles %}
+{% load explorer_extras %}
+
+{% block filterjs %}
+<script src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous'></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
+<script>	
+$(document).ready(function() {
+	$('#clade-select-1').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
+	$('#clade-select-2').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
+	$('#clade-select-3').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
+	$('#clade-select-4').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
+	$('#clade-select-5').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
+	$('#isotype-select-1').select2({width: "100%", allowClear: true, placeholder: "Select isotype/position"});
+	$('#position-select-1').select2({width: "100%", allowClear: true, placeholder: "Select isotype/position"});
+	$('#isotype-select-2').select2({width: "100%", allowClear: true, placeholder: "Select isotype/position"});
+	$('#position-select-2').select2({width: "100%", allowClear: true, placeholder: "Select isotype/position"});
+	$('#isotype-select-3').select2({width: "100%", allowClear: true, placeholder: "Select isotype/position"});
+	$('#position-select-3').select2({width: "100%", allowClear: true, placeholder: "Select isotype/position"});
+})
+</script>
+{% endblock %}
+
+
+{% block plotjs %}
+<script src='https://d3js.org/d3.v4.min.js'></script>
+<script src="{% static 'explorer/js/distributions.js' %}"></script>
+<script type = "text/javascript">
+
+d3.json('{% url "explorer:species_distribution" clade_txids=plot_clades|clade_dicts_to_url_string isotypes=isotypes|list_to_url_string positions=positions|list_to_url_string %}', draw_species_distribution);
+</script>
+{% endblock %}
+
+
+
+{% block filter %}
+<div class='p-3'>
+	<div class='row vertical-align select-bar data-select-bar'>
+		<div class='col-md-2 p-3'>
+			<h4>Select tRNAs</h4>
+		</div>
+		<div class='col-md-10 p-3'>
+
+			<form id='data-select-form' action='{% url "explorer:variation_species" %}' method="POST">
+				{% csrf_token %}
+				<div class='my-2'>
+					<select class='multiselect' name="form_clades_1" multiple="multiple" id="clade-select-1">
+						{% for taxid, clade in clade_list.items %}
+							{% if clade.0 == "Eukaryota" %}
+							<option value="{{ taxid }}" selected="selected">{{ clade.0 }} ({{ clade.1 }})</option>
+							{% else %}
+							<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
+							{% endif %}
+						{% endfor %}
+					</select>
+					<select class='multiselect' name="form_clades_2" multiple="multiple" id="clade-select-2">
+						{% for taxid, clade in clade_list.items %}
+						<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
+						{% endfor %}
+					</select>
+					<select class='multiselect' name="form_clades_3" multiple="multiple" id="clade-select-3">
+						{% for taxid, clade in clade_list.items %}
+						<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
+						{% endfor %}
+					</select>
+					<select class='multiselect' name="form_clades_4" multiple="multiple" id="clade-select-4">
+						{% for taxid, clade in clade_list.items %}
+						<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
+						{% endfor %}
+					</select>
+					<select class='multiselect' name="form_clades_5" multiple="multiple" id="clade-select-5">
+						{% for taxid, clade in clade_list.items %}
+						<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
+						{% endfor %}
+					</select>
+				</div>
+				<div class='my-2'>
+					<div class="row">
+						<div class="col">
+							<select class='multiselect' name="form_isotypes_1" id="isotype-select-1">
+								<option></option>
+								<option value="All">All isotypes</option>
+								{% for isotype in isotypes_list %}
+								<option value="{{ isotype }}">{{ isotype }}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="col">
+							<select class='multiselect' name="form_positions_1" id="position-select-1">
+								<option></option>
+								{% for position in positions_list %}
+								<option value="{{ position }}">{{ position }}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class='my-2'>
+					<div class="row">
+						<div class="col">
+							<select class='multiselect' name="form_isotypes_3" id="isotype-select-3">
+								<option></option>
+								<option value="All">All isotypes</option>
+								{% for isotype in isotypes_list %}
+								<option value="{{ isotype }}">{{ isotype }}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="col">
+							<select class='multiselect' name="form_positions_3" id="position-select-3">
+								<option></option>
+								{% for position in positions_list %}
+								<option value="{{ position }}">{{ position }}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class='my-2'>
+					<div class="row">
+						<div class="col">
+							<select class='multiselect' name="form_isotypes_2" id="isotype-select-2">
+								<option></option>
+								<option value="All">All isotypes</option>
+								{% for isotype in isotypes_list %}
+								<option value="{{ isotype }}">{{ isotype }}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="col">
+							<select class='multiselect' name="form_positions_2" id="position-select-2">
+								<option></option>
+								{% for position in positions_list %}
+								<option value="{{ position }}">{{ position }}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+				</div>
+
+				<div class='my-2'>
+					<button class='btn btn-primary' type='submit'>Submit</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}

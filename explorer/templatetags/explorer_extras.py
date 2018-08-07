@@ -23,11 +23,3 @@ def list_to_url_string(mylist):
 @register.filter('list_to_pretty_string')
 def list_to_pretty_string(mylist):
   return ', '.join(mylist)
-
-@register.filter('get_single_clade_name')
-def get_single_clade_name(clade_dict):
-  return list(clade_dict.values())[0][0]
-
-@register.filter('get_single_clade_rank')
-def get_single_clade_name(clade_dict):
-  return list(clade_dict.values())[0][1]

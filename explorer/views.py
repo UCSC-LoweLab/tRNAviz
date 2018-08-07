@@ -78,7 +78,7 @@ def summary(request):
     'clade_dict': clade_dict
   })
 
-def variation(request):
+def variation_distribution(request):
   filter_clades = [{'4930': ('Saccharomyces', 'genus')}]
   filter_isotypes = ['All']
   filter_positions = ['single']
@@ -96,11 +96,39 @@ def variation(request):
     filter_isotypes = request.POST.getlist('form_isotypes')
     filter_positions = request.POST.getlist('form_positions')
 
-  return render(request, 'explorer/variation.html', {
+  return render(request, 'explorer/distribution.html', {
     'plot_clades': filter_clades,
     'isotypes': filter_isotypes,
     'positions': filter_positions,
     'clade_list': clade_list
+  })
+
+def variation_species(request):
+  filter_clades = [{'4930': ('Saccharomyces', 'genus')}]
+  filter_isotypes = ['All']
+  filter_positions = ['single']
+
+  clade_list = {}
+  for taxonomy in models.Taxonomy.objects.values():
+    clade_list[taxonomy['taxid']] = taxonomy['name'], taxonomy['rank']
+
+  if request.method == "POST":
+    clade_groups = [request.POST.getlist('form_clades_1'), request.POST.getlist('form_clades_2'), request.POST.getlist('form_clades_3'), request.POST.getlist('form_clades_4'), request.POST.getlist('form_clades_5')]
+    filter_clades = []
+    for clade_group in clade_groups:
+      if len(clade_group) == 0: continue
+      filter_clades.append({taxid: clade_list[taxid] for taxid in clade_group})
+    filter_isotypes = request.POST.getlist('form_isotypes')
+    filter_positions = request.POST.getlist('form_positions')
+
+  return render(request, 'explorer/species.html', {
+    'plot_clades': filter_clades,
+    'isotypes': filter_isotypes,
+    'positions': filter_positions,
+    'clade_list': clade_list,
+    'isotypes_list': ISOTYPES,
+    'positions_list': SINGLE_POSITIONS + PAIRED_POSITIONS
+
   })
 
 def get_coords(request):
@@ -253,7 +281,7 @@ def distribution(request, clade_txids, isotypes, positions):
   return JsonResponse(json.dumps(plot_data), safe = False)
 
 
-def position_distribution(request, clades, isotypes, positions):
+def species_distribution(request, clades, isotypes, positions):
   # reconstruct clade dict based on ids
   clade_groups = [[taxid for taxid in clade_group.split(',')] for clade_group in clades.split(';')]
   clades = []
@@ -262,10 +290,7 @@ def position_distribution(request, clades, isotypes, positions):
   clade_info = {clade['taxid']: (clade['name'], clade['rank']) for clade in models.Taxonomy.objects.filter(taxid__in = clades).values()}
   isotypes = ISOTYPES if 'All' in isotypes else isotypes
 
-  if 'single' in positions:
-    positions = SINGLE_POSITIONS
-  elif 'paired' in positions:
-    positions = PAIRED_POSITIONS
+  positions = ['8']
   query_positions = ['p{}'.format(position.replace(':', '_')) for position in positions]
   query_positions = query_positions + ['isotype', 'species']
 

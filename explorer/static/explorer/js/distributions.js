@@ -179,6 +179,6 @@ var draw_distribution = function(plot_data) {
 };
 
 
-var draw_position_distribution = function(plot_data) {
+var draw_species_distribution = function(plot_data) {
   d3.select('#distribution-svg').html(JSON.parse(plot_data));
 }

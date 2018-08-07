@@ -84,3 +84,7 @@ div.loading-overlay {
     cursor: wait;
 }
 
+p.lead {
+  margin: 0;
+}
+
