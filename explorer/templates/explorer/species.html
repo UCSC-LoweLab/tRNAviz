@@ -20,6 +20,8 @@ $(document).ready(function() {
 	$('#position-select-2').select2({width: "100%", allowClear: true, placeholder: "Select isotype/position"});
 	$('#isotype-select-3').select2({width: "100%", allowClear: true, placeholder: "Select isotype/position"});
 	$('#position-select-3').select2({width: "100%", allowClear: true, placeholder: "Select isotype/position"});
+	$('#isotype-select-4').select2({width: "100%", allowClear: true, placeholder: "Select isotype/position"});
+	$('#position-select-4').select2({width: "100%", allowClear: true, placeholder: "Select isotype/position"});
 })
 </script>
 {% endblock %}
@@ -30,7 +32,7 @@ $(document).ready(function() {
 <script src="{% static 'explorer/js/distributions.js' %}"></script>
 <script type = "text/javascript">
 
-d3.json('{% url "explorer:species_distribution" clade_txids=plot_clades|clade_dicts_to_url_string isotypes=isotypes|list_to_url_string positions=positions|list_to_url_string %}', draw_species_distribution);
+d3.json('{% url "explorer:species_distribution" clade_txids=plot_clades|clade_dicts_to_url_string foci=foci|foci_to_url_string %}', draw_species_distribution);
 </script>
 {% endblock %}
 
@@ -80,16 +82,15 @@ d3.json('{% url "explorer:species_distribution" clade_txids=plot_clades|clade_di
 				<div class='my-2'>
 					<div class="row">
 						<div class="col">
-							<select class='multiselect' name="form_isotypes_1" id="isotype-select-1">
+							<select name="form_isotypes_1" id="isotype-select-1">
 								<option></option>
-								<option value="All">All isotypes</option>
 								{% for isotype in isotypes_list %}
 								<option value="{{ isotype }}">{{ isotype }}</option>
 								{% endfor %}
 							</select>
 						</div>
 						<div class="col">
-							<select class='multiselect' name="form_positions_1" id="position-select-1">
+							<select name="form_positions_1" id="position-select-1">
 								<option></option>
 								{% for position in positions_list %}
 								<option value="{{ position }}">{{ position }}</option>
@@ -101,16 +102,15 @@ d3.json('{% url "explorer:species_distribution" clade_txids=plot_clades|clade_di
 				<div class='my-2'>
 					<div class="row">
 						<div class="col">
-							<select class='multiselect' name="form_isotypes_3" id="isotype-select-3">
+							<select name="form_isotypes_2" id="isotype-select-2">
 								<option></option>
-								<option value="All">All isotypes</option>
 								{% for isotype in isotypes_list %}
 								<option value="{{ isotype }}">{{ isotype }}</option>
 								{% endfor %}
 							</select>
 						</div>
 						<div class="col">
-							<select class='multiselect' name="form_positions_3" id="position-select-3">
+							<select name="form_positions_2" id="position-select-2">
 								<option></option>
 								{% for position in positions_list %}
 								<option value="{{ position }}">{{ position }}</option>
@@ -122,7 +122,27 @@ d3.json('{% url "explorer:species_distribution" clade_txids=plot_clades|clade_di
 				<div class='my-2'>
 					<div class="row">
 						<div class="col">
-							<select class='multiselect' name="form_isotypes_2" id="isotype-select-2">
+							<select name="form_isotypes_3" id="isotype-select-3">
+								<option></option>
+								{% for isotype in isotypes_list %}
+								<option value="{{ isotype }}">{{ isotype }}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="col">
+							<select name="form_positions_3" id="position-select-3">
+								<option></option>
+								{% for position in positions_list %}
+								<option value="{{ position }}">{{ position }}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class='my-2'>
+					<div class="row">
+						<div class="col">
+							<select name="form_isotypes_4" id="isotype-select-4">
 								<option></option>
 								<option value="All">All isotypes</option>
 								{% for isotype in isotypes_list %}
@@ -131,7 +151,7 @@ d3.json('{% url "explorer:species_distribution" clade_txids=plot_clades|clade_di
 							</select>
 						</div>
 						<div class="col">
-							<select class='multiselect' name="form_positions_2" id="position-select-2">
+							<select name="form_positions_4" id="position-select-4">
 								<option></option>
 								{% for position in positions_list %}
 								<option value="{{ position }}">{{ position }}</option>

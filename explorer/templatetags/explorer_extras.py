@@ -23,3 +23,7 @@ def list_to_url_string(mylist):
 @register.filter('list_to_pretty_string')
 def list_to_pretty_string(mylist):
   return ', '.join(mylist)
+
+@register.filter('foci_to_url_string')
+def foci_to_url_string(foci):   
+  return ';'.join([','.join([focus[0][0], focus[1][0]]) for focus in foci])

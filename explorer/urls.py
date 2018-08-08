@@ -19,7 +19,7 @@ urlpatterns = [
   path('variation/distribution', views.variation_distribution, name = 'variation_distribution'),
   path('variation/species', views.variation_species, name = 'variation_species'),
   path('api/distribution/<str:clade_txids>/<str:isotypes>/<str:positions>/', views.distribution, name = 'distribution'),
-  path('api/species/<str:clade_txids>/<str:isotypes>/<str:positions>/', views.species_distribution, name = 'species_distribution'),
+  path('api/species/<str:clade_txids>/<str:foci>/', views.species_distribution, name = 'species_distribution'),
 
   path('compare/', views.compare, name = 'compare'),
   path('compare/render', views.render_bitchart, name = 'render'),
