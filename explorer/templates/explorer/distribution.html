@@ -76,34 +76,20 @@ d3.json('{% url "explorer:distribution" clade_txids=plot_clades|clade_dicts_to_u
 				<div class='my-2'>
 					<select class='multiselect' name="form_isotypes" multiple="multiple" id="isotypes-select">
 						<option value="All" selected="selected">All isotypes</option>
-						<option value="Ala">Ala</option>
-						<option value="Arg">Arg</option>
-						<option value="Asn">Asn</option>
-						<option value="Asp">Asp</option>
-						<option value="Cys">Cys</option>
-						<option value="Gln">Gln</option>
-						<option value="Glu">Glu</option>
-						<option value="Gly">Gly</option>
-						<option value="His">His</option>
-						<option value="Ile">Ile</option>
-						<option value="iMet">iMet</option>
-						<option value="Leu">Leu</option>
-						<option value="Lys">Lys</option>
-						<option value="Met">Met</option>
-						<option value="Phe">Phe</option>
-						<option value="Pro">Pro</option>
-						<option value="Ser">Ser</option>
-						<option value="Thr">Thr</option>
-						<option value="Trp">Trp</option>
-						<option value="Tyr">Tyr</option>
-						<option value="Val">Val</option>
+						{% for isotype in isotypes_list %}
+						<option value="{{ isotype }}">{{ isotype }}</option>
+						{% endfor %}
 					</select>
 				</div>
 				<div class='my-2'>
-					<select class='multiselect' name="form_positions" id="positions-select">
+					<select class='multiselect' name="form_positions" multiple="multiple" id="positions-select">
 						<option value="single" selected="selected">Single bases</option>
 						<option value="paired">Base pairs</option>
 						<option value="tertiary">Tertiary interactions</option>
+						<option value="variable">Variable arm</option>
+						{% for position in positions_list %}
+						<option value="{{ position }}">{{ position }}</option>
+						{% endfor %}
 					</select>
 				</div>
 				<div class='my-2'>
@@ -113,4 +99,24 @@ d3.json('{% url "explorer:distribution" clade_txids=plot_clades|clade_dicts_to_u
 		</div>
 	</div>
 </div>
+{% endblock %}
+
+
+{% block table %}
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Clade(s)</th>
+			<th scope="col">Isotype(s)</th>
+			<th scope="col">Position(s)</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>{{ plot_clades|clade_dicts_to_pretty_string|linebreaks }}</td>
+			<td>{{ isotypes|list_to_pretty_string }}</td>
+			<td>{{ positions|list_to_pretty_string }}</td>
+		</tr>
+	</tbody>
+</table>
 {% endblock %}

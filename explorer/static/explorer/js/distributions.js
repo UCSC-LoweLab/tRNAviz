@@ -44,7 +44,7 @@ var draw_distribution = function(plot_data) {
 
   var feature_scale = d3.scaleOrdinal()
     .domain(['A', 'C', 'G', 'U', '-', 'A:A', 'A:C', 'A:G', 'A:U', 'C:A', 'C:C', 'C:G', 'C:U', 'G:A', 'G:C', 'G:G', 'G:U', 'U:A', 'U:C', 'U:G', 'U:U'])
-    .range(['#ffd92f', '#4daf4a', '#e41a1c', '#377eb8'].concat(d3.schemeCategory20));
+    .range(['#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#cccccc'].concat(d3.schemeCategory20));
 
   var svg = d3.select('#distribution-svg');
 
@@ -130,8 +130,7 @@ var draw_distribution = function(plot_data) {
         tooltip_isotype.html(isotype);
         tooltip_group.html(d.data.group);
         tooltip_freq.html(Math.round((d[1] - d[0]) * 100) / 100)
-        var feature = d3.select('#tooltip-feature').html()
-        tooltip_count.html(distro_data[isotype][position].filter(x => x['group'] == d.data.group)[0][feature]);
+        tooltip_count.html(distro_data[isotype][position].filter(x => x['group'] == d.data.group)[0][d3.select('#tooltip-feature').html()]);
         tooltip.transition()
           .duration(100)
           .style('opacity', .9)
@@ -144,8 +143,7 @@ var draw_distribution = function(plot_data) {
       })
       .on('mousemove', function(d, i) {  
         tooltip_freq.html(Math.round((d[1] - d[0]) * 100) / 100)
-        var feature = d3.select('#tooltip-feature').html()
-        tooltip_count.html(distro_data[isotype][position].filter(x => x['group'] == d.data.group)[0][feature]);
+        tooltip_count.html(distro_data[isotype][position].filter(x => x['group'] == d.data.group)[0][d3.select('#tooltip-feature').html()]);
         tooltip.style('left', d3.event.pageX + 'px')
           .style('top', d3.event.pageY + 'px');
         })
@@ -234,7 +232,7 @@ var draw_species_distribution = function(plot_data) {
 
   var feature_scale = d3.scaleOrdinal()
     .domain(['A', 'C', 'G', 'U', '-', 'A:A', 'A:C', 'A:G', 'A:U', 'C:A', 'C:C', 'C:G', 'C:U', 'G:A', 'G:C', 'G:G', 'G:U', 'U:A', 'U:C', 'U:G', 'U:U'])
-    .range(['#ffd92f', '#4daf4a', '#e41a1c', '#377eb8'].concat(d3.schemeCategory20));
+    .range(['#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#cccccc'].concat(d3.schemeCategory20));
 
   var svg = d3.select('#distribution-svg');
 

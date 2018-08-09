@@ -82,7 +82,7 @@ d3.json('{% url "explorer:species_distribution" clade_txids=plot_clades|clade_di
 				<div class='my-2'>
 					<div class="row">
 						<div class="col">
-							<select name="form_isotypes_1" id="isotype-select-1">
+							<select name="form_isotypes" id="isotype-select-1">
 								<option></option>
 								{% for isotype in isotypes_list %}
 								<option value="{{ isotype }}">{{ isotype }}</option>
@@ -90,7 +90,7 @@ d3.json('{% url "explorer:species_distribution" clade_txids=plot_clades|clade_di
 							</select>
 						</div>
 						<div class="col">
-							<select name="form_positions_1" id="position-select-1">
+							<select name="form_positions" id="position-select-1">
 								<option></option>
 								{% for position in positions_list %}
 								<option value="{{ position }}">{{ position }}</option>
@@ -102,7 +102,7 @@ d3.json('{% url "explorer:species_distribution" clade_txids=plot_clades|clade_di
 				<div class='my-2'>
 					<div class="row">
 						<div class="col">
-							<select name="form_isotypes_2" id="isotype-select-2">
+							<select name="form_isotypes" id="isotype-select-2">
 								<option></option>
 								{% for isotype in isotypes_list %}
 								<option value="{{ isotype }}">{{ isotype }}</option>
@@ -110,7 +110,7 @@ d3.json('{% url "explorer:species_distribution" clade_txids=plot_clades|clade_di
 							</select>
 						</div>
 						<div class="col">
-							<select name="form_positions_2" id="position-select-2">
+							<select name="form_positions" id="position-select-2">
 								<option></option>
 								{% for position in positions_list %}
 								<option value="{{ position }}">{{ position }}</option>
@@ -122,7 +122,7 @@ d3.json('{% url "explorer:species_distribution" clade_txids=plot_clades|clade_di
 				<div class='my-2'>
 					<div class="row">
 						<div class="col">
-							<select name="form_isotypes_3" id="isotype-select-3">
+							<select name="form_isotypes" id="isotype-select-3">
 								<option></option>
 								{% for isotype in isotypes_list %}
 								<option value="{{ isotype }}">{{ isotype }}</option>
@@ -130,7 +130,7 @@ d3.json('{% url "explorer:species_distribution" clade_txids=plot_clades|clade_di
 							</select>
 						</div>
 						<div class="col">
-							<select name="form_positions_3" id="position-select-3">
+							<select name="form_positions" id="position-select-3">
 								<option></option>
 								{% for position in positions_list %}
 								<option value="{{ position }}">{{ position }}</option>
@@ -142,7 +142,7 @@ d3.json('{% url "explorer:species_distribution" clade_txids=plot_clades|clade_di
 				<div class='my-2'>
 					<div class="row">
 						<div class="col">
-							<select name="form_isotypes_4" id="isotype-select-4">
+							<select name="form_isotypes" id="isotype-select-4">
 								<option></option>
 								<option value="All">All isotypes</option>
 								{% for isotype in isotypes_list %}
@@ -151,7 +151,7 @@ d3.json('{% url "explorer:species_distribution" clade_txids=plot_clades|clade_di
 							</select>
 						</div>
 						<div class="col">
-							<select name="form_positions_4" id="position-select-4">
+							<select name="form_positions" id="position-select-4">
 								<option></option>
 								{% for position in positions_list %}
 								<option value="{{ position }}">{{ position }}</option>
@@ -168,4 +168,19 @@ d3.json('{% url "explorer:species_distribution" clade_txids=plot_clades|clade_di
 		</div>
 	</div>
 </div>
+{% endblock %}
+
+{% block table %}
+<table class="table">
+	<tbody>
+		<tr>
+			<th scope="row">Clade groups</th>
+			<td>{{ plot_clades|clade_dicts_to_pretty_string|linebreaks }}</td>
+		</tr>
+		<tr>
+			<th scope="row">Foci</th>
+			<td>{{ foci|foci_to_pretty_string|linebreaks }}</td>
+		</tr>
+	</tbody>
+</table>
 {% endblock %}

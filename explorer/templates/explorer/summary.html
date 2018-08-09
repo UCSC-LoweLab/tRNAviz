@@ -51,28 +51,10 @@ d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', draw_tilemap)
 				</div>
 				<div class='my-2'>
 					<select class='multiselect' name="isotype" id="isotype-select">
-						<option value="All" selected="selected">All isotypes</option>
-						<option value="Ala">Ala</option>
-						<option value="Arg">Arg</option>
-						<option value="Asn">Asn</option>
-						<option value="Asp">Asp</option>
-						<option value="Cys">Cys</option>
-						<option value="Gln">Gln</option>
-						<option value="Glu">Glu</option>
-						<option value="Gly">Gly</option>
-						<option value="His">His</option>
-						<option value="Ile">Ile</option>
-						<option value="iMet">iMet</option>
-						<option value="Leu">Leu</option>
-						<option value="Lys">Lys</option>
-						<option value="Met">Met</option>
-						<option value="Phe">Phe</option>
-						<option value="Pro">Pro</option>
-						<option value="Ser">Ser</option>
-						<option value="Thr">Thr</option>
-						<option value="Trp">Trp</option>
-						<option value="Tyr">Tyr</option>
-						<option value="Val">Val</option>
+						<option value="All">All isotypes</option>
+						{% for isotype in isotypes_list %}
+						<option value="{{ isotype }}">{{ isotype }}</option>
+						{% endfor %}
 					</select>
 				</div>
 				<div class='my-2'>

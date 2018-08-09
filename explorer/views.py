@@ -23,7 +23,6 @@ SINGLE_POSITIONS = [
   '26',
   '32', '33', '34', '35', '36', '37', '38', 
   '44', '45', '46', '47', '48', 
-  'V1', 'V2', 'V3', 'V4', 'V5',
   '54', '55', '56', '57', '58', '59', '60', 
   '73'
 ]
@@ -31,10 +30,11 @@ PAIRED_POSITIONS = [
   '1:72', '2:71', '3:70', '4:69', '5:68', '6:67', '7:66',
   '10:25', '11:24', '12:23', '13:22', 
   '27:43', '28:42', '29:41', '30:40', '31:39', 
-  'V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27', 
   '49:65', '50:64', '51:63', '52:62', '53:61'
 ]
-
+TERTIARY_INTERACTIONS = ['8:14', '9:23', '10:45', '15:48', '18:55', '19:56', '22:46', '26:44', '54:58']
+VARIABLE_LOOP_POSITIONS = ['V1', 'V2', 'V3', 'V4', 'V5', 'V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27']
+POSITIONS = SINGLE_POSITIONS + PAIRED_POSITIONS + VARIABLE_LOOP_POSITIONS + TERTIARY_INTERACTIONS
 FEATURE_LABELS = {
   'A': 'A', 'G': 'G', 'C': 'C', 'U': 'U', 'Absent': '-', '': '',
   'Purine': 'Purine', 'Pyrimidine': 'Pyrimidine',
@@ -75,7 +75,8 @@ def summary(request):
     'clade': filter_clade,
     'clade_txid': filter_taxid,
     'isotype': filter_isotype,
-    'clade_dict': clade_dict
+    'clade_dict': clade_dict,
+    'isotype_list': ISOTYPES
   })
 
 def variation_distribution(request):
@@ -100,12 +101,14 @@ def variation_distribution(request):
     'plot_clades': filter_clades,
     'isotypes': filter_isotypes,
     'positions': filter_positions,
-    'clade_list': clade_list
+    'clade_list': clade_list,
+    'isotypes_list': ISOTYPES,
+    'positions_list': POSITIONS
   })
 
 def variation_species(request):
-  filter_clades = [{'4930': ('Saccharomyces', 'genus')}]
-  foci = [[['Met'], ['54']], [['iMet'], ['54']], [['Met'], ['58']], [['iMet'], ['58']]]
+  filter_clades = [{'4895': ('Schizosaccharomyces', 'genus')}, {'4930': ('Saccharomyces', 'genus')}]
+  foci = [('Ala', '3:70'), ('Gly', '3:70'), ('Ala', '46'), ('Gly', '46')]
 
   clade_list = {}
   for taxonomy in models.Taxonomy.objects.values():
@@ -118,15 +121,15 @@ def variation_species(request):
       if len(clade_group) == 0: continue
       filter_clades.append({taxid: clade_list[taxid] for taxid in clade_group})
 
-    foci = [[[request.POST.get('form_isotypes_{}'.format(i))], [request.POST.get('form_positions_{}'.format(i))]] for i in range(1, 5)]
-    for focus in foci:
-      
+    foci = list(zip(request.POST.getlist('form_isotypes'), request.POST.getlist('form_positions')))
+    foci = [focus for focus in foci if focus[0] != '']
+
   return render(request, 'explorer/species.html', {
     'plot_clades': filter_clades,
     'foci': foci,
     'clade_list': clade_list,
     'isotypes_list': ISOTYPES,
-    'positions_list': SINGLE_POSITIONS + PAIRED_POSITIONS
+    'positions_list': POSITIONS
 
   })
 
@@ -238,11 +241,22 @@ def distribution(request, clade_txids, isotypes, positions):
   clade_info = {clade['taxid']: (clade['name'], clade['rank']) for clade in models.Taxonomy.objects.filter(taxid__in = clades).values()}
   isotypes = ISOTYPES if 'All' in isotypes else isotypes.split(',')
 
+  positions = positions.split(',')
+  query_positions = []
   if 'single' in positions:
-    positions = SINGLE_POSITIONS
-  elif 'paired' in positions:
-    positions = PAIRED_POSITIONS
-  query_positions = ['p{}'.format(position.replace(':', '_')) for position in positions]
+    query_positions.extend(SINGLE_POSITIONS)
+    positions.remove('single')
+  if 'paired' in positions:
+    query_positions.extend(PAIRED_POSITIONS)
+    positions.remove('paired')
+  if 'tertiary' in positions:
+    query_positions.extend(TERTIARY_INTERACTIONS)
+    positions.remove('tertiary')
+  if 'variable' in positions:
+    query_positions.extend(VARIABLE_LOOP_POSITIONS)
+    positions.remove('variable')
+  query_positions.extend(positions)
+  query_positions = ['p{}'.format(position.replace(':', '_')) for position in list(set(query_positions))]
   query_positions = query_positions + ['isotype']
 
   # Filter tRNA set with user queries
@@ -290,7 +304,6 @@ def species_distribution(request, clade_txids, foci):
   foci = [tuple(focus.split(',')) for focus in foci.split(';')]
   isotypes = [isotype for isotype, position in foci]
   positions = [position for isotype, position in foci]
-  print(positions)
   query_positions = ['p{}'.format(position.replace(':', '_')) for position in positions]
   query_positions = query_positions + ['isotype', 'assembly']
 
