@@ -41,10 +41,10 @@ var feature_scale = d3.scaleOrdinal()
   .domain(['', 'A', 'C', 'G', 'U', '-', 'Purine', 'Pyrimidine', 'Weak', 'Strong','Amino','Keto','B','D','H','V','N','Absent','Mismatched','Paired','High mismatch rate'])
   .range(['#ffffff', '#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#dddddd', '#ff8300','#66c2a5','#b3de69','#fb72b2','#c1764a','#b26cbd','#e5c494','#ccebd5','#ffa79d','#a6cdea','white','#ffffff','#cccccc','#ffffcc','#222222']);
 
-
+var adata, cdata;
 var draw_cloverleaf = function(cloverleaf_data) {
   cloverleaf_data = JSON.parse(cloverleaf_data)
-
+  adata = cloverleaf_data;
   var cloverleaf_margin = 50,
       cloverleaf_width = 500,
       cloverleaf_height = 525,
@@ -95,15 +95,22 @@ var draw_cloverleaf = function(cloverleaf_data) {
 
 };
 
+var i;
+var a, c;
 var update_cloverleaf = function(cloverleaf_data) {
 	new Promise(function(resolve, reject) {
 	  var coords = d3.select('#cloverleaf').selectAll('circle').data();
 	  for (var index in coords) {
+      i = index;
+      a=coords;
+      c=cloverleaf_data;
+      console.log(coords[i]);
 	  	coords[index]['consensus'] = cloverleaf_data[coords[index]['position']]['consensus'];
 	  	coords[index]['freqs'] = cloverleaf_data[coords[index]['position']]['freqs'];
 	  }
 	  resolve(coords);
   }).then(function(updated_coords) {
+    
     d3.select('#cloverleaf-area .loading-overlay').style('display', 'none')
     
   	set_cloverleaf_circle_attributes(updated_coords);

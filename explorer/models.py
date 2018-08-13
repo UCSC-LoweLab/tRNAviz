@@ -214,10 +214,8 @@ class tRNA(models.Model):
 
 
 class Consensus(models.Model):
-  isotype = models.CharField(max_length = 5)
-  clade = models.CharField(max_length = 50)
-  rank = models.CharField(max_length = 20)
   taxid = models.CharField(max_length = 10)
+  isotype = models.CharField(max_length = 5)
 
   p1_72 = models.CharField('1:72', default = '', max_length = 20)
   p1 = models.CharField('1', default = '', max_length = 20)
@@ -353,7 +351,7 @@ class Consensus(models.Model):
   p73 = models.CharField('73', default = '', max_length = 20)
   
   def __str__(self):
-    return '{} / {} consensus set'.format(self.clade, self.isotype)
+    return 'Consensus for {} {}'.format(self.taxid, self.isotype)
 
 
 class Freq(models.Model):

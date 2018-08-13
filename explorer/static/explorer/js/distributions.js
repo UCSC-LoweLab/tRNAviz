@@ -187,7 +187,7 @@ var draw_species_distribution = function(plot_data) {
     assembly_groups = assembly_groups.concat(distro_data[focus].map(d => [d['assembly'], d['group']]))
   }
   assembly_groups = Array.from(new Set(assembly_groups.map(x => JSON.stringify(x)))).map(x => JSON.parse(x))
-  assemblies = assembly_groups.map(x => x[0])
+  var assemblies = assembly_groups.map(x => x[0])
   var groups = Array.from(new Set(assembly_groups.map(x => x[1])))
 
   var group_sizes = Array.from(assembly_groups.map(x => x[1])
@@ -218,13 +218,13 @@ var draw_species_distribution = function(plot_data) {
 
   // generate y axis and put spacers in between groups
   var assemblies_sorted = assembly_groups.sort((a, b) => parseInt(a[1]) - parseInt(b[1])).map(d => d[0]);
-  y_axis_labels = [];
+  var y_axis_labels = [];
   for (i in group_sizes) {
     y_axis_labels = y_axis_labels.concat(assemblies_sorted.splice(0, group_sizes[i]));
     if (i != groups.length - 1) y_axis_labels.push('spacer' + i);
   }
 
-  assembly_group_scale = d3.scaleBand()
+  var assembly_group_scale = d3.scaleBand()
     .domain(y_axis_labels)
     .range([10, 20 * assemblies.length])
     .paddingInner(0.1)
@@ -288,7 +288,7 @@ var draw_species_distribution = function(plot_data) {
       return d3.max(stacked, function(d) { return d[1]; });
     };
 
-    bar_x_scale = d3.scaleLinear()
+    var bar_x_scale = d3.scaleLinear()
       .domain([d3.min(stacked, stackMin), d3.max(stacked, stackMax)])
       .range([0, facet_width - 20]);
 

@@ -147,21 +147,23 @@ def cloverleaf(request, clade_txid, isotype):
   freqs = {}
   for freq in freqs_qs.values():
     position = freq['position']
-    if position in SINGLE_POSITIONS:
+    if position in SINGLE_POSITIONS + ['V1', 'V2', 'V3', 'V4', 'V5']:
       freqs[position] = {base: freq[base] for base in SINGLE_FEATURES}
-    elif position in PAIRED_POSITIONS:
+    elif position in PAIRED_POSITIONS + ['V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27']:
       freqs[position] = {PAIRED_FEATURES[pair]: freq[pair] for pair in PAIRED_FEATURES}
 
+
   consensus = consensus_qs.values()[0]
+
   for colname in consensus:
     position = colname.replace('p', '').replace('_', ':')
-    if position in SINGLE_POSITIONS:
+    if position in SINGLE_POSITIONS + ['V1', 'V2', 'V3', 'V4', 'V5']:
       position_consensus = FEATURE_LABELS[consensus[colname]]
       plot_data[position] = {
         'consensus': position_consensus,
         'freqs': freqs[position]
       }
-    if position in PAIRED_POSITIONS:
+    elif position in PAIRED_POSITIONS + ['V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27']:
       position5, position3 = position.split(':')
       if consensus[colname] == '': 
         position5_consensus, position3_consensus = ('', '')
@@ -189,9 +191,9 @@ def tilemap(request, clade_txid):
   for freq in freqs_qs.values():
     position = freq['position']
     isotype = freq['isotype']
-    if position in SINGLE_POSITIONS:
+    if position in SINGLE_POSITIONS + ['V1', 'V2', 'V3', 'V4', 'V5']:
       freqs[isotype][position] = {base: freq[base] for base in SINGLE_FEATURES}
-    elif position in PAIRED_POSITIONS:
+    elif position in PAIRED_POSITIONS + ['V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27']:
       freqs[isotype][position] = {PAIRED_FEATURES[pair]: freq[pair] for pair in PAIRED_FEATURES}
 
   consensus = consensus_qs.values()
@@ -199,7 +201,7 @@ def tilemap(request, clade_txid):
     isotype = consensus['isotype']
     for colname in consensus:
       position = colname.replace('p', '').replace('_', ':')
-      if position in SINGLE_POSITIONS:
+      if position in SINGLE_POSITIONS + ['V1', 'V2', 'V3', 'V4', 'V5']:
         position_consensus = FEATURE_LABELS[consensus[colname]]
         plot_data.append({
           'position': position,
@@ -208,7 +210,7 @@ def tilemap(request, clade_txid):
           'freqs': freqs[isotype][position],
           'type': 'single'
         })
-      if position in PAIRED_POSITIONS:
+      if position in PAIRED_POSITIONS + ['V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27']:
         if consensus[colname] == '': 
           position5_consensus, position3_consensus = ('', '')
         else:

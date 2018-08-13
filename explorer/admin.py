@@ -4,7 +4,6 @@ from import_export.admin import ImportExportModelAdmin
 from import_export.fields import Field
 from .models import Taxonomy, tRNA, Consensus, Freq, Coord
 
-
 # For import export
 class TaxonomyResource(resources.ModelResource):
   class Meta:
@@ -290,7 +289,7 @@ class ConsensusResource(resources.ModelResource):
 
   class Meta:
     model = Consensus
-    import_id_fields = ('isotype', 'clade', 'rank')
+    import_id_fields = ('txid', 'isotype')
 
 class FreqResource(resources.ModelResource):
   absent = Field(attribute = 'absent', column_name = '-')
@@ -322,7 +321,7 @@ class FreqResource(resources.ModelResource):
 
   class Meta:
     model = Freq
-    import_id_fields = ('position', 'isotype', 'clade', 'rank')
+    import_id_fields = ('position', 'isotype', 'taxid')
 
 class CoordResource(resources.ModelResource):
   class Meta:
