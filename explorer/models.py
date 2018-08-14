@@ -23,7 +23,6 @@ ISOTYPES = (
   ('Thr', 'Thr'),
   ('Trp', 'Trp'),
   ('Tyr', 'Tyr'),
-  ('Und', 'Und'),
   ('Val', 'Val')
 )
 

@@ -12,9 +12,8 @@ import pandas as pd
 from itertools import product
 
 from . import models
-from . import filters
 from . import serializers
-
+from . import forms
 
 
 SINGLE_POSITIONS = [
@@ -346,16 +345,21 @@ def species_distribution(request, clade_txids, foci):
   return JsonResponse(json.dumps(plot_data), safe = False)
 
 def compare(request):
-  clade_list = {}
-  for taxonomy in models.Taxonomy.objects.values():
-    clade_list[taxonomy['taxid']] = taxonomy['name'], taxonomy['rank']
+  if request.method == 'POST':
+    form = forms.CompareForm(request.POST)
+    print(form)
+    if form.is_valid():
+      pass
+  else:
+    form = forms.CompareForm()
 
   return render(request, 'explorer/compare.html', {
-    'clade_list': clade_list
+    'form': form
   })
+  
 
-def render_bitchart(request):
-  if request.method != "POST":
-    return compare(request)
+# def render_bitchart(request):
+#   if request.method != "POST":
+#     return compare(request)
 
-  return render(request, 'explorer/render-bitchart.html')
+#   return render(request, 'explorer/render-bitchart.html')

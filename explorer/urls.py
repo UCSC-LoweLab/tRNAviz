@@ -22,5 +22,5 @@ urlpatterns = [
   path('api/species/<str:clade_txids>/<str:foci>/', views.species_distribution, name = 'species_distribution'),
 
   path('compare/', views.compare, name = 'compare'),
-  path('compare/render', views.render_bitchart, name = 'render'),
+  # path('compare/render', views.render_bitchart, name = 'render'),
 ]

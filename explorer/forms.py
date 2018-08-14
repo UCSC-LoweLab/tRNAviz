@@ -1,32 +1,24 @@
 from django import forms
 from . import models
 
-ISOTYPES = ['Ala', 'Arg', 'Asn', 'Asp', 'Cys', 'Gln', 'Glu', 'Gly', 'His', 'Ile', 'iMet', 'Leu', 'Lys', 'Met', 'Phe', 'Pro', 'Ser', 'Thr', 'Trp', 'Tyr', 'Val']
-
-class CompareGroupForm(forms.Form):
-  name = forms.CharField(max_length = 10, required = True)
-  input_fasta = forms.CharField(widget = forms.Textarea)
-  clade = forms.ChoiceField(choices = [])
-  isotype = forms.ChoiceField(choices = ISOTYPES)
-
-  def __init__(self, *args, **kwargs):
-    super(CompareQueryForm, self).__init__(*args, **kwargs)
-    self.fields['clade'].choices = [(clade.taxid, '{} ({})'.format(clade.name, clade.rank)) for clade in models.Taxonomy.objects.all()]
+CLADES = [(clade.taxid, '{} ({})'.format(clade.name, clade.rank)) for clade in models.Taxonomy.objects.all()]
 
 class CompareForm(forms.Form):
-  def __init__(self, *args, **kwargs):
-    # self.user = kwargs.pop('user', None)
-    super(CompareForm, self).__init__(*args, **kwargs)
+  name = forms.CharField(max_length = 10, required = True)
+  input_fasta = forms.CharField(widget = forms.Textarea)
+  clade = forms.ChoiceField(choices = CLADES)
+  isotype = forms.ChoiceField(choices = models.ISOTYPES)
 
-    self.fields['reference_clade'] = forms.CharField(
-                                    max_length=30,
-                                    initial = self.user.first_name,
-                                    widget=forms.TextInput(attrs={
-                                        'placeholder': 'First Name',
-                                    }))
-      self.fields['last_name'] = forms.CharField(
-                                      max_length=30,
-                                      initial = self.user.last_name,
-                                      widget=forms.TextInput(attrs={
-                                          'placeholder': 'Last Name',
-                                      }))
+  def is_valid(self):
+    valid = super(SignInForm, self).is_valid()
+    if not valid: return valid
+
+    # validate reference
+    try:
+      clade = models.Taxonomy.objects.get(taxid = self.cleaned_data['clade'])
+    except models.Taxonomy.DoesNotExist:
+      self._errors['no_clade'] = 'Invalid clade - does not exist'
+      return False
+
+    if self.cleaned_data['isotype'] not in ['All'] + [i[0] for i in models.ISOTYPES]:
+      self._errors['invalid_isotype'] = 'Invalid isotype'
