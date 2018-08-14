@@ -41,6 +41,8 @@ d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', draw_tilemap)
 
 			<form id='data-select-form' action='{% url "explorer:summary" %}' method="POST">
 				{% csrf_token %}
+				{{ formset.management_form }}
+{% for form in formset %}
 				<div class='my-2'>
 					<select class='multiselect' name="clade_txid" id="clade-select">
 						<option value="Eukaryota" selected="selected">All eukaryotes<option>
@@ -57,6 +59,7 @@ d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', draw_tilemap)
 						{% endfor %}
 					</select>
 				</div>
+				{% endfor %}
 				<div class='my-2'>
 					<button class='btn btn-primary' type='submit'>Submit</button>
 				</div>

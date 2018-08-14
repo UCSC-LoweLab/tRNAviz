@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import formset_factory
 from . import models
 from . import choices
 
@@ -11,7 +12,7 @@ class CompareForm(forms.Form):
   isotype = forms.ChoiceField(choices = choices.ISOTYPES)
 
   def is_valid(self):
-    valid = super(SignInForm, self).is_valid()
+    valid = super(CompareForm, self).is_valid()
     if not valid: return valid
 
     # validate reference
@@ -23,3 +24,5 @@ class CompareForm(forms.Form):
 
     if self.cleaned_data['isotype'] not in ['All'] + [i[0] for i in choices.ISOTYPES]:
       self._errors['invalid_isotype'] = 'Invalid isotype'
+
+CompareFormset = formset_factory(CompareForm, extra = 2)

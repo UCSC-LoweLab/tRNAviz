@@ -346,15 +346,16 @@ def species_distribution(request, clade_txids, foci):
 
 def compare(request):
   if request.method == 'POST':
-    form = forms.CompareForm(request.POST)
-    print(form)
-    if form.is_valid():
-      pass
+    formset = forms.CompareFormset(request.POST)
+    if formset.is_valid():
+      for form in formset:
+        if form.is_valid():
+          pass
   else:
-    form = forms.CompareForm()
+    formset = forms.CompareFormset()
 
   return render(request, 'explorer/compare.html', {
-    'form': form
+    'formset': formset
   })
   
 
