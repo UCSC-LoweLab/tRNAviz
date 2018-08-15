@@ -31,3 +31,8 @@ def foci_to_url_string(foci):
 @register.filter('foci_to_pretty_string')
 def foci_to_pretty_string(foci):
   return '\n'.join([', '.join(focus) for focus in foci])
+
+
+@register.filter('minus1')
+def minus1(number):
+  return number - 1
