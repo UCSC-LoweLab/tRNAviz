@@ -347,16 +347,18 @@ def species_distribution(request, clade_txids, foci):
 def compare(request):
   if request.method == 'POST':
     formset = forms.CompareFormset(request.POST)
-    if formset.is_valid():
-      for form in formset:
-        if form.is_valid():
-          pass
-  else:
-    formset = forms.CompareFormset()
+    print('formset is {}valid'.format('in' if formset.is_valid() else ''))
+    for form in formset:
+      print(form.cleaned_data)
 
-  return render(request, 'explorer/compare.html', {
-    'formset': formset
-  })
+    return render(request, 'explorer/compare.html', {
+      'formset': formset,
+      'plot_data': plot_data
+    })
+  else:
+    return render(request, 'explorer/compare.html', {
+      'formset': forms.CompareFormset()
+    })
   
 
 # def render_bitchart(request):

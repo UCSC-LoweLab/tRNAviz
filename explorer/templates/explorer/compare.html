@@ -25,23 +25,10 @@ $(document).ready(function() {
 
 
 <script type='text/javascript'>
-
-function cloneMore(selector, prefix) {
-    var new_form = $(selector).clone(true);
-    var form_number = $('#id_' + prefix + '-TOTAL_FORMS').val(); // looks up total number of forms in management form
-    new_form.find('span').remove()
-    new_form.find(':input').each(function() {
-        var name = $(this).attr('name').replace(form_number - 1, form_number);
-        var id = $(this).attr('id').replace(form_number - 1, form_number);
-        $(this).attr({'name': name, 'id': id}).val('');
-    });
-    new_form.append('<span class="glyphicon glyphicon-minus" aria-hidden="true"><button class="btn btn-danger remove-form-row"></button></span>')
-    form_number++;
-    $('#id_' + prefix + '-TOTAL_FORMS').val(form_number);
-    $(selector).after(new_form);
-}
+var select2_placeholders = {'name': 'Group name (required)', 'clade': 'Select clade', 'isotype': 'Select isotype', 'fasta': 'Paste sequence in FASTA format (sequence characters in [AGCUT] only)'}
 function deleteForm(prefix, btn) {
   var form_number = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+  
   btn.closest('.form-row').remove();
   form_number--;
   $('#id_' + prefix + '-TOTAL_FORMS').val(form_number);
@@ -52,15 +39,44 @@ function deleteForm(prefix, btn) {
   		var old_number_regex = new RegExp('\\d+');
       var name = $(this).attr('name').replace(old_number_regex, i + 1);
       var id = $(this).attr('id').replace(old_number_regex, i + 1);
-      $(this).attr({'name': name, 'id': id});
+      // remove and rebind select2 to all fields
+      $(this).select2("destroy");
+			// $(this).next().find('span.select2-selection').attr('aria-labelledby', select2_id)
+			// $(this).next().find('span.select2-selection__rendered').attr('id', select2_id)
+      $(this).attr({'name': name, 'id': id, 'data-select2-id': id});
+      var field = name.split('-').pop()
+      $(this).select2({width: "100%", allowClear: true, placeholder: select2_placeholders[field]});
     });
   }
 }
 $(document).on('click', '.add-form-row', function(e){
   e.preventDefault();
-  cloneMore('.form-row:last', 'form');
-  return false;
+  var clade_select;
+  var isotype_select;
+  var form_number;
+  var addFormRow = function () {
+  	var new_form = $('.form-row-dummy').clone(true).removeClass().addClass('form-row').removeAttr('style');
+  	form_number = $('#id_form-TOTAL_FORMS').val(); // looks up total number of forms in management form
+	  // new_form.find('span').remove()
+	  clade_select = new_form.find('#clade-select-0');
+	  clade_select.attr({'name': 'form-' + form_number + '-clade', 'id': 'clade-select-' + form_number}).val('');
+
+	  isotype_select = new_form.find('#isotype-select-0')
+	  isotype_select.attr({'name': 'form-' + form_number + '-isotype', 'id': 'isotype-select-' + form_number}).val('');
+	  
+	  // new_form.append('<span class="glyphicon glyphicon-minus" aria-hidden="true"><button class="btn btn-danger remove-form-row"></button></span>')
+	  form_number++;
+	  $('#id_form-TOTAL_FORMS').val(form_number);
+	  $('.form-row:last').after(new_form)
+  }
+
+  $.when(addFormRow()).done( function() {
+  	clade_select.select2({width: "100%", allowClear: true, placeholder: "Select clade"});
+  	isotype_select.select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
+  });
+	
 });
+
 $(document).on('click', '.remove-form-row', function(e){
   e.preventDefault();
   deleteForm('form', $(this));
@@ -85,7 +101,7 @@ $(document).on('click', '.remove-form-row', function(e){
 			<div class='col-md-10 p-3'>
 
 				<div class='my-2'>
-					<select class='multiselect' name="form-reference-clade" id="reference-clade-select">
+					<select class='multiselect' name="form-0-clade" id="reference-clade-select">
 						{% for clade in form.clade.field.choices %}
 							{% if clade.1 == "Eukaryota (domain)" %}
 							<option value="{{ clade.0 }}" selected="selected">{{ clade.1 }}</option>
@@ -96,7 +112,7 @@ $(document).on('click', '.remove-form-row', function(e){
 					</select>
 				</div>
 				<div class='my-2'>
-					<select class='multiselect' name="form-reference-isotype" id="reference-isotype-select">
+					<select class='multiselect' name="form-0-isotype" id="reference-isotype-select">
 						<option value="All" selected="selected">All isotypes</option>
 						{% for isotype in form.isotype.field.choices %}
 						<option value="{{ isotype.0 }}">{{ isotype.0 }}</option>
@@ -109,10 +125,9 @@ $(document).on('click', '.remove-form-row', function(e){
 			</div>
 
 			<div class='col-md-10 p-3'>
-			{% else %}
-				<div class='form-row'>
+				<div class='form-row-dummy' style="display: none;">
 					<div class='my-2'>
-						<select class='multiselect' name="form-clade-{{ forloop.counter|minus1 }}" id="clade-select-{{ forloop.counter|minus1 }}">
+						<select class='multiselect' name="form-1-clade" id="clade-select-0">
 							<option></option>
 							{% for clade in form.clade.field.choices %}
 							{% if clade.1 == "Eukaryota (domain)" %}
@@ -124,7 +139,31 @@ $(document).on('click', '.remove-form-row', function(e){
 						</select>
 					</div>
 					<div class='my-2'>
-						<select class='multiselect' name="form-isotype-{{ forloop.counter|minus1 }}" id="isotype-select-{{ forloop.counter|minus1 }}">
+						<select class='multiselect' name="form-1-isotype" id="isotype-select-0">
+							<option value="All" selected="selected">All isotypes</option>
+							{% for isotype in form.isotype.field.choices %}
+							<option value="{{ isotype.0 }}">{{ isotype.0 }}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<span class="glyphicon glyphicon-minus" aria-hidden="true"><button class="btn btn-danger remove-form-row"></button></span>
+				</div>
+			{% else %}
+				<div class='form-row'>
+					<div class='my-2'>
+						<select class='multiselect' name="form-{{ forloop.counter }}-clade" id="clade-select-{{ forloop.counter|minus1 }}">
+							<option></option>
+							{% for clade in form.clade.field.choices %}
+							{% if clade.1 == "Eukaryota (domain)" %}
+							<option value="{{ clade.0 }}" selected="selected">{{ clade.1 }}</option>
+							{% else %}
+							<option value="{{ clade.0 }}">{{ clade.1 }}</option>
+							{% endif %}
+							{% endfor %}
+						</select>
+					</div>
+					<div class='my-2'>
+						<select class='multiselect' name="form-{{ forloop.counter }}-isotype" id="isotype-select-{{ forloop.counter|minus1 }}">
 							<option value="All" selected="selected">All isotypes</option>
 							{% for isotype in form.isotype.field.choices %}
 							<option value="{{ isotype.0 }}">{{ isotype.0 }}</option>

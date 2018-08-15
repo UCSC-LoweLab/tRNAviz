@@ -88,3 +88,6 @@ p.lead {
   margin: 0;
 }
 
+button.remove-form-row {
+  height: 50%;
+}

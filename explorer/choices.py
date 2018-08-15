@@ -1,4 +1,5 @@
 ISOTYPES = (
+  ('All', 'All'),
   ('Ala', 'Ala'),
   ('Arg', 'Arg'),
   ('Asn', 'Asn'),
