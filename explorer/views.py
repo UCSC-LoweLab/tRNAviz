@@ -350,7 +350,7 @@ def compare(request):
     print('formset is {}valid'.format('in' if formset.is_valid() else ''))
     for form in formset:
       print(form.cleaned_data)
-
+    plot_data = ''
     return render(request, 'explorer/compare.html', {
       'formset': formset,
       'plot_data': plot_data

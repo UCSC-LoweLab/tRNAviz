@@ -46,7 +46,7 @@ div.vertical-align {
 div.data-select-bar {
   background: #eeeeee;
 }
-div.plot-select-bar {
+div.reference-select-bar {
   background: #dddddd;
 }
 
@@ -90,4 +90,10 @@ p.lead {
 
 button.remove-form-row {
   height: 50%;
+}
+
+
+div.form-row {
+  margin: 0;
+  display: block;
 }

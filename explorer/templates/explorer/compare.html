@@ -41,8 +41,6 @@ function deleteForm(prefix, btn) {
       var id = $(this).attr('id').replace(old_number_regex, i + 1);
       // remove and rebind select2 to all fields
       $(this).select2("destroy");
-			// $(this).next().find('span.select2-selection').attr('aria-labelledby', select2_id)
-			// $(this).next().find('span.select2-selection__rendered').attr('id', select2_id)
       $(this).attr({'name': name, 'id': id, 'data-select2-id': id});
       var field = name.split('-').pop()
       $(this).select2({width: "100%", allowClear: true, placeholder: select2_placeholders[field]});
@@ -55,16 +53,14 @@ $(document).on('click', '.add-form-row', function(e){
   var isotype_select;
   var form_number;
   var addFormRow = function () {
-  	var new_form = $('.form-row-dummy').clone(true).removeClass().addClass('form-row').removeAttr('style');
+  	var new_form = $('.form-row-dummy').clone(true).removeClass().addClass('form-row').css('display', 'block');
   	form_number = $('#id_form-TOTAL_FORMS').val(); // looks up total number of forms in management form
-	  // new_form.find('span').remove()
+
 	  clade_select = new_form.find('#clade-select-0');
 	  clade_select.attr({'name': 'form-' + form_number + '-clade', 'id': 'clade-select-' + form_number}).val('');
-
 	  isotype_select = new_form.find('#isotype-select-0')
 	  isotype_select.attr({'name': 'form-' + form_number + '-isotype', 'id': 'isotype-select-' + form_number}).val('');
-	  
-	  // new_form.append('<span class="glyphicon glyphicon-minus" aria-hidden="true"><button class="btn btn-danger remove-form-row"></button></span>')
+
 	  form_number++;
 	  $('#id_form-TOTAL_FORMS').val(form_number);
 	  $('.form-row:last').after(new_form)
@@ -90,9 +86,9 @@ $(document).on('click', '.remove-form-row', function(e){
 <div class='p-3'>
 	<form id='data-select-form' action='' method="POST">
 		{% csrf_token %}
-		<div class='row vertical-align select-bar data-select-bar'>
+		<div class='row vertical-align select-bar reference-select-bar'>
 			<div class='col-md-2 p-3'>
-				<h4>Select Reference</h4>
+				<h4>Reference</h4>
 			</div>
 
 			{{ formset.management_form }}
@@ -120,12 +116,15 @@ $(document).on('click', '.remove-form-row', function(e){
 					</select>
 				</div>
 			</div>
+		</div>
+		<div class='row vertical-align select-bar data-select-bar'>
 			<div class='col-md-2 p-3'>
-				<h4>Select tRNAs</h4>
+				<h4>Selections</h4>
 			</div>
 
 			<div class='col-md-10 p-3'>
 				<div class='form-row-dummy' style="display: none;">
+					<hr class='col-md-10'>
 					<div class='my-2'>
 						<select class='multiselect' name="form-1-clade" id="clade-select-0">
 							<option></option>
@@ -146,10 +145,11 @@ $(document).on('click', '.remove-form-row', function(e){
 							{% endfor %}
 						</select>
 					</div>
-					<span class="glyphicon glyphicon-minus" aria-hidden="true"><button class="btn btn-danger remove-form-row"></button></span>
+					<button class="btn btn-sm btn-secondary switch-fasta-input">Switch to FASTA input</button>
+					<button class="btn btn-sm btn-danger remove-form-row">Delete row</button>
 				</div>
 			{% else %}
-				<div class='form-row'>
+				<div class='form-row' style='display: block;'>
 					<div class='my-2'>
 						<select class='multiselect' name="form-{{ forloop.counter }}-clade" id="clade-select-{{ forloop.counter|minus1 }}">
 							<option></option>
@@ -170,23 +170,24 @@ $(document).on('click', '.remove-form-row', function(e){
 							{% endfor %}
 						</select>
 					</div>
+					<button class="btn btn-sm btn-secondary switch-fasta-input">Switch to FASTA input</button>
 				</div>
 			{% endif %}
 			{% endfor %}
 
+				<hr class="col-md-10">
 				<div class='my-2'>
-					<div class="input-group-append">
-            <button class="btn btn-success add-form-row">Add row</button>
-          </div>
+          <button class="btn btn-success add-form-row">Add row</button>
+					<button class='btn btn-primary' type='submit'>Submit</button>
         </div>
 
       </div>
+
+
+
 		</div>
 				
-				<div class='my-2'>
-					<button class='btn btn-primary' type='submit'>Submit</button>
-				</div>
-		</div>
+				
 	</form>
 </div>
 {% endblock %}
