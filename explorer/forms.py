@@ -6,7 +6,7 @@ from . import choices
 CLADES = [(clade.taxid, '{} ({})'.format(clade.name, clade.rank)) for clade in models.Taxonomy.objects.all()]
 
 class CompareForm(forms.Form):
-  name = forms.CharField(max_length = 10, required = True)
+  name = forms.CharField(max_length = 10, required = False)
   input_fasta = forms.CharField(widget = forms.Textarea, required = False)
   clade = forms.ChoiceField(choices = CLADES, required = False)
   isotype = forms.ChoiceField(choices = choices.ISOTYPES, required = False)
@@ -14,12 +14,14 @@ class CompareForm(forms.Form):
   def is_valid(self):
     valid = super(CompareForm, self).is_valid()
     if not valid: return valid
-
+    print(self.cleaned_data)
     # validate clade
     try:
       clade = models.Taxonomy.objects.get(taxid = self.cleaned_data['clade'])
     except models.Taxonomy.DoesNotExist:
-      self.add_error('no_clade', 'Invalid clade - does not exist in database')
+      self.add_error('clade', 'Invalid clade - does not exist in database')
       return False
 
-CompareFormset = formset_factory(CompareForm, extra = 2)
+    return True
+
+CompareFormset = formset_factory(CompareForm, extra = 3)
