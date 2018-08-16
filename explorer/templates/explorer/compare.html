@@ -116,26 +116,34 @@ $(document).on('click', '.remove-form-row', function(e){
 				{% endif %}
 				{% if forloop.counter > 1 %}
 					<div class='my-2'>
-						<input class="form-control" type="text" name="form-{{ forloop.counter0 }}-name" id="name-input-{{ forloop.counter0 }}" placeholder="Group name">
+						<input class="form-control" type="text" name="form-{{ forloop.counter0 }}-name" id="name-input-{{ forloop.counter0 }}" placeholder="Group name" value="{{ form.name.value|default_if_none:'' }}">
 					</div>
 				{% endif %}
 					<div class='my-2 db-select'>
 						<select class='form-control multiselect' name="form-{{ forloop.counter0 }}-clade" id="clade-select-{{ forloop.counter0 }}">
-						{% for clade in form.clade.field.choices %}
 							<option></option>
-							{% if clade.1 == "Eukaryota (domain)" %}
+							{% for clade in form.clade.field.choices %}
+							{% if form.clade.value == None and forloop.parentloop.counter < 3 and clade.1 == "Eukaryota (domain)" %}
+							<option value="{{ clade.0 }}" selected="selected">{{ clade.1 }}</option>
+							{% elif form.clade.value == clade.0 %}
 							<option value="{{ clade.0 }}" selected="selected">{{ clade.1 }}</option>
 							{% else %}
 							<option value="{{ clade.0 }}">{{ clade.1 }}</option>
 							{% endif %}
-						{% endfor %}
+							{% endfor %}
 						</select>
 					</div>
 					<div class='my-2 db-select'>
 						<select class='form-control multiselect' name="form-{{ forloop.counter0 }}-isotype" id="isotype-select-{{ forloop.counter0 }}">
-							<option value="All" selected="selected">All isotypes</option>
+							<!-- <option value="All" selected="selected">All isotypes</option> -->
 							{% for isotype in form.isotype.field.choices %}
-							<option value="{{ isotype.0 }}">{{ isotype.0 }}</option>
+							{% if form.isotype.value == None and isotype.0 == 'All' %}
+							<option value="{{ isotype.0 }}" selected="selected">{{ isotype.1 }}</option>
+							{% elif form.isotype.value == isotype.0 %}
+							<option value="{{ isotype.0 }}" selected="selected">{{ isotype.1 }}</option>
+							{% else %}
+							<option value="{{ isotype.0 }}">{{ isotype.1 }}</option>
+							{% endif %}
 							{% endfor %}
 						</select>
 					</div>
@@ -143,7 +151,7 @@ $(document).on('click', '.remove-form-row', function(e){
 					{% if forloop.counter > 1 %}
 					<button class="btn btn-sm btn-secondary switch-fasta-input">Switch to FASTA input</button>
 					{% endif %}
-					{% if forloop.counter == 2 %}
+					{% if forloop.counter > 1 and forloop.counter != 3 %}
 					<button class="btn btn-sm btn-danger remove-form-row">Delete row</button>
 					{% endif %}
 
