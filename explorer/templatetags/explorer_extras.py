@@ -33,6 +33,11 @@ def foci_to_pretty_string(foci):
   return '\n'.join([', '.join(focus) for focus in foci])
 
 
-@register.filter('minus1')
-def minus1(number):
-  return number - 1
+@register.filter('minus2')
+def minus2(number):
+  return number - 2
+
+@register.filter('parity_to_div_class')
+def parity_to_div_class(number):
+  if number % 2 == 0: return 'select-bar-even'
+  else: return 'select-bar-odd'

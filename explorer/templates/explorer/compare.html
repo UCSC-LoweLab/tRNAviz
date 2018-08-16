@@ -13,8 +13,10 @@
 <script src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous'></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
-<script>	
+<script type='text/javascript'>
 $(document).ready(function() {
 	$('#clade-select-0').select2({width: "100%", allowClear: true, placeholder: "Select reference clade"});
 	$('#isotype-select-0').select2({width: "100%", allowClear: true, placeholder: "Select reference isotype"});
@@ -22,16 +24,69 @@ $(document).ready(function() {
 		$('#clade-select-' + i).select2({width: "100%", allowClear: true, placeholder: "Select clade"});
 		$('#isotype-select-' + i).select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
 	}
+	// Destroy bootstrap toggle for dummy, reinitialize when adding a new row
+	$('#id_form-1-use_fasta').bootstrapToggle('destroy');
+
+	// Switch toggled fields to FASTA
 })
-</script>
 
 
-<script type='text/javascript'>
+$(document).on('click', '.toggle', function(e) {
+	e.preventDefault();
+	
+  // Form watches for "checked" attribute in checkbox input but toggle machinery doesn't do this
+	var form_switch = $(this).find('input')[0];
+	if (form_switch.hasAttribute('checked')) $(form_switch).removeAttr('checked');
+	else $(form_switch).attr('checked', true);
+
+	// Replace fasta / select
+	var db_selects = $(this).closest('.form-row').find('.db-select');
+	var fasta_input = $(this).closest('.form-row').find('.fasta-input');
+	if (form_switch.hasAttribute('checked')) {
+		db_selects.css('display', 'none');
+		fasta_input.css('display', 'block');
+	}
+	else {
+		db_selects.css('display', 'block');
+		fasta_input.css('display', 'none');
+	}
+});
+
+
+$(document).on('click', '.add-form-row', function(e){
+  e.preventDefault();
+  var clade_select, isotype_select, fasta_input, use_fasta_toggle;
+
+  var addFormRow = function () {
+  	var new_form = $('.form-row-dummy').clone(true).removeClass().addClass('form-row').css('display', 'block');
+  	var form_index = $('#id_form-TOTAL_FORMS').val();
+  	name_input = new_form.find('#name-input-1');
+  	name_input.attr({'name': 'form-' + form_index + '-name', 'id': 'name-input-' + form_index}).val('');
+	  clade_select = new_form.find('#clade-select-1');
+	  clade_select.attr({'name': 'form-' + form_index + '-clade', 'id': 'clade-select-' + form_index}).val('');
+	  isotype_select = new_form.find('#isotype-select-1');
+	  isotype_select.attr({'name': 'form-' + form_index + '-isotype', 'id': 'isotype-select-' + form_index}).val('');
+	  fasta_input = new_form.find('#fasta-input-1')
+	  fasta_input.attr({'name': 'form-' + form_index + '-fasta', 'id': 'fasta-input-' + form_index}).val('');
+	  use_fasta_toggle = new_form.find('#id_form-1-use_fasta');
+	  use_fasta_toggle.attr({'name': 'form-' + form_index + '-use_fasta', 'id': 'id_form-' + form_index + '-use_fasta'}).val('');
+	  $('#id_form-TOTAL_FORMS').val(++form_index);
+	  $('.form-row:last').after(new_form)
+  }
+
+  $.when(addFormRow()).done( function() {
+  	clade_select.select2({width: "100%", allowClear: true, placeholder: "Select clade"});
+  	isotype_select.select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
+  	use_fasta_toggle.bootstrapToggle();
+  });
+});
+
 var select2_placeholders = {'name': 'Group name (required)', 'clade': 'Select clade', 'isotype': 'Select isotype', 'fasta': 'Paste sequence in FASTA format (sequence characters in [AGCUT] only)'}
-function deleteForm(btn) {
+
+$(document).on('click', '.remove-form-row', function(e){
+  e.preventDefault();
   var form_number = parseInt($('#id_form-TOTAL_FORMS').val());
-  
-  btn.closest('.form-row').remove();
+  $(this).closest('.form-row').remove();
   $('#id_form-TOTAL_FORMS').val(--form_number);
   // loop through all forms and update field numbering
   for (var i = 1, form_index = 3, form_rows = $('.form-row'); i < form_rows.length; i++, form_index++) {
@@ -42,6 +97,7 @@ function deleteForm(btn) {
       var id = $(this).attr('id').replace(old_number_regex, form_index);
       $(this).attr({'name': name, 'id': id});
       if ($(this).attr('type') == "text") return true;
+
       // remove and rebind select2 for select fields
       $(this).select2("destroy");
       $(this).attr('data-select2-id', id);
@@ -49,37 +105,6 @@ function deleteForm(btn) {
       $(this).select2({width: "100%", allowClear: true, placeholder: select2_placeholders[field]});
     });
   }
-}
-$(document).on('click', '.add-form-row', function(e){
-  e.preventDefault();
-  var clade_select;
-  var isotype_select;
-
-  var addFormRow = function () {
-  	var new_form = $('.form-row-dummy').clone(true).removeClass().addClass('form-row').css('display', 'block');
-  	var form_index = $('#id_form-TOTAL_FORMS').val();
-  	name_input = new_form.find('#name-input-1');
-  	name_input.attr({'name': 'form-' + form_index + '-name', 'id': 'name-input-' + form_index}).val('');
-	  clade_select = new_form.find('#clade-select-1');
-	  clade_select.attr({'name': 'form-' + form_index + '-clade', 'id': 'clade-select-' + form_index}).val('');
-	  isotype_select = new_form.find('#isotype-select-1')
-	  isotype_select.attr({'name': 'form-' + form_index + '-isotype', 'id': 'isotype-select-' + form_index}).val('');
-
-	  $('#id_form-TOTAL_FORMS').val(++form_index);
-	  $('.form-row:last').after(new_form)
-  }
-
-  $.when(addFormRow()).done( function() {
-  	clade_select.select2({width: "100%", allowClear: true, placeholder: "Select clade"});
-  	isotype_select.select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
-  });
-	
-});
-
-$(document).on('click', '.remove-form-row', function(e){
-  e.preventDefault();
-  deleteForm($(this));
-  return false;
 });
 </script>
 {% endblock %}
@@ -110,17 +135,19 @@ $(document).on('click', '.remove-form-row', function(e){
 				<div>
 				{% elif forloop.counter == 2 %}
 				<div class='form-row-dummy' style="display: none;">
-					<hr class="col-md-10">
 				{% elif forloop.counter > 2 %}
 				<div class='form-row' style='display: block;'>
 				{% endif %}
+				{% if forloop.counter == 2 or forloop.counter > 3 %}
+					<hr class="col-md-10">
+				{% endif %}
 				{% if forloop.counter > 1 %}
 					<div class='my-2'>
-						<input class="form-control" type="text" name="form-{{ forloop.counter0 }}-name" id="name-input-{{ forloop.counter0 }}" placeholder="Group name" value="{{ form.name.value|default_if_none:'' }}">
+						<input class="form-control name-input" type="text" name="form-{{ forloop.counter0 }}-name" id="name-input-{{ forloop.counter0 }}" placeholder="Group name" value="{{ form.name.value|default_if_none:'' }}">
 					</div>
 				{% endif %}
-					<div class='my-2 db-select'>
-						<select class='form-control multiselect' name="form-{{ forloop.counter0 }}-clade" id="clade-select-{{ forloop.counter0 }}">
+					<div class='my-2 db-select' style="display: {{ form.use_fasta.value|yesno:'none,block' }};">
+						<select class='form-control multiselect clade-select' name="form-{{ forloop.counter0 }}-clade" id="clade-select-{{ forloop.counter0 }}">
 							<option></option>
 							{% for clade in form.clade.field.choices %}
 							{% if form.clade.value == None and forloop.parentloop.counter < 3 and clade.1 == "Eukaryota (domain)" %}
@@ -133,8 +160,8 @@ $(document).on('click', '.remove-form-row', function(e){
 							{% endfor %}
 						</select>
 					</div>
-					<div class='my-2 db-select'>
-						<select class='form-control multiselect' name="form-{{ forloop.counter0 }}-isotype" id="isotype-select-{{ forloop.counter0 }}">
+					<div class='my-2 db-select'  style="display: {{ form.use_fasta.value|yesno:'none,block' }};">
+						<select class='form-control multiselect isotype-select' name="form-{{ forloop.counter0 }}-isotype" id="isotype-select-{{ forloop.counter0 }}">
 							<!-- <option value="All" selected="selected">All isotypes</option> -->
 							{% for isotype in form.isotype.field.choices %}
 							{% if form.isotype.value == None and isotype.0 == 'All' %}
@@ -147,9 +174,11 @@ $(document).on('click', '.remove-form-row', function(e){
 							{% endfor %}
 						</select>
 					</div>
-
 					{% if forloop.counter > 1 %}
-					<button class="btn btn-sm btn-secondary switch-fasta-input">Switch to FASTA input</button>
+					<div class='my-2 fasta-input' style="display: {{ form.use_fasta.value|yesno:'block,none' }};">
+						<textarea class="form-control fasta-input" name="form-{{ forloop.counter0 }}-fasta" id="fasta-input-{{ forloop.counter0 }}" placeholder="Paste tRNAs in FASTA format">{{ form.fasta.value|default_if_none:"" }}</textarea>
+					</div>
+					{{ form.use_fasta }}
 					{% endif %}
 					{% if forloop.counter > 1 and forloop.counter != 3 %}
 					<button class="btn btn-sm btn-danger remove-form-row">Delete row</button>

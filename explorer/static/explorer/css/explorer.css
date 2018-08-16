@@ -97,3 +97,11 @@ div.form-row {
   margin: 0;
   display: block;
 }
+
+textarea.fasta-input {
+  height: 64px;
+}
+
+span.btn-default {
+  background: #ffffff;
+}
