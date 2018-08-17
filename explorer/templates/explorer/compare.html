@@ -19,10 +19,10 @@
 <script type='text/javascript'>
 $(document).ready(function() {
 	$('#clade-select-0').select2({width: "100%", allowClear: true, placeholder: "Select reference clade"});
-	$('#isotype-select-0').select2({width: "100%", allowClear: true, placeholder: "Select reference isotype"});
+	$('#id_form-0-isotype').select2({width: "100%", allowClear: true, placeholder: "Select reference isotype"});
 	for (var i = 2, form_rows = $('.form-row'); i < form_rows.length + 2; i++) {
 		$('#clade-select-' + i).select2({width: "100%", allowClear: true, placeholder: "Select clade"});
-		$('#isotype-select-' + i).select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
+		$('#id_form-' + i + '-isotype').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
 	}
 	// Destroy bootstrap toggle for dummy, reinitialize when adding a new row
 	$('#id_form-1-use_fasta').bootstrapToggle('destroy');
@@ -60,14 +60,14 @@ $(document).on('click', '.add-form-row', function(e){
   var addFormRow = function () {
   	var new_form = $('.form-row-dummy').clone(true).removeClass().addClass('form-row').css('display', 'block');
   	var form_index = $('#id_form-TOTAL_FORMS').val();
-  	name_input = new_form.find('#name-input-1');
-  	name_input.attr({'name': 'form-' + form_index + '-name', 'id': 'name-input-' + form_index}).val('');
+  	name_input = new_form.find('#id_form-1-name');
+  	name_input.attr({'name': 'form-' + form_index + '-name', 'id': 'id_form-' + form_index + '-name'}).val('');
 	  clade_select = new_form.find('#clade-select-1');
 	  clade_select.attr({'name': 'form-' + form_index + '-clade', 'id': 'clade-select-' + form_index}).val('');
-	  isotype_select = new_form.find('#isotype-select-1');
-	  isotype_select.attr({'name': 'form-' + form_index + '-isotype', 'id': 'isotype-select-' + form_index}).val('');
-	  fasta_input = new_form.find('#fasta-input-1')
-	  fasta_input.attr({'name': 'form-' + form_index + '-fasta', 'id': 'fasta-input-' + form_index}).val('');
+	  isotype_select = new_form.find('#id_form-1-isotype');
+	  isotype_select.attr({'name': 'form-' + form_index + '-isotype', 'id': 'id_form-' + form_index + '-isotype'}).val('');
+	  fasta_input = new_form.find('#id_form-1-fasta')
+	  fasta_input.attr({'name': 'form-' + form_index + '-fasta', 'id': 'id_form-' + form_index + '-fasta'}).val('');
 	  use_fasta_toggle = new_form.find('#id_form-1-use_fasta');
 	  use_fasta_toggle.attr({'name': 'form-' + form_index + '-use_fasta', 'id': 'id_form-' + form_index + '-use_fasta'}).val('');
 	  $('#id_form-TOTAL_FORMS').val(++form_index);
@@ -96,7 +96,7 @@ $(document).on('click', '.remove-form-row', function(e){
       var name = $(this).attr('name').replace(old_number_regex, form_index);
       var id = $(this).attr('id').replace(old_number_regex, form_index);
       $(this).attr({'name': name, 'id': id});
-      if ($(this).attr('type') == "text") return true;
+      if ($(this).prop('tagName') != "SELECT") return true;
 
       // remove and rebind select2 for select fields
       $(this).select2("destroy");
@@ -143,7 +143,7 @@ $(document).on('click', '.remove-form-row', function(e){
 				{% endif %}
 				{% if forloop.counter > 1 %}
 					<div class='my-2'>
-						<input class="form-control name-input" type="text" name="form-{{ forloop.counter0 }}-name" id="name-input-{{ forloop.counter0 }}" placeholder="Group name" value="{{ form.name.value|default_if_none:'' }}">
+						{{ form.name }}
 					</div>
 				{% endif %}
 					<div class='my-2 db-select' style="display: {{ form.use_fasta.value|yesno:'none,block' }};">
@@ -161,22 +161,11 @@ $(document).on('click', '.remove-form-row', function(e){
 						</select>
 					</div>
 					<div class='my-2 db-select'  style="display: {{ form.use_fasta.value|yesno:'none,block' }};">
-						<select class='form-control multiselect isotype-select' name="form-{{ forloop.counter0 }}-isotype" id="isotype-select-{{ forloop.counter0 }}">
-							<!-- <option value="All" selected="selected">All isotypes</option> -->
-							{% for isotype in form.isotype.field.choices %}
-							{% if form.isotype.value == None and isotype.0 == 'All' %}
-							<option value="{{ isotype.0 }}" selected="selected">{{ isotype.1 }}</option>
-							{% elif form.isotype.value == isotype.0 %}
-							<option value="{{ isotype.0 }}" selected="selected">{{ isotype.1 }}</option>
-							{% else %}
-							<option value="{{ isotype.0 }}">{{ isotype.1 }}</option>
-							{% endif %}
-							{% endfor %}
-						</select>
+						{{ form.isotype }}
 					</div>
 					{% if forloop.counter > 1 %}
 					<div class='my-2 fasta-input' style="display: {{ form.use_fasta.value|yesno:'block,none' }};">
-						<textarea class="form-control fasta-input" name="form-{{ forloop.counter0 }}-fasta" id="fasta-input-{{ forloop.counter0 }}" placeholder="Paste tRNAs in FASTA format">{{ form.fasta.value|default_if_none:"" }}</textarea>
+						{{ form.fasta }}
 					</div>
 					{{ form.use_fasta }}
 					{% endif %}
