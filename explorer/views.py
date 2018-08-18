@@ -1,20 +1,26 @@
-from django.shortcuts import render
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
 from django.db.models import Count, Max, Q
 from django.core import serializers
-from rest_framework.renderers import JSONRenderer
-from collections import defaultdict
 from django.http import JsonResponse
+from django.core.files import File
+
+import os
+import sys
+import re
 import json
+from collections import defaultdict
+import pandas as pd
+from tempfile import NamedTemporaryFile
+from Bio import SeqIO
+import subprocess
 
 from django_pandas.io import read_frame
-import pandas as pd
-from itertools import product
 
+from django.conf import settings
 from . import models
 from . import serializers
 from . import forms
-
+from . import compare
 
 SINGLE_POSITIONS = [
   '8', '9',
@@ -345,25 +351,193 @@ def species_distribution(request, clade_txids, foci):
   return JsonResponse(json.dumps(plot_data), safe = False)
 
 def compare(request):
-  if request.method == 'POST':
-    formset = forms.CompareFormset(request.POST)
-    if not formset.is_valid():
-      print(formset.errors)
-    for form in formset:
-      print(form.cleaned_data)
-    plot_data = ''
-    return render(request, 'explorer/compare.html', {
-      'formset': formset
-      # 'plot_data': plot_data
-    })
-  else:
+  if request.method != 'POST':
     return render(request, 'explorer/compare.html', {
       'formset': forms.CompareFormset()
     })
+
+  formset = forms.CompareFormset(request.POST)
+  if not formset.is_valid():
+    print(formset.errors)
+
+  # with NamedTemporaryFile() as fasta:
+  #   f.write(formset)
+
+  # read in tRNA fasta file 
+  seqs = []
+  seq_file_handle = open(settings.ENGINE_DIR + 'tRNAs.fa')
+  for seq in SeqIO.parse(seq_file_handle, 'fasta'):
+    seqs.append(seq)
+  seq_file_handle.close()
+
+  trna_fasta_files = []
+  for i, form in enumerate(formset):
+    data = form.cleaned_data
+    print('Form {} with dict {}'.format(i, data))
+
+    # Skip dummy form row
+    if i == 1: continue 
+    
+    # Prepare tRNAs for writing to file
+    trna_fasta_fh = NamedTemporaryFile('w')
+    trna_seqs = []
+
+    # For selects, query db
+    if 'use_fasta' not in data or not data['use_fasta']:
+      clade_qs = models.Taxonomy.objects.filter(taxid = data['clade']).values()[0]
+      rank, name = clade_qs['rank'] if clade_qs['rank'] != 'class' else 'taxclass', clade_qs['name']
+      trna_qs = models.tRNA.objects.filter(Q(**{rank: name})).values('seqname')
+      if data['isotype'] != 'All':
+        trna_qs = trna_qs.filter(isotype = data['isotype'])
+      seqnames = [d['seqname'] for d in trna_qs]
+      for seq in seqs:
+        if seq.description in seqnames: trna_seqs.append(seq)
+
+      # make sure that there are enough seqs to build a CM with
+      if i == 0 and len(trna_qs) < 5:
+        raise ValidationError('Not enough sequences in database for reference category. Query a broader set.')
+
+      SeqIO.write(trna_seqs, trna_fasta_fh, 'fasta')
+    # otherwise write input directly into file
+    else:
+      trna_fasta_fh.write(data['fasta'])
+
+    trna_fasta_files.append(trna_fasta_fh)
+
+  # Build CM for reference
+  ref_fasta = trna_fasta_files[0].name
+  ref_align_fh = NamedTemporaryFile()
+  num_model = '{}/euk-num.cm'.format(settings.ENGINE_DIR)
+  cmd_cmalign = 'cmalign -g --notrunc --matchonly -o {} {} {} > /dev/null'.format(ref_align_fh.name, num_model, ref_fasta)
+  subprocess.call(cmd_cmalign, shell = True)
+  ref_model_fh = NamedTemporaryFile()
+  cmd_cmbuild = 'cmbuild --hand --enone -F {} {} > /dev/null'.format(ref_model_fh.name, ref_align_fh.name)
+  subprocess.call(cmd_cmbuild, shell = True)
+  subprocess.call('cp {} {}-persist'.format(ref_model_fh.name, ref_model_fh.name), shell = True)
+  subprocess.call('cp {} {}-persist'.format(ref_align_fh.name, ref_align_fh.name), shell = True)
+
+  # Remove introns from all tRNAs (except reference)
+  for trna_fasta_fh in trna_files[1:]:
+
+    num_model_align_fh = NamedTemporaryFile('rw')
+    processed_fasta_fh = NamedTemporaryFile('rw')
+    parsetree_fh = NamedTemporaryFile('rw')
+
+    # First, align to numbering model
+    cmd_cmalign = 'cmalign -g --notrunc --matchonly -o {} {} {} > /dev/null'.format(num_model_align_fh.name, num_model, trna_fasta_fh.name)
+    subprocess.call(cmd_cmalign, shell = True)
+
+    # rewrite tRNAs to new file and realign to reference model
+    for line in num_model_align_fh:
+      if line[0] in ['#', '/', '\n']: continue
+      seqname, seq = line.strip().split()
+      seq = seq.replace('-', '')
+      processed_fasta_fh.write('>{}\n{}\n'.format(seqname, seq))
+    cmd_cmalign = 'cmalign -g --notrunc --matchonly --tfile {} -o /dev/null {} {} > /dev/null'.format(parsetree_fh.name, ref_model_fh.name, processed_fasta_fh.name)
+
+    # parse parsetree output
+    bits = parse_parsetree(parsetree_fh)
+
+  # Get consensus and modals for reference
+
+
+  return render(request, 'explorer/compare.html', {
+    'formset': formset
+    # 'plot_data': plot_data
+  })
+
+
+
+def parse_parsetree(parsetree_fh):
+  positions = {4: '73', 5: '1:72', 6: '2:71', 7: '3:70', 8: '4:69', 9: '5:68', 10: '6:67', 11: '7:66', 12: '8', 13: '9', 18: '10:25', 19: '11:24', 20: '12:23', 21: '13:22', 22: '14', 23: '15', 24: '16', 25: '17', 26: '17a', 27: '18', 28: '19', 29: '20', 30: '20a', 31: '20b', 32: '21', 35: '26', 36: '27:43', 37: '28:42', 38: '29:41', 39: '30:40', 40: '31:39', 41: '32', 42: '33', 43: '34', 44: '35', 45: '36', 46: '37', 47: '38', 50: '44', 51: '45', 54: 'V11:V21', 55: 'V12:V22', 56: 'V13:V23', 57: 'V14:V24', 58: 'V15:V25', 59: 'V16:V26', 60: 'V17:V27', 61: 'V1', 62: 'V2', 63: 'V3', 64: 'V4', 65: 'V5', 68: '46', 69: '47', 70: '48', 71: '49:65', 72: '50:64', 73: '51:63', 74: '52:62', 75: '53:61', 76: '54', 77: '55', 78: '56', 79: '57', 80: '58', 81: '59', 82: '60'}
+  skip_positions = [0, 1, 2, 3, 14, 15, 16, 17, 33, 34, 48, 49, 52, 53, 66, 67]
+  terminal_position = 83
+
+  # load parsetrees into memory
+  parsetrees = {}
+  scores = {}
+  identities = {}
+  doneParsingHeader = False
+  for line in parsetree_fh:
+    if line[0] == '>':
+      seqname = line.strip()[1:]
+      continue
+    elif line[0:2] == '//':
+      parsetrees[seqname] = (identities, scores)
+      # reset everything that might have changed
+      positions = {4: '73', 5: '1:72', 6: '2:71', 7: '3:70', 8: '4:69', 9: '5:68', 10: '6:67', 11: '7:66', 12: '8', 13: '9', 18: '10:25', 19: '11:24', 20: '12:23', 21: '13:22', 22: '14', 23: '15', 24: '16', 25: '17', 26: '17a', 27: '18', 28: '19', 29: '20', 30: '20a', 31: '20b', 32: '21', 35: '26', 36: '27:43', 37: '28:42', 38: '29:41', 39: '30:40', 40: '31:39', 41: '32', 42: '33', 43: '34', 44: '35', 45: '36', 46: '37', 47: '38', 50: '44', 51: '45', 54: 'V11:V21', 55: 'V12:V22', 56: 'V13:V23', 57: 'V14:V24', 58: 'V15:V25', 59: 'V16:V26', 60: 'V17:V27', 61: 'V1', 62: 'V2', 63: 'V3', 64: 'V4', 65: 'V5', 68: '46', 69: '47', 70: '48', 71: '49:65', 72: '50:64', 73: '51:63', 74: '52:62', 75: '53:61', 76: '54', 77: '55', 78: '56', 79: '57', 80: '58', 81: '59', 82: '60'}
+      skip_positions = [0, 1, 2, 3, 14, 15, 16, 17, 33, 34, 48, 49, 52, 53, 66, 67]
+      terminal_position = 83
+      scores = {}
+      identities = {}
+      doneParsingHeader = False
+      continue
+    elif line[0:3] == '---':
+      continue
+
+    cols = line.strip().split()
+    if len(cols) > 0 and cols[0] == '0':
+      doneParsingHeader = True
+      tsc = float(cols[8])
+      continue
+    if not doneParsingHeader:
+      continue
+
+    # parse row. columns: rowid, emitl, emitr, state, mode, nxtl, nxtr, prv, tsc, esc
+    rowid = int(cols[0])
+    emitl = cols[1]
+    emitr = cols[2]
+    state = cols[3]
+    prev_tsc = tsc
+    tsc = float(cols[8])
+    esc = float(cols[9])
+
+    # exit on terminal node
+    if rowid >= terminal_position:
+      continue
+
+    # skip special node rows
+    if rowid in skip_positions:
+      tsc = float(cols[8])
+      continue
+
+    # add standard match positions to scores dict
+    if state[-2:] in ["MR", "ML", "MP"]:
+      scores[positions[rowid]] = prev_tsc + esc
+      if state[-2:] == "MR": identities[positions[rowid]] = re.findall('[A-Z]', emitr)[0]
+      if state[-2:] == "ML": identities[positions[rowid]] = re.findall('[A-Z]', emitl)[0]
+      if state[-2:] == "MP": identities[positions[rowid]] = '{}:{}'.format(re.findall('[A-Z]', emitl)[0], re.findall('[A-Z]', emitr)[0])
+
+    # for deletions, don't add the esc value
+    if state[-1] == "D":
+      scores[positions[rowid]] = prev_tsc
+      identities[positions[rowid]] = '-'
+      if ':' in positions[rowid]: identities[positions[rowid]] = '-:-'
+      
+    # for insertions, increment remaining positions by 1 and skip
+    if state[-2:] in ["IL", "IR"]:
+      terminal_position += 1
+      for position in sorted(positions, reverse = True):
+        if position < rowid: break
+        positions[position + 1] = positions.pop(position)
+
+      for i, position in reversed(list(enumerate(sorted(skip_positions)))):
+        if position < rowid: break
+        skip_positions[i] += 1
   
-
-# def render_bitchart(request):
-#   if request.method != "POST":
-#     return compare(request)
-
-#   return render(request, 'explorer/render-bitchart.html')
+  bits = []
+  for seqname in parsetrees.keys():
+    identities, scores = parsetrees[seqname]
+    for position in sorted(scores):
+      if len(parsetrees) == 1:
+        bits.append({
+          'seqname': 'seq',
+          'position': position,
+          'score' = round(scores[position], 2),
+          'feature' = identities[position]})
+      else:
+        bits.append({
+          'seqname': seqname,
+          'position': position,
+          'score' = round(scores[position], 2),
+          'feature' = identities[position]})
