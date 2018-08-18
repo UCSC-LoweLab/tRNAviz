@@ -1,11 +1,8 @@
 from django.shortcuts import render, redirect
-from django.db.models import Count, Max, Q
+from django.db.models import Q
 from django.core import serializers
 from django.http import JsonResponse
-from django.core.files import File
 
-import os
-import sys
 import re
 import json
 from collections import defaultdict
@@ -20,7 +17,6 @@ from django.conf import settings
 from . import models
 from . import serializers
 from . import forms
-from . import compare
 
 SINGLE_POSITIONS = [
   '8', '9',
@@ -360,9 +356,6 @@ def compare(request):
   if not formset.is_valid():
     print(formset.errors)
 
-  # with NamedTemporaryFile() as fasta:
-  #   f.write(formset)
-
   # read in tRNA fasta file 
   seqs = []
   seq_file_handle = open(settings.ENGINE_DIR + 'tRNAs.fa')
@@ -404,7 +397,7 @@ def compare(request):
 
     trna_fasta_files.append(trna_fasta_fh)
 
-  # Build CM for reference
+  # Build reference CM model
   ref_fasta = trna_fasta_files[0].name
   ref_align_fh = NamedTemporaryFile()
   num_model = '{}/euk-num.cm'.format(settings.ENGINE_DIR)
@@ -413,36 +406,75 @@ def compare(request):
   ref_model_fh = NamedTemporaryFile()
   cmd_cmbuild = 'cmbuild --hand --enone -F {} {} > /dev/null'.format(ref_model_fh.name, ref_align_fh.name)
   subprocess.call(cmd_cmbuild, shell = True)
-  subprocess.call('cp {} {}-persist'.format(ref_model_fh.name, ref_model_fh.name), shell = True)
-  subprocess.call('cp {} {}-persist'.format(ref_align_fh.name, ref_align_fh.name), shell = True)
+  # subprocess.call('cp {} {}-persist'.format(ref_model_fh.name, ref_model_fh.name), shell = True)
+  # subprocess.call('cp {} {}-persist'.format(ref_align_fh.name, ref_align_fh.name), shell = True)
 
-  # Remove introns from all tRNAs (except reference)
+  # Align tRNAs to reference model and collect raw bit scores
+  bits = []
   for trna_fasta_fh in trna_files[1:]:
 
     num_model_align_fh = NamedTemporaryFile('rw')
     processed_fasta_fh = NamedTemporaryFile('rw')
     parsetree_fh = NamedTemporaryFile('rw')
 
-    # First, align to numbering model
+    # Remove introns from all tRNAs (except reference). First, align to numbering model to purge insertions
     cmd_cmalign = 'cmalign -g --notrunc --matchonly -o {} {} {} > /dev/null'.format(num_model_align_fh.name, num_model, trna_fasta_fh.name)
     subprocess.call(cmd_cmalign, shell = True)
 
-    # rewrite tRNAs to new file and realign to reference model
+    # remove introns using alignment and rewrite tRNAs to new file
     for line in num_model_align_fh:
       if line[0] in ['#', '/', '\n']: continue
       seqname, seq = line.strip().split()
       seq = seq.replace('-', '')
       processed_fasta_fh.write('>{}\n{}\n'.format(seqname, seq))
-    cmd_cmalign = 'cmalign -g --notrunc --matchonly --tfile {} -o /dev/null {} {} > /dev/null'.format(parsetree_fh.name, ref_model_fh.name, processed_fasta_fh.name)
 
-    # parse parsetree output
-    bits = parse_parsetree(parsetree_fh)
+    # realign to reference model and parse parsetree output
+    cmd_cmalign = 'cmalign -g --notrunc --matchonly --tfile {} -o /dev/null {} {} > /dev/null'.format(parsetree_fh.name, ref_model_fh.name, processed_fasta_fh.name)
+    bits.append(parse_parsetree(parsetree_fh))
+
+  # Normalize bit scores. To do this, we generate a consensus sequence and align it to the model.
+  # Generate consensus sequence. First, build a consensus model with gaps.
+  cons_model_fh = NamedTemporaryFile()
+  cons_align_fh = NamedTemporaryFile()
+  cons_fasta_fh = NamedTemporaryFile()
+  cons_parsetree_fh = NamedTemporaryFile()
+  cmd_cmemit = 'cmemit --exp 5 -N 1000 -a {} > {}'.format(ref_model_fh.name, cons_align_fh.name)
+  cmd_cmbuild = 'cmbuild --enone -F {} {} > /dev/null'.format(cons_model_fh.name, cons_align_fh.name)
+  # Then emit a consensus sequence, format, align to reference model, and get normalizing bits
+  cmd_cmemit = 'cmemit -c {} | perl -npe "if(/^[acguACGU]/){s/uc($1)/[agcu]/g}" > {}'.format(cons_model_fh.name, cons_fasta_fh.name)
+  subprocess.call(cmd_cmemit, shell = True)
+  cmd_cmalign = 'cmalign -g --notrunc --matchonly --tfile {} -o /dev/null {} {} > /dev/null'.format(cons_parsetree_fh.name, ref_model_fh.name, cons_fasta_fh.name)
+  subprocess.call(cmd_cmalign, shell = True)
+  ref_bits = parse_parsetree(cons_parsetree_fh)
+
+  # Compile into pandas df and summarize each position by average score
+  bits = pd.DataFrame(bits).append(ref_bits)
 
   # Get consensus and modals for reference
+  ref_taxid = formset[0].cleaned_data['clade']
+  ref_isotype = formset[0].cleaned_data['isotype']
+  ref_cons_qs = models.Consensus.objects.filter(taxid = ref_taxid, isotype = ref_isotype).values()
+  ref_cons = read_frame(ref_cons_qs).drop('id', axis = 1).set_index(['taxid', 'isotype']).stack().reset_index()
+  ref_cons.columns = ['taxid', 'isotype', 'position', 'feature']
+  ref_cons.position = ref_cons.position.apply(lambda x: x[1:].replace('_', ':'))
 
+  freqs_qs = models.Freq.objects.filter(taxid = ref_taxid, isotype = ref_isotype).values()
+  ref_freqs = read_frame(freqs_qs).drop('id', axis = 1)
+  ref_freqs['mode'] = ref_freqs.drop(['taxid', 'isotype', 'position', 'total'], axis = 1).max(axis = 1)
+  ref_freqs['feature'] = ref_freqs.drop(['taxid', 'isotype', 'position', 'total', 'mode'], axis = 1).idxmax(axis = 1)
+  ref_freqs = ref_freqs[['isotype', 'position', 'feature', 'mode', 'total']]
+
+  # Normalize by subtracting, and purge identical features
+  # bits = bits.leftjoin
+
+        # 'seqname': seqname,
+        # 'position': position,
+        # 'score' = round(scores[position], 2),
+        # 'feature' = identities[position]})
 
   return render(request, 'explorer/compare.html', {
     'formset': formset
+    # 'coords': coords,
     # 'plot_data': plot_data
   })
 
@@ -529,15 +561,11 @@ def parse_parsetree(parsetree_fh):
   for seqname in parsetrees.keys():
     identities, scores = parsetrees[seqname]
     for position in sorted(scores):
-      if len(parsetrees) == 1:
-        bits.append({
-          'seqname': 'seq',
-          'position': position,
-          'score' = round(scores[position], 2),
-          'feature' = identities[position]})
-      else:
-        bits.append({
-          'seqname': seqname,
-          'position': position,
-          'score' = round(scores[position], 2),
-          'feature' = identities[position]})
+      bits.append({
+        'seqname': seqname,
+        'position': position,
+        'score' = round(scores[position], 2),
+        'feature' = identities[position]})
+
+  return bits
+
