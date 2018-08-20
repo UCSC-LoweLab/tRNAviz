@@ -1,4 +1,4 @@
-from django.urls import path, register_converter
+from django.urls import path, re_path
 from django.shortcuts import redirect, reverse
 from . import views
 
@@ -22,5 +22,5 @@ urlpatterns = [
   path('api/species/<str:clade_txids>/<str:foci>/', views.species_distribution, name = 'species_distribution'),
 
   path('compare/', views.compare, name = 'compare'),
-  # path('compare/render', views.render_bitchart, name = 'render'),
+  re_path('api/render/(.*)', views.render_bitchart, name = 'render'),
 ]

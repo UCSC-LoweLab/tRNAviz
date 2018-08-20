@@ -137,3 +137,7 @@ DEBUG_TOOLBAR_CONFIG = {
 # For import export
 IMPORT_EXPORT_USE_TRANSACTIONS = True
 STATIC_ROOT = "/projects/lowelab/users/blin/tRNAviz/static/"
+
+# Media files
+MEDIA_ROOT = "/projects/lowelab/users/blin/tRNAviz/media/"
+MEDIA_URL = "/media/"

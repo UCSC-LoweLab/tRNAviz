@@ -26,8 +26,6 @@ $(document).ready(function() {
 	}
 	// Destroy bootstrap toggle for dummy, reinitialize when adding a new row
 	$('#id_form-1-use_fasta').bootstrapToggle('destroy');
-
-	// Switch toggled fields to FASTA
 })
 
 
@@ -109,6 +107,20 @@ $(document).on('click', '.remove-form-row', function(e){
 </script>
 {% endblock %}
 
+{% block plotjs %}
+<script src='https://d3js.org/d3.v4.min.js'></script>
+<script src="{% static 'explorer/js/compare.js' %}"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+	if ('{{ valid_form }}' == 'True') {
+		console.log('run d3 on {{ formset_json }}');
+		d3.json('{% url "explorer:render" formset_json %}', draw_bitchart);
+		
+	}
+})
+
+</script>
+{% endblock %}
 
 {% block filter %}
 <div class='p-3'>
@@ -172,6 +184,14 @@ $(document).on('click', '.remove-form-row', function(e){
 					{% if forloop.counter > 1 and forloop.counter != 3 %}
 					<button class="btn btn-sm btn-danger remove-form-row">Delete row</button>
 					{% endif %}
+					<!-- prevent form from returning None because of lack of fields -->
+					{% if forloop.counter == 1 %}
+					<div class='my-2 fasta-input' style="display: none">
+						{{ form.fasta }}
+						{{ form.name }}
+						{{ form.use_fasta }}
+					</div>
+					{% endif %}
 
 				<!-- tag closing for IDE support -->
 				{% if forloop.counter > 2 %}
@@ -202,12 +222,12 @@ $(document).on('click', '.remove-form-row', function(e){
 {% block plots %}
 <div class="p-3">
 
-	<div class="p-3" id="bitchart-area">
+	<div class="p-3" id="plot-area">
 		{% if plot_data %}
-			{{ plot_data }}
+		{{ plot_data|safe }}
 		{% endif %}
-		<!-- <div class="loading-overlay">
-		</div> -->
+		
 	</div>
+		}
 </div>
 {% endblock %}

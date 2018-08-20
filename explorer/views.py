@@ -3,11 +3,13 @@ from django.db.models import Q
 from django.core import serializers
 from django.http import JsonResponse
 
+import os
 import re
 import json
 from collections import defaultdict
 import pandas as pd
 from tempfile import NamedTemporaryFile
+from shutil import copy
 from Bio import SeqIO
 import subprocess
 
@@ -349,13 +351,35 @@ def species_distribution(request, clade_txids, foci):
 def compare(request):
   if request.method != 'POST':
     return render(request, 'explorer/compare.html', {
-      'formset': forms.CompareFormset()
+      'formset': forms.CompareFormSet(),
+      'valid_form': False,
+      'formset_json': 'none'
     })
 
-  formset = forms.CompareFormset(request.POST)
+  formset = forms.CompareFormSet(request.POST)
   if not formset.is_valid():
     print(formset.errors)
 
+  formset_json_fh = NamedTemporaryFile('w')
+  for form in formset:
+    print(form.as_dict())
+
+  formset_json_fh.write(json.dumps([form.as_dict() for form in formset]))
+  formset_json_fh.flush()
+  copy(formset_json_fh.name, settings.MEDIA_ROOT + formset_json_fh.name)
+  formset_json_fh.close()
+
+  return render(request, 'explorer/compare.html', {
+    'formset': formset,
+    'valid_form': True,
+    'formset_json': formset_json_fh.name
+  })
+
+def render_bitchart(request, formset_json_filename):
+  # get formset
+  formset = json.loads(open(settings.MEDIA_ROOT + formset_json_filename).read())
+  os.remove(settings.MEDIA_ROOT + formset_json_filename)
+  
   # read in all tRNAs
   seqs = []
   seq_file_handle = open(settings.ENGINE_DIR + 'tRNAs.fa')
@@ -365,8 +389,7 @@ def compare(request):
 
   # write tRNA sets to files
   trna_fasta_files = []
-  for i, form in enumerate(formset):
-    data = form.cleaned_data
+  for i, data in enumerate(formset):
     print('Form {} with dict {}'.format(i, data))
 
     # Skip dummy form row
@@ -432,7 +455,7 @@ def compare(request):
   # Align tRNAs to reference model and collect bit scores
   bits = pd.DataFrame()
   for i, trna_fasta_fh in enumerate(trna_fasta_files[1:]):
-    group_name = formset[i+2].cleaned_data['name']
+    group_name = formset[i+2]['name']
 
     num_model_align_fh = NamedTemporaryFile('r+')
     processed_fasta_fh = NamedTemporaryFile('r+', buffering = 1)
@@ -466,8 +489,8 @@ def compare(request):
   print(bits.head())
 
   # Get consensus and modals for reference
-  ref_taxid = formset[0].cleaned_data['clade']
-  ref_isotype = formset[0].cleaned_data['isotype']
+  ref_taxid = formset[0]['clade']
+  ref_isotype = formset[0]['isotype']
   ref_cons_qs = models.Consensus.objects.filter(taxid = ref_taxid, isotype = ref_isotype).values()
   ref_cons = read_frame(ref_cons_qs).drop(['id', 'taxid', 'isotype'], axis = 1).stack().unstack(0).reset_index()
   ref_cons.columns = ['position', 'feature']
@@ -485,13 +508,7 @@ def compare(request):
 
   bits = pd.concat([bits, ref_cons, ref_freqs], sort = True).reset_index(drop = True).to_dict(orient = 'index')
 
-  return render(request, 'explorer/compare.html', {
-    'formset': formset,
-    # 'coords': coords,
-    'plot_data': bits
-  })
-
-
+  return JsonResponse(json.dumps(bits), safe = False)
 
 def parse_parsetree(parsetree_fh):
   positions = {4: '73', 5: '1:72', 6: '2:71', 7: '3:70', 8: '4:69', 9: '5:68', 10: '6:67', 11: '7:66', 12: '8', 13: '9', 18: '10:25', 19: '11:24', 20: '12:23', 21: '13:22', 22: '14', 23: '15', 24: '16', 25: '17', 26: '17a', 27: '18', 28: '19', 29: '20', 30: '20a', 31: '20b', 32: '21', 35: '26', 36: '27:43', 37: '28:42', 38: '29:41', 39: '30:40', 40: '31:39', 41: '32', 42: '33', 43: '34', 44: '35', 45: '36', 46: '37', 47: '38', 50: '44', 51: '45', 54: 'V11:V21', 55: 'V12:V22', 56: 'V13:V23', 57: 'V14:V24', 58: 'V15:V25', 59: 'V16:V26', 60: 'V17:V27', 61: 'V1', 62: 'V2', 63: 'V3', 64: 'V4', 65: 'V5', 68: '46', 69: '47', 70: '48', 71: '49:65', 72: '50:64', 73: '51:63', 74: '52:62', 75: '53:61', 76: '54', 77: '55', 78: '56', 79: '57', 80: '58', 81: '59', 82: '60'}

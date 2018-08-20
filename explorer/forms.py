@@ -43,4 +43,19 @@ class CompareForm(forms.Form):
 
     return True
 
-CompareFormset = formset_factory(CompareForm, extra = 3)
+  def as_dict(self):
+    return {
+      'name': str(self['name'].value()),
+      'fasta': str(self['fasta'].value()),
+      'clade': str(self['clade'].value()),
+      'isotype': str(self['isotype'].value()),
+      'use_fasta': bool(self['use_fasta'].value())
+    }
+
+class EmptyPermittedFormSet(forms.BaseFormSet):
+  def __init__(self, *args, **kwargs):
+    super(EmptyPermittedFormSet, self).__init__(*args, **kwargs)
+    for form in self.forms:
+      form.empty_permitted = False
+
+CompareFormSet = formset_factory(CompareForm, formset = EmptyPermittedFormSet, can_delete = True, extra = 3)
