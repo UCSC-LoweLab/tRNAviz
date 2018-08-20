@@ -49,13 +49,20 @@ FEATURE_LABELS = {
   'Paired': ('Paired', 'Paired'), 'Bulge': ('Bulge', 'Bulge'), 'Mismatched': ('Mismatched', 'Mismatched'), 'NN': ('N', 'N')
 }
 
-SINGLE_FEATURES = ['A', 'C', 'G', 'U', 'absent']
-
+SINGLE_FEATURES = {'A': 'A', 'C': 'C', 'G': 'G', 'U': 'U', 'absent': '-'}
 PAIRED_FEATURES = {
   'AU': 'A:U', 'UA': 'U:A', 'GC': 'G:C', 'CG': 'C:G', 'GU': 'G:U', 'UG': 'U:G', 
   'AA': 'A:A', 'AC': 'A:C', 'AG': 'A:G', 'CA': 'C:A', 'CC': 'C:C', 'CU': 'C:U', 'GA': 'G:A', 'GG': 'G:G', 'UC': 'U:C', 'UU': 'U:U',
   'AM': 'A:-', 'CM': 'C:-', 'GM': 'G:-', 'UM': 'U:-', 'MA': '-:A', 'MC': '-:C', 'MG': '-:G', 'MU': '-:U', 'MM': '-:-'
 }
+FEATURES = {}
+FEATURES.update(SINGLE_FEATURES)
+FEATURES.update(PAIRED_FEATURES)
+
+FEATURES.update({'Absent': '-', 'Purine': 'R', 'Pyrimidine': 'Y', 'Amino': 'M', 'Keto': 'K', 'Weak': 'W', 'Strong': 'S', 
+  'B': 'B', 'D': 'D', 'H': 'H', 'V': 'V', 'N': 'N', 
+  'PurinePyrimidine': 'R:Y', 'PyrimidinePurine': 'Y:R', 'WobblePair': 'K:K', 'StrongPair': 'S:S', 'WeakPair': 'W:W', 'AminoKeto': 'M:K', 'KetoAmino': 'K:M', 
+  'Paired': 'N:N', 'Bulge': '', 'Mismatched': 'N|N', 'NN': '', '': ''})
 
 ISOTYPES = ['Ala', 'Arg', 'Asn', 'Asp', 'Cys', 'Gln', 'Glu', 'Gly', 'His', 'Ile', 'iMet', 'Leu', 'Lys', 'Met', 'Phe', 'Pro', 'Ser', 'Thr', 'Trp', 'Tyr', 'Val']
 
@@ -151,7 +158,7 @@ def cloverleaf(request, clade_txid, isotype):
   for freq in freqs_qs.values():
     position = freq['position']
     if position in SINGLE_POSITIONS + ['V1', 'V2', 'V3', 'V4', 'V5']:
-      freqs[position] = {base: freq[base] for base in SINGLE_FEATURES}
+      freqs[position] = {base: freq[base] for base in SINGLE_FEATURES.keys()}
     elif position in PAIRED_POSITIONS + ['V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27']:
       freqs[position] = {PAIRED_FEATURES[pair]: freq[pair] for pair in PAIRED_FEATURES}
 
@@ -195,7 +202,7 @@ def tilemap(request, clade_txid):
     position = freq['position']
     isotype = freq['isotype']
     if position in SINGLE_POSITIONS + ['V1', 'V2', 'V3', 'V4', 'V5']:
-      freqs[isotype][position] = {base: freq[base] for base in SINGLE_FEATURES}
+      freqs[isotype][position] = {base: freq[base] for base in SINGLE_FEATURES.keys()}
     elif position in PAIRED_POSITIONS + ['V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27']:
       freqs[isotype][position] = {PAIRED_FEATURES[pair]: freq[pair] for pair in PAIRED_FEATURES}
 
@@ -450,7 +457,7 @@ def render_bitchart(request, formset_json_filename):
   cmd_cmalign = 'cmalign -g --notrunc --matchonly --tfile {} {} {} > /dev/null'.format(cons_parsetree_fh.name, ref_model_fh.name, cons_fasta_fh.name)
   res = subprocess.run(cmd_cmalign, shell = True)
   ref_bits = pd.DataFrame(parse_parsetree(cons_parsetree_fh))
-  ref_bits.seqname = 'Reference'
+  ref_bits.seqname = 'Reference consensus'
 
   # Align tRNAs to reference model and collect bit scores
   bits = pd.DataFrame()
@@ -496,7 +503,9 @@ def render_bitchart(request, formset_json_filename):
   ref_cons.columns = ['position', 'feature']
   ref_cons.position = ref_cons.position.apply(lambda x: x[1:].replace('_', ':'))
   ref_cons['score'] = 0
-  ref_cons['seqname'] = 'Reference'
+  ref_cons['seqname'] = 'Reference consensus'
+  # Translate long codes to short codes
+  ref_cons['feature'] = ref_cons.feature.apply(lambda x: FEATURES[x])
 
   freqs_qs = models.Freq.objects.filter(taxid = ref_taxid, isotype = ref_isotype).values()
   ref_freqs = read_frame(freqs_qs).drop(['id', 'taxid', 'isotype', 'total'], axis = 1)
@@ -504,11 +513,18 @@ def render_bitchart(request, formset_json_filename):
   ref_freqs['feature'] = ref_freqs.drop('position', axis = 1).idxmax(axis = 1)
   ref_freqs = ref_freqs[['position', 'feature']]
   ref_freqs['score'] = 0
-  ref_freqs['seqname'] = 'Modal'
+  ref_freqs['seqname'] = 'Most common feature'
+  # Translate db codes to short codes
+  ref_freqs['feature'] = ref_freqs.feature.apply(lambda x: FEATURES[x])
 
-  bits = pd.concat([bits, ref_cons, ref_freqs], sort = True).reset_index(drop = True).to_dict(orient = 'index')
+  bits = pd.concat([bits, ref_cons, ref_freqs], sort = True).reset_index(drop = True)
 
-  return JsonResponse(json.dumps(bits), safe = False)
+  groups = ['Reference consensus', 'Most common feature'] + list(filter(lambda x: x not in ['Reference consensus', 'Most common feature'], bits.seqname.unique()))
+  bits = bits[bits.position.isin(SINGLE_POSITIONS + PAIRED_POSITIONS)].to_dict(orient = 'index')
+
+  plot_data = {'bits': bits, 'groups': groups}
+
+  return JsonResponse(json.dumps(plot_data), safe = False)
 
 def parse_parsetree(parsetree_fh):
   positions = {4: '73', 5: '1:72', 6: '2:71', 7: '3:70', 8: '4:69', 9: '5:68', 10: '6:67', 11: '7:66', 12: '8', 13: '9', 18: '10:25', 19: '11:24', 20: '12:23', 21: '13:22', 22: '14', 23: '15', 24: '16', 25: '17', 26: '17a', 27: '18', 28: '19', 29: '20', 30: '20a', 31: '20b', 32: '21', 35: '26', 36: '27:43', 37: '28:42', 38: '29:41', 39: '30:40', 40: '31:39', 41: '32', 42: '33', 43: '34', 44: '35', 45: '36', 46: '37', 47: '38', 50: '44', 51: '45', 54: 'V11:V21', 55: 'V12:V22', 56: 'V13:V23', 57: 'V14:V24', 58: 'V15:V25', 59: 'V16:V26', 60: 'V17:V27', 61: 'V1', 62: 'V2', 63: 'V3', 64: 'V4', 65: 'V5', 68: '46', 69: '47', 70: '48', 71: '49:65', 72: '50:64', 73: '51:63', 74: '52:62', 75: '53:61', 76: '54', 77: '55', 78: '56', 79: '57', 80: '58', 81: '59', 82: '60'}
