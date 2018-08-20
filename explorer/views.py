@@ -351,7 +351,7 @@ def compare(request):
     return render(request, 'explorer/compare.html', {
       'formset': forms.CompareFormset()
     })
-  print(request.POST)
+
   formset = forms.CompareFormset(request.POST)
   if not formset.is_valid():
     print(formset.errors)
@@ -414,14 +414,14 @@ def compare(request):
   cons_model_fh = NamedTemporaryFile()
   cons_align_fh = NamedTemporaryFile()
   cons_fasta_fh = NamedTemporaryFile()
-  cons_parsetree_fh = NamedTemporaryFile('r+t')
+  cons_parsetree_fh = NamedTemporaryFile('r+')
   cmd_cmemit = 'cmemit --exp 5 -N 1000 -a {} > {}'.format(ref_model_fh.name, cons_align_fh.name)
   res = subprocess.run(cmd_cmemit, shell = True)
   cmd_cmbuild = 'cmbuild --enone -F {} {} > /dev/null'.format(cons_model_fh.name, cons_align_fh.name)
   res = subprocess.run(cmd_cmbuild, shell = True)
   # Then emit a consensus sequence, format, align to reference model, and get normalizing bits
   cmd_cmemit = 'cmemit -c {}'.format(cons_model_fh.name)
-  res = subprocess.run(cmd_cmemit, stdout = subprocess.PIPE, universal_newlines = True, shell = True)
+  res = subprocess.run(cmd_cmemit, stdout = subprocess.PIPE, shell = True)
   cons_fasta_fh.write(res.stdout.upper())
   cons_fasta_fh.flush()
   cmd_cmalign = 'cmalign -g --notrunc --matchonly --tfile {} {} {} > /dev/null'.format(cons_parsetree_fh.name, ref_model_fh.name, cons_fasta_fh.name)
@@ -455,18 +455,19 @@ def compare(request):
     current_bits = pd.DataFrame(parse_parsetree(parsetree_fh))
     
     # For selections with mutliple tRNAs, summarize by average score and modal feature
-    modal_features = current_bits.groupby('position').apply(lambda x: x['feature'].mode()).reset_index().rename(columns = {0: 'feature'})
+    modal_features = current_bits.groupby('position').apply(lambda x: x['feature'].mode()[0]).reset_index().rename(columns = {0: 'feature'})
     current_bits = current_bits.set_index(['seqname', 'feature', 'position']).groupby('position').mean()
     current_bits =  current_bits.join(modal_features.set_index('position')).reset_index()
     current_bits['seqname'] = group_name
     bits = bits.append(current_bits)
 
   # Normalize
-  bits['score'] = bits.apply(lambda x: x['score'] - ref_bits[ref_bits.position == x['position']]['score'].values[0], axis = 1)
+  bits['score'] = round(bits.apply(lambda x: x['score'] - ref_bits[ref_bits.position == x['position']]['score'].values[0], axis = 1), 2)
+  print(bits.head())
 
   # Get consensus and modals for reference
-  ref_taxid = formset_data[0]['clade']
-  ref_isotype = formset_data[0]['isotype']
+  ref_taxid = formset[0].cleaned_data['clade']
+  ref_isotype = formset[0].cleaned_data['isotype']
   ref_cons_qs = models.Consensus.objects.filter(taxid = ref_taxid, isotype = ref_isotype).values()
   ref_cons = read_frame(ref_cons_qs).drop(['id', 'taxid', 'isotype'], axis = 1).stack().unstack(0).reset_index()
   ref_cons.columns = ['position', 'feature']
@@ -476,13 +477,13 @@ def compare(request):
 
   freqs_qs = models.Freq.objects.filter(taxid = ref_taxid, isotype = ref_isotype).values()
   ref_freqs = read_frame(freqs_qs).drop(['id', 'taxid', 'isotype', 'total'], axis = 1)
-  ref_freqs['mode'] = ref_freqs.drop('position', axis = 1).max(axis = 1)
-  # ref_freqs['feature'] = ref_freqs.drop(['position', 'mode'], axis = 1).idxmax(axis = 1)
+  # ref_freqs['mode'] = ref_freqs.drop('position', axis = 1).max(axis = 1)
+  ref_freqs['feature'] = ref_freqs.drop('position', axis = 1).idxmax(axis = 1)
   ref_freqs = ref_freqs[['position', 'feature']]
   ref_freqs['score'] = 0
   ref_freqs['seqname'] = 'Modal'
 
-  bits = bits.append(ref_freqs).append(ref_cons)
+  bits = pd.concat([bits, ref_cons, ref_freqs], sort = True).reset_index(drop = True).to_dict(orient = 'index')
 
   return render(request, 'explorer/compare.html', {
     'formset': formset,
