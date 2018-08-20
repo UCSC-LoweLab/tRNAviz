@@ -351,18 +351,19 @@ def compare(request):
     return render(request, 'explorer/compare.html', {
       'formset': forms.CompareFormset()
     })
-
+  print(request.POST)
   formset = forms.CompareFormset(request.POST)
   if not formset.is_valid():
     print(formset.errors)
 
-  # read in tRNA fasta file 
+  # read in all tRNAs
   seqs = []
   seq_file_handle = open(settings.ENGINE_DIR + 'tRNAs.fa')
   for seq in SeqIO.parse(seq_file_handle, 'fasta'):
     seqs.append(seq)
   seq_file_handle.close()
 
+  # write tRNA sets to files
   trna_fasta_files = []
   for i, form in enumerate(formset):
     data = form.cleaned_data
@@ -372,7 +373,7 @@ def compare(request):
     if i == 1: continue 
     
     # Prepare tRNAs for writing to file
-    trna_fasta_fh = NamedTemporaryFile('w')
+    trna_fasta_fh = NamedTemporaryFile('w', buffering = 1)
     trna_seqs = []
 
     # For selects, query db
@@ -394,7 +395,8 @@ def compare(request):
     # otherwise write input directly into file
     else:
       trna_fasta_fh.write(data['fasta'])
-
+    
+    trna_fasta_fh.flush()
     trna_fasta_files.append(trna_fasta_fh)
 
   # Build reference CM model
@@ -402,24 +404,43 @@ def compare(request):
   ref_align_fh = NamedTemporaryFile()
   num_model = '{}/euk-num.cm'.format(settings.ENGINE_DIR)
   cmd_cmalign = 'cmalign -g --notrunc --matchonly -o {} {} {} > /dev/null'.format(ref_align_fh.name, num_model, ref_fasta)
-  subprocess.call(cmd_cmalign, shell = True)
+  res = subprocess.run(cmd_cmalign, shell = True)
   ref_model_fh = NamedTemporaryFile()
   cmd_cmbuild = 'cmbuild --hand --enone -F {} {} > /dev/null'.format(ref_model_fh.name, ref_align_fh.name)
-  subprocess.call(cmd_cmbuild, shell = True)
-  # subprocess.call('cp {} {}-persist'.format(ref_model_fh.name, ref_model_fh.name), shell = True)
-  # subprocess.call('cp {} {}-persist'.format(ref_align_fh.name, ref_align_fh.name), shell = True)
+  res = subprocess.run(cmd_cmbuild, shell = True)
 
-  # Align tRNAs to reference model and collect raw bit scores
-  bits = []
-  for trna_fasta_fh in trna_files[1:]:
+  # Get normalizing bit scores. To do this, we generate a consensus sequence and align it to the model.
+  # Generate consensus sequence. First, build a consensus model with gaps.
+  cons_model_fh = NamedTemporaryFile()
+  cons_align_fh = NamedTemporaryFile()
+  cons_fasta_fh = NamedTemporaryFile()
+  cons_parsetree_fh = NamedTemporaryFile('r+t')
+  cmd_cmemit = 'cmemit --exp 5 -N 1000 -a {} > {}'.format(ref_model_fh.name, cons_align_fh.name)
+  res = subprocess.run(cmd_cmemit, shell = True)
+  cmd_cmbuild = 'cmbuild --enone -F {} {} > /dev/null'.format(cons_model_fh.name, cons_align_fh.name)
+  res = subprocess.run(cmd_cmbuild, shell = True)
+  # Then emit a consensus sequence, format, align to reference model, and get normalizing bits
+  cmd_cmemit = 'cmemit -c {}'.format(cons_model_fh.name)
+  res = subprocess.run(cmd_cmemit, stdout = subprocess.PIPE, universal_newlines = True, shell = True)
+  cons_fasta_fh.write(res.stdout.upper())
+  cons_fasta_fh.flush()
+  cmd_cmalign = 'cmalign -g --notrunc --matchonly --tfile {} {} {} > /dev/null'.format(cons_parsetree_fh.name, ref_model_fh.name, cons_fasta_fh.name)
+  res = subprocess.run(cmd_cmalign, shell = True)
+  ref_bits = pd.DataFrame(parse_parsetree(cons_parsetree_fh))
+  ref_bits.seqname = 'Reference'
 
-    num_model_align_fh = NamedTemporaryFile('rw')
-    processed_fasta_fh = NamedTemporaryFile('rw')
-    parsetree_fh = NamedTemporaryFile('rw')
+  # Align tRNAs to reference model and collect bit scores
+  bits = pd.DataFrame()
+  for i, trna_fasta_fh in enumerate(trna_fasta_files[1:]):
+    group_name = formset[i+2].cleaned_data['name']
+
+    num_model_align_fh = NamedTemporaryFile('r+')
+    processed_fasta_fh = NamedTemporaryFile('r+', buffering = 1)
+    parsetree_fh = NamedTemporaryFile('r+', buffering = 1)
 
     # Remove introns from all tRNAs (except reference). First, align to numbering model to purge insertions
     cmd_cmalign = 'cmalign -g --notrunc --matchonly -o {} {} {} > /dev/null'.format(num_model_align_fh.name, num_model, trna_fasta_fh.name)
-    subprocess.call(cmd_cmalign, shell = True)
+    res = subprocess.run(cmd_cmalign, shell = True)
 
     # remove introns using alignment and rewrite tRNAs to new file
     for line in num_model_align_fh:
@@ -430,52 +451,43 @@ def compare(request):
 
     # realign to reference model and parse parsetree output
     cmd_cmalign = 'cmalign -g --notrunc --matchonly --tfile {} -o /dev/null {} {} > /dev/null'.format(parsetree_fh.name, ref_model_fh.name, processed_fasta_fh.name)
-    bits.append(parse_parsetree(parsetree_fh))
+    res = subprocess.run(cmd_cmalign, shell = True)
+    current_bits = pd.DataFrame(parse_parsetree(parsetree_fh))
+    
+    # For selections with mutliple tRNAs, summarize by average score and modal feature
+    modal_features = current_bits.groupby('position').apply(lambda x: x['feature'].mode()).reset_index().rename(columns = {0: 'feature'})
+    current_bits = current_bits.set_index(['seqname', 'feature', 'position']).groupby('position').mean()
+    current_bits =  current_bits.join(modal_features.set_index('position')).reset_index()
+    current_bits['seqname'] = group_name
+    bits = bits.append(current_bits)
 
-  # Normalize bit scores. To do this, we generate a consensus sequence and align it to the model.
-  # Generate consensus sequence. First, build a consensus model with gaps.
-  cons_model_fh = NamedTemporaryFile()
-  cons_align_fh = NamedTemporaryFile()
-  cons_fasta_fh = NamedTemporaryFile()
-  cons_parsetree_fh = NamedTemporaryFile()
-  cmd_cmemit = 'cmemit --exp 5 -N 1000 -a {} > {}'.format(ref_model_fh.name, cons_align_fh.name)
-  cmd_cmbuild = 'cmbuild --enone -F {} {} > /dev/null'.format(cons_model_fh.name, cons_align_fh.name)
-  # Then emit a consensus sequence, format, align to reference model, and get normalizing bits
-  cmd_cmemit = 'cmemit -c {} | perl -npe "if(/^[acguACGU]/){s/uc($1)/[agcu]/g}" > {}'.format(cons_model_fh.name, cons_fasta_fh.name)
-  subprocess.call(cmd_cmemit, shell = True)
-  cmd_cmalign = 'cmalign -g --notrunc --matchonly --tfile {} -o /dev/null {} {} > /dev/null'.format(cons_parsetree_fh.name, ref_model_fh.name, cons_fasta_fh.name)
-  subprocess.call(cmd_cmalign, shell = True)
-  ref_bits = parse_parsetree(cons_parsetree_fh)
-
-  # Compile into pandas df and summarize each position by average score
-  bits = pd.DataFrame(bits).append(ref_bits)
+  # Normalize
+  bits['score'] = bits.apply(lambda x: x['score'] - ref_bits[ref_bits.position == x['position']]['score'].values[0], axis = 1)
 
   # Get consensus and modals for reference
-  ref_taxid = formset[0].cleaned_data['clade']
-  ref_isotype = formset[0].cleaned_data['isotype']
+  ref_taxid = formset_data[0]['clade']
+  ref_isotype = formset_data[0]['isotype']
   ref_cons_qs = models.Consensus.objects.filter(taxid = ref_taxid, isotype = ref_isotype).values()
-  ref_cons = read_frame(ref_cons_qs).drop('id', axis = 1).set_index(['taxid', 'isotype']).stack().reset_index()
-  ref_cons.columns = ['taxid', 'isotype', 'position', 'feature']
+  ref_cons = read_frame(ref_cons_qs).drop(['id', 'taxid', 'isotype'], axis = 1).stack().unstack(0).reset_index()
+  ref_cons.columns = ['position', 'feature']
   ref_cons.position = ref_cons.position.apply(lambda x: x[1:].replace('_', ':'))
+  ref_cons['score'] = 0
+  ref_cons['seqname'] = 'Reference'
 
   freqs_qs = models.Freq.objects.filter(taxid = ref_taxid, isotype = ref_isotype).values()
-  ref_freqs = read_frame(freqs_qs).drop('id', axis = 1)
-  ref_freqs['mode'] = ref_freqs.drop(['taxid', 'isotype', 'position', 'total'], axis = 1).max(axis = 1)
-  ref_freqs['feature'] = ref_freqs.drop(['taxid', 'isotype', 'position', 'total', 'mode'], axis = 1).idxmax(axis = 1)
-  ref_freqs = ref_freqs[['isotype', 'position', 'feature', 'mode', 'total']]
+  ref_freqs = read_frame(freqs_qs).drop(['id', 'taxid', 'isotype', 'total'], axis = 1)
+  ref_freqs['mode'] = ref_freqs.drop('position', axis = 1).max(axis = 1)
+  # ref_freqs['feature'] = ref_freqs.drop(['position', 'mode'], axis = 1).idxmax(axis = 1)
+  ref_freqs = ref_freqs[['position', 'feature']]
+  ref_freqs['score'] = 0
+  ref_freqs['seqname'] = 'Modal'
 
-  # Normalize by subtracting, and purge identical features
-  # bits = bits.leftjoin
-
-        # 'seqname': seqname,
-        # 'position': position,
-        # 'score' = round(scores[position], 2),
-        # 'feature' = identities[position]})
+  bits = bits.append(ref_freqs).append(ref_cons)
 
   return render(request, 'explorer/compare.html', {
-    'formset': formset
+    'formset': formset,
     # 'coords': coords,
-    # 'plot_data': plot_data
+    'plot_data': bits
   })
 
 
@@ -564,8 +576,8 @@ def parse_parsetree(parsetree_fh):
       bits.append({
         'seqname': seqname,
         'position': position,
-        'score' = round(scores[position], 2),
-        'feature' = identities[position]})
+        'score': round(scores[position], 2),
+        'feature': identities[position]})
 
   return bits
 
