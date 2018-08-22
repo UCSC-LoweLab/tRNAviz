@@ -226,6 +226,33 @@ $(document).ready(function () {
 		<div class="loading-overlay">
 		</div>		
 	</div>
-		}
+	
+
+	<div class="tooltip" style="opacity:0">
+		<table class="table table-sm table-striped table-bordered table-light">
+			<tbody>
+				<tr>
+					<th scope="col">Position</th>
+					<td id="tooltip-position"></td>
+				</tr>
+				<tr>
+					<th scope="col">Group</th>
+					<td id="tooltip-group"></td>
+				</tr>
+				<tr>
+					<th scope="col">Score (mean)</th>
+					<td id="tooltip-score"></td>
+				</tr>
+				<tr>
+					<th scope="col">Feature (mode)</th>
+					<td id="tooltip-feature"></td>
+				</tr>
+				<tr>
+					<th scope="col">No. tRNAs</th>
+					<td id="tooltip-freq"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 </div>
 {% endblock %}

@@ -55,14 +55,21 @@ PAIRED_FEATURES = {
   'AA': 'A:A', 'AC': 'A:C', 'AG': 'A:G', 'CA': 'C:A', 'CC': 'C:C', 'CU': 'C:U', 'GA': 'G:A', 'GG': 'G:G', 'UC': 'U:C', 'UU': 'U:U',
   'AM': 'A:-', 'CM': 'C:-', 'GM': 'G:-', 'UM': 'U:-', 'MA': '-:A', 'MC': '-:C', 'MG': '-:G', 'MU': '-:U', 'MM': '-:-'
 }
-FEATURES = {}
-FEATURES.update(SINGLE_FEATURES)
-FEATURES.update(PAIRED_FEATURES)
-
-FEATURES.update({'Absent': '-', 'Purine': 'R', 'Pyrimidine': 'Y', 'Amino': 'M', 'Keto': 'K', 'Weak': 'W', 'Strong': 'S', 
+IUPAC_CODES = {}
+IUPAC_CODES.update(SINGLE_FEATURES)
+IUPAC_CODES.update(PAIRED_FEATURES)
+IUPAC_CODES.update({'Absent': '-', 'Purine': 'R', 'Pyrimidine': 'Y', 'Amino': 'M', 'Keto': 'K', 'Weak': 'W', 'Strong': 'S', 
   'B': 'B', 'D': 'D', 'H': 'H', 'V': 'V', 'N': 'N', 
   'PurinePyrimidine': 'R:Y', 'PyrimidinePurine': 'Y:R', 'WobblePair': 'K:K', 'StrongPair': 'S:S', 'WeakPair': 'W:W', 'AminoKeto': 'M:K', 'KetoAmino': 'K:M', 
   'Paired': 'N:N', 'Bulge': '', 'Mismatched': 'N|N', 'NN': '', '': ''})
+HUMAN_LABELS = {
+  'Amino': 'A / C', 'Keto': 'G / U', 'Weak': 'A / U', 'Strong': 'G / C', 
+  'B': 'C / G / U', 'H': 'A / C / U', 'D': 'A / G / U', 'V': 'A / C / G', 'N': 'N',
+  'PurinePyrimidine': 'Purine:Pyrimidine', 'PyrimidinePurine': 'Pyrimidine:Purine',
+  'WobblePair': 'G:U / U:G', 'StrongPair': 'G:C / C:G', 'WeakPair': 'A:U / U:A', 'AminoKeto': 'A:U / C:G', 'KetoAmino': 'G:C / U:A', 
+  'Paired': 'Paired', 'Bulge': '-:N / N:-', 'Mismatched': 'Mismatched', 'NN': 'N:N'
+}
+
 
 ISOTYPES = ['Ala', 'Arg', 'Asn', 'Asp', 'Cys', 'Gln', 'Glu', 'Gly', 'His', 'Ile', 'iMet', 'Leu', 'Lys', 'Met', 'Phe', 'Pro', 'Ser', 'Thr', 'Trp', 'Tyr', 'Val']
 
@@ -457,7 +464,7 @@ def render_bitchart(request, formset_json_filename):
   cmd_cmalign = 'cmalign -g --notrunc --matchonly --tfile {} {} {} > /dev/null'.format(cons_parsetree_fh.name, ref_model_fh.name, cons_fasta_fh.name)
   res = subprocess.run(cmd_cmalign, shell = True)
   ref_bits = pd.DataFrame(parse_parsetree(cons_parsetree_fh))
-  ref_bits.seqname = 'Reference consensus'
+  ref_bits.group = 'Reference consensus'
 
   # Align tRNAs to reference model and collect bit scores
   bits = pd.DataFrame()
@@ -485,10 +492,13 @@ def render_bitchart(request, formset_json_filename):
     current_bits = pd.DataFrame(parse_parsetree(parsetree_fh))
     
     # For selections with mutliple tRNAs, summarize by average score and modal feature
+    num_trnas = len(current_bits.seqname.unique())
     modal_features = current_bits.groupby('position').apply(lambda x: x['feature'].mode()[0]).reset_index().rename(columns = {0: 'feature'})
     current_bits = current_bits.set_index(['seqname', 'feature', 'position']).groupby('position').mean()
     current_bits =  current_bits.join(modal_features.set_index('position')).reset_index()
-    current_bits['seqname'] = group_name
+    current_bits = current_bits[['feature', 'position', 'score']]
+    current_bits['group'] = group_name
+    current_bits['total'] = num_trnas
     bits = bits.append(current_bits)
 
   # Normalize
@@ -503,23 +513,23 @@ def render_bitchart(request, formset_json_filename):
   ref_cons.columns = ['position', 'feature']
   ref_cons.position = ref_cons.position.apply(lambda x: x[1:].replace('_', ':'))
   ref_cons['score'] = 0
-  ref_cons['seqname'] = 'Reference consensus'
-  # Translate long codes to short codes
-  ref_cons['feature'] = ref_cons.feature.apply(lambda x: FEATURES[x])
-
+  ref_cons['total'] = ''
+  ref_cons['group'] = 'Reference consensus'
+  
   freqs_qs = models.Freq.objects.filter(taxid = ref_taxid, isotype = ref_isotype).values()
-  ref_freqs = read_frame(freqs_qs).drop(['id', 'taxid', 'isotype', 'total'], axis = 1)
-  # ref_freqs['mode'] = ref_freqs.drop('position', axis = 1).max(axis = 1)
-  ref_freqs['feature'] = ref_freqs.drop('position', axis = 1).idxmax(axis = 1)
-  ref_freqs = ref_freqs[['position', 'feature']]
+  ref_freqs = read_frame(freqs_qs).drop(['id', 'taxid', 'isotype'], axis = 1)
+  ref_freqs['feature'] = ref_freqs.drop(['position', 'total'], axis = 1).idxmax(axis = 1)
+  ref_freqs = ref_freqs[['position', 'feature', 'total']]
   ref_freqs['score'] = 0
-  ref_freqs['seqname'] = 'Most common feature'
-  # Translate db codes to short codes
-  ref_freqs['feature'] = ref_freqs.feature.apply(lambda x: FEATURES[x])
+  ref_freqs['group'] = 'Most common feature'
 
   bits = pd.concat([bits, ref_cons, ref_freqs], sort = True).reset_index(drop = True)
+  
+  # Translate human readable codes to IUPAC codes and tooltip labels
+  bits['label'] = bits.feature.apply(lambda x: HUMAN_LABELS[x] if x in HUMAN_LABELS else x)
+  bits['feature'] = bits.feature.apply(lambda x: IUPAC_CODES[x] if x in IUPAC_CODES else x)
 
-  groups = ['Reference consensus', 'Most common feature'] + list(filter(lambda x: x not in ['Reference consensus', 'Most common feature'], bits.seqname.unique()))
+  groups = ['Reference consensus', 'Most common feature'] + list(filter(lambda x: x not in ['Reference consensus', 'Most common feature'], bits.group.unique()))
   bits = bits[bits.position.isin(SINGLE_POSITIONS + PAIRED_POSITIONS)].to_dict(orient = 'index')
 
   plot_data = {'bits': bits, 'groups': groups}

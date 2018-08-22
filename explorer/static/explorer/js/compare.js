@@ -24,6 +24,14 @@ var draw_bitchart = function(plot_data) {
 		.attr('width', plot_width + plot_margin)
 		.attr('height', plot_height + plot_margin)
 	
+	
+  var tooltip = d3.select('.tooltip');
+  var tooltip_position = tooltip.select('#tooltip-position');
+  var tooltip_group = tooltip.select('#tooltip-group');
+  var tooltip_score = tooltip.select('#tooltip-score');
+  var tooltip_feature = tooltip.select('#tooltip-feature');
+  var tooltip_freq = tooltip.select('#tooltip-freq');
+
 	var bitchart = svg.append('g')
 		.attr('id', 'bitchart-plot')
 
@@ -76,26 +84,55 @@ var draw_bitchart = function(plot_data) {
   	.attr('class', 'tile')
 
   tiles.append('rect')
-  	.attr('id', d => 'tile-' + d['position'] + '-' + escape(d['seqname']))
-  	.attr('class', 'bitchart-tile')
+  	.attr('id', d => 'tile-' + d['position'] + '-' + escape(d['group']))
+  	.attr('class', 'bitchart-rect')
   	.attr('transform', 'translate(' + y_axis_offset + ', 0)')
   	.attr('x', d => position_scale(d['position']))
-  	.attr('y', d => group_scale(d['seqname']))
+  	.attr('y', d => group_scale(d['group']))
   	.attr('width', tile_width)
   	.attr('height', tile_width)
   	.style('fill', d => score_scale(d['score']))
   	.style('fill-opacity', d => alpha_scale(d['score']))
+    .on('mouseover', function(d, i) {
+      tooltip_position.html(d['position']);
+      tooltip_group.html(d['group']);
+      tooltip_score.html(d['score']);
+      tooltip_feature.html(d['label']);
+      tooltip_freq.html(d['total']);
+      tooltip.transition()
+        .duration(100)
+        .style('opacity', .9)
+        .style('left', d3.event.pageX + 'px')
+        .style('top', d3.event.pageY + 'px');
+      d3.select(this)
+        .transition()
+        .duration(100)
+        .attr('class', 'bitchart-rect-highlight');
+    })
+    .on('mousemove', function(d, i) {  
+      tooltip.style('left', d3.event.pageX + 'px')
+        .style('top', d3.event.pageY + 'px');
+      })
+    .on('mouseout', function(d) {   
+      tooltip.transition()    
+        .duration(100)    
+        .style('opacity', 0); 
+      d3.select(this)
+        .transition()
+        .duration(100)
+        .attr('class', 'bitchart-rect');
+    });
 
   tiles.append('text')
-  	.attr('id', d => 'annot-' + d['position'] + '-' + escape(d['seqname']))
+  	.attr('id', d => 'annot-' + d['position'] + '-' + escape(d['group']))
   	.attr('class', 'bitchart-annot')
   	.attr('transform', 'translate(' + y_axis_offset + ', 0)')
     .attr('text-anchor', 'middle')
     .attr('alignment-baseline', 'middle')
     .attr('font-size', '0.8em')
   	.attr('x', d => position_scale(d['position']) + tile_width / 2)
-  	.attr('y', d => group_scale(d['seqname']) + tile_width / 2)
+  	.attr('y', d => group_scale(d['group']) + tile_width / 2)
   	.text(d => d['feature'])
-  	.style('fill', d => (d['score'] < -4) ? 'white' : 'black')
-
+    .style('pointer-events', 'none')
+  	.style('fill', d => (d['score'] < -4) ? 'white' : 'black');
 };

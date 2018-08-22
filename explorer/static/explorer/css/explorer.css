@@ -27,7 +27,10 @@ div.tooltip th {
   stroke: #444444;
   stroke-width: 1;
 }
-.cloverleaf-highlight, .distro-rect-highlight {
+.bitchart-rect {
+  stroke-width: 0;
+}
+.cloverleaf-highlight, .distro-rect-highlight, .bitchart-rect-highlight {
   stroke: #ff0000;
   stroke-width: 3;
 }
