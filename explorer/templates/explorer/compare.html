@@ -221,11 +221,11 @@ $(document).ready(function () {
 
 {% block plots %}
 <div class="p-3">
-
+	{% if valid_form %}
 	<div class="p-3" id="plot-area">
 		<div class="loading-overlay">
-		</div>		
 	</div>
+	{% endif %}
 	
 
 	<div class="tooltip" style="opacity:0">
