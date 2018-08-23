@@ -1,5 +1,6 @@
 from django.urls import path, re_path
 from django.shortcuts import redirect, reverse
+from django.conf import settings
 from . import views
 
 app_name = 'explorer'
