@@ -132,9 +132,10 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': lambda x: True
 }
 
-TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
-
-if not TESTING:
+# Testing specific options
+if len(sys.argv) > 1 and sys.argv[1] in ['test', 'coverage']:
+    MIGRATION_MODULES = {'explorer': None,}
+else:
     MIDDLEWARE += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     INSTALLED_APPS += ('debug_toolbar', )
 
