@@ -20,26 +20,28 @@ class CompareForm(forms.Form):
     initial = 'All',
     choices = choices.ISOTYPES,
     required = False)
-  use_fasta = forms.BooleanField(widget = forms.CheckboxInput(attrs = {
-    'class': 'use-fasta-toggle',
-    'data-toggle': 'toggle',
-    'data-size': 'small',
-    'data-onstyle': 'info',
-    'data-offstyle': 'secondary',
-    'data-on': 'Switch to data select',
-    'data-off': 'Switch to FASTA input'
-    }), required = False)
+  use_fasta = forms.BooleanField(
+    widget = forms.CheckboxInput(attrs = {
+      'class': 'use-fasta-toggle',
+      'data-toggle': 'toggle',
+      'data-size': 'small',
+      'data-onstyle': 'info',
+      'data-offstyle': 'secondary',
+      'data-on': 'Switch to data select',
+      'data-off': 'Switch to FASTA input'
+      }), 
+    required = False)
 
   def is_valid(self):
     valid = super(CompareForm, self).is_valid()
     if not valid: return valid
 
-    # validate clade
-    # try:
-    #   clade = models.Taxonomy.objects.get(taxid = self.cleaned_data['clade'])
-    # except models.Taxonomy.DoesNotExist:
-    #   self.add_error('clade', 'Invalid clade - does not exist in database')
-    #   return False
+    # validation
+    try:
+      clade = models.Taxonomy.objects.get(taxid = self.cleaned_data['clade'])
+    except models.Taxonomy.DoesNotExist:
+      self.add_error('clade', 'Invalid clade')
+      return False
 
     return True
 

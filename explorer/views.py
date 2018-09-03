@@ -342,7 +342,6 @@ def species_distribution(request, clade_txids, foci):
     query_filter_args = Q()
     for q in q_list:
       query_filter_args = query_filter_args | q
-    focus_filter_args = Q()
     trna_qs = models.tRNA.objects.filter(*(query_filter_args,)).filter(isotype__in = isotypes).values(*query_positions)
     df = read_frame(trna_qs)
     df['group'] = str(i + 1)
@@ -391,7 +390,7 @@ def compare(request):
     'formset_json': formset_json_fh.name
   })
 
-def render_bitchart(request, formset_json_filename):
+def bitchart(request, formset_json_filename):
   # get formset
   formset = json.loads(open(settings.MEDIA_ROOT + formset_json_filename).read())
   os.remove(settings.MEDIA_ROOT + formset_json_filename)

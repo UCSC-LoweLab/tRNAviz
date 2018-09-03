@@ -1,6 +1,5 @@
 from django.test import TestCase, Client
 from django.test.client import RequestFactory
-from model_mommy import mommy
 
 from explorer import models
 from explorer.views import *
@@ -56,3 +55,4 @@ class VariationViewTests(TestCase):
   def test_species_distribution_get_response(self):
     response = self.client.get('/variation/species')
     self.assertEqual(response.status_code, 200)
+
