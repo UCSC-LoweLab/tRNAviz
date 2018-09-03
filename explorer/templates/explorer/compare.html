@@ -113,8 +113,7 @@ $(document).on('click', '.remove-form-row', function(e){
 <script type="text/javascript">
 $(document).ready(function () {
 	if ('{{ valid_form }}' == 'True') {
-		console.log('run d3 on {{ formset_json }}');
-		d3.json('{% url "explorer:render" formset_json %}', draw_bitchart);
+		d3.json('{% url "explorer:bitchart" formset_json %}', draw_bitchart);
 		
 	}
 })

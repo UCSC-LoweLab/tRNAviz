@@ -1,8 +1,8 @@
-from django.test import TestCase, Client
+from django.test import TestCase, Client, tag
 from django.test.client import RequestFactory
 
 from explorer import models
-from explorer.views import *
+from explorer import views
 
 
 class SummaryTests(TestCase):

@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from django.db.models import Q
-from django.core import serializers
 from django.http import JsonResponse
 
 import os
@@ -17,7 +16,6 @@ from django_pandas.io import read_frame
 
 from django.conf import settings
 from . import models
-from . import serializers
 from . import forms
 
 SINGLE_POSITIONS = [
@@ -152,53 +150,6 @@ def variation_species(request):
 
   })
 
-def get_coords(request):
-  data = models.Coord.objects.all()
-  serializer = serializers.CoordSerializer(data, many = True)
-  return JsonResponse(serializer.data, safe = False)
-
-def cloverleaf(request, clade_txid, isotype):
-  consensus_qs = models.Consensus.objects.filter(taxid = clade_txid, isotype = isotype)
-  freqs_qs = models.Freq.objects.filter(taxid = clade_txid, isotype = isotype)
-  plot_data = {}
-
-  # preprocess freqs so Django doesn't submit separate queries per filter
-  freqs = {}
-  for freq in freqs_qs.values():
-    position = freq['position']
-    if position in SINGLE_POSITIONS + ['V1', 'V2', 'V3', 'V4', 'V5']:
-      freqs[position] = {base: freq[base] for base in SINGLE_FEATURES.keys()}
-    elif position in PAIRED_POSITIONS + ['V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27']:
-      freqs[position] = {PAIRED_FEATURES[pair]: freq[pair] for pair in PAIRED_FEATURES}
-
-
-  consensus = consensus_qs.values()[0]
-
-  for colname in consensus:
-    position = colname.replace('p', '').replace('_', ':')
-    if position in SINGLE_POSITIONS + ['V1', 'V2', 'V3', 'V4', 'V5']:
-      position_consensus = FEATURE_LABELS[consensus[colname]]
-      plot_data[position] = {
-        'consensus': position_consensus,
-        'freqs': freqs[position]
-      }
-    elif position in PAIRED_POSITIONS + ['V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27']:
-      position5, position3 = position.split(':')
-      if consensus[colname] == '': 
-        position5_consensus, position3_consensus = ('', '')
-      else:
-        position5_consensus, position3_consensus = FEATURE_LABELS[consensus[colname]]
-
-      plot_data[position5] = {
-        'consensus': position5_consensus,
-        'freqs': freqs[position]
-      }
-      plot_data[position3] = {
-        'consensus': position3_consensus,
-        'freqs': freqs[position]
-      }
-
-  return JsonResponse(json.dumps(plot_data), safe = False)
 
 def tilemap(request, clade_txid):
   consensus_qs = models.Consensus.objects.filter(taxid = clade_txid).exclude(isotype = 'All')
