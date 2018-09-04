@@ -12,8 +12,8 @@
 
 <script>	
 $(document).ready(function() {
-	$('#clade-select').select2({width: "100%", allowClear: true, placeholder: "Select a clade"});
-	$('#isotype-select').select2({width: "100%", allowClear: true, placeholder: "Select an isotype"});
+	$('#id_clade').select2({width: "100%", allowClear: true, placeholder: "Select a clade"});
+	$('#id_isotype').select2({width: "100%", allowClear: true, placeholder: "Select an isotype"});
 })
 </script>
 {% endblock %}
@@ -42,20 +42,10 @@ d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', draw_tilemap)
 			<form id='data-select-form' action='{% url "explorer:summary" %}' method="POST">
 				{% csrf_token %}
 				<div class='my-2'>
-					<select class='multiselect' name="clade_txid" id="clade-select">
-						<option value="Eukaryota" selected="selected">All eukaryotes<option>
-						{% for taxid, clade in clade_dict.items %}
-						<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
-						{% endfor %}
-					</select>
+					{{ form.clade }}
 				</div>
 				<div class='my-2'>
-					<select class='multiselect' name="isotype" id="isotype-select">
-						<option value="All">All isotypes</option>
-						{% for isotype in isotypes_list %}
-						<option value="{{ isotype }}">{{ isotype }}</option>
-						{% endfor %}
-					</select>
+					{{ form.isotype }}
 				</div>
 				<div class='my-2'>
 					<button class='btn btn-primary' type='submit'>Submit</button>
@@ -73,14 +63,12 @@ d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', draw_tilemap)
 		<thead>
 			<tr>
 				<th scope="col">Clade</th>
-				<th scope="col">Rank</th>
 				<th scope="col">Isotype</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td>{{ clade.0 }}</td>
-				<td>{{ clade.1|title }}</td>
+				<td>{{ clade }}</td>
 				<td>{{ isotype }}</td>
 			</tr>
 		</tbody>

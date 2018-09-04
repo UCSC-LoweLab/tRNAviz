@@ -3,7 +3,7 @@ from django.test.client import RequestFactory
 
 from explorer import models
 from explorer import views
-
+from explorer import choices
 
 class SummaryTests(TestCase):
   def setUp(self):
@@ -12,7 +12,7 @@ class SummaryTests(TestCase):
     self.filter_clade = ('Saccharomyces', 'genus')
     self.filter_isotype = 'All'
     self.clade_dict = {'4930': ('Saccharomyces', 'genus')}
-    self.isotype_list = ISOTYPES
+    self.isotype_list = choices.ISOTYPES
 
 
   def test_summary_redirects(self):

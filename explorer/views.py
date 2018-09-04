@@ -75,25 +75,29 @@ ISOTYPES = ['Ala', 'Arg', 'Asn', 'Asp', 'Cys', 'Gln', 'Glu', 'Gly', 'His', 'Ile'
 
 
 def summary(request):
-  filter_taxid = '4930'
-  filter_clade = ('Saccharomyces', 'genus')
-  filter_isotype = 'All'
+  if request.method != 'POST':
+    form = forms.SummaryForm()
+    for clade_taxid, clade in forms.CLADES:
+      if clade_taxid == '4930': break
 
-  clade_dict = {}
-  for taxonomy in models.Taxonomy.objects.values():
-    clade_dict[taxonomy['taxid']] = taxonomy['name'], taxonomy['rank']
+    return render(request, 'explorer/summary.html', {
+      'form': form,
+      'clade': clade, 
+      'clade_txid': clade_taxid, 
+      'isotype': form['isotype'].value()
+    })
 
-  if request.method == "POST":
-    filter_taxid = request.POST.get('clade_txid')
-    filter_clade = clade_dict[filter_taxid]
-    filter_isotype = request.POST.get('isotype')
+  form = forms.SummaryForm(request.POST)
+  if not form.is_valid():
+    print(form.errors)
+  for clade_taxid, clade in forms.CLADES:
+    if clade_taxid == form['clade'].value(): break
 
   return render(request, 'explorer/summary.html', {
-    'clade': filter_clade,
-    'clade_txid': filter_taxid,
-    'isotype': filter_isotype,
-    'clade_dict': clade_dict,
-    'isotype_list': ISOTYPES
+    'form': form,
+    'clade': clade, 
+    'clade_txid': form['clade'].value(), 
+    'isotype': form['isotype'].value()
   })
 
 def variation_distribution(request):
@@ -211,7 +215,6 @@ def distribution(request, clade_txids, isotypes, positions):
       plot_data[isotype][position] = list(pd.DataFrame(freqs.loc[isotype, position]).to_dict(orient = 'index').values())
 
   return JsonResponse(json.dumps(plot_data), safe = False)
-
 
 def species_distribution(request, clade_txids, foci):
   # reconstruct clade dict based on ids

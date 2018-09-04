@@ -5,6 +5,19 @@ from . import choices
 
 CLADES = [(clade.taxid, '{} ({})'.format(clade.name, clade.rank)) for clade in models.Taxonomy.objects.all()]
 
+class SummaryForm(forms.Form):
+  clade = forms.ChoiceField(
+    widget = forms.Select({'class': 'form-control multiselect isotype-select'}),
+    choices = CLADES,
+    required = True,
+    initial = '4930')
+  isotype = forms.ChoiceField(
+    widget = forms.Select({'class': 'form-control multiselect isotype-select'}), 
+    initial = 'All',
+    choices = choices.ISOTYPES,
+    required = True)
+
+
 class CompareForm(forms.Form):
   name = forms.CharField(widget = forms.TextInput({
     'class': 'form-control name-input',
