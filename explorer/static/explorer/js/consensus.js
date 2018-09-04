@@ -228,7 +228,6 @@ var draw_base_distro = function(coord) {
 };
 
 var draw_tilemap = function(tilemap_data) {
-  tilemap_data = JSON.parse(tilemap_data);
   d3.select('#tilemap-area .loading-overlay').style('display', 'none')
   var tilemap_margin = 50,
       tilemap_width = 1200,

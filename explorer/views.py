@@ -150,59 +150,6 @@ def variation_species(request):
 
   })
 
-
-def tilemap(request, clade_txid):
-  consensus_qs = models.Consensus.objects.filter(taxid = clade_txid).exclude(isotype = 'All')
-  freqs_qs = models.Freq.objects.filter(taxid = clade_txid).exclude(isotype = 'All')
-  plot_data = [] # use a list instead of dict - don't need to map positions to coords like for cloverleaf
-
-  # preprocess freqs so Django doesn't submit separate queries per filter
-  freqs = defaultdict(dict)
-  for freq in freqs_qs.values():
-    position = freq['position']
-    isotype = freq['isotype']
-    if position in SINGLE_POSITIONS + ['V1', 'V2', 'V3', 'V4', 'V5']:
-      freqs[isotype][position] = {base: freq[base] for base in SINGLE_FEATURES.keys()}
-    elif position in PAIRED_POSITIONS + ['V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27']:
-      freqs[isotype][position] = {PAIRED_FEATURES[pair]: freq[pair] for pair in PAIRED_FEATURES}
-
-  consensus = consensus_qs.values()
-  for consensus in consensus_qs.values():
-    isotype = consensus['isotype']
-    for colname in consensus:
-      position = colname.replace('p', '').replace('_', ':')
-      if position in SINGLE_POSITIONS + ['V1', 'V2', 'V3', 'V4', 'V5']:
-        position_consensus = FEATURE_LABELS[consensus[colname]]
-        plot_data.append({
-          'position': position,
-          'isotype': isotype,
-          'consensus': position_consensus,
-          'freqs': freqs[isotype][position],
-          'type': 'single'
-        })
-      if position in PAIRED_POSITIONS + ['V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27']:
-        if consensus[colname] == '': 
-          position5_consensus, position3_consensus = ('', '')
-        else:
-          position5_consensus, position3_consensus = FEATURE_LABELS[consensus[colname]]
-
-        plot_data.append({
-          'position': position,
-          'isotype': isotype,
-          'consensus': position5_consensus,
-          'freqs': freqs[isotype][position],
-          'type': 'left'
-        })
-        plot_data.append({
-          'position': position,
-          'isotype': isotype,
-          'consensus': position3_consensus,
-          'freqs': freqs[isotype][position],
-          'type': 'right'
-        })
-
-  return JsonResponse(json.dumps(plot_data), safe = False)
-
 def distribution(request, clade_txids, isotypes, positions):
 
   # reconstruct clade dict based on ids
