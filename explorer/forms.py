@@ -17,7 +17,6 @@ class SummaryForm(forms.Form):
     choices = choices.ISOTYPES,
     required = True)
 
-
 class CompareForm(forms.Form):
   name = forms.CharField(widget = forms.TextInput({
     'class': 'form-control name-input',
@@ -44,19 +43,6 @@ class CompareForm(forms.Form):
       'data-off': 'Switch to FASTA input'
       }), 
     required = False)
-
-  def is_valid(self):
-    valid = super(CompareForm, self).is_valid()
-    if not valid: return valid
-
-    # validation
-    try:
-      clade = models.Taxonomy.objects.get(taxid = self.cleaned_data['clade'])
-    except models.Taxonomy.DoesNotExist:
-      self.add_error('clade', 'Invalid clade')
-      return False
-
-    return True
 
   def as_dict(self):
     return {

@@ -1,58 +1,44 @@
 from django.test import TestCase, Client, tag
-from django.test.client import RequestFactory
+from django.test import RequestFactory
+from django.urls import reverse
 
-from explorer import models
 from explorer import views
-from explorer import choices
 
-class SummaryTests(TestCase):
+@tag('summary')
+class SummaryViewTests(TestCase):
   def setUp(self):
-    self.client = Client()
-    self.filter_taxid = '4930'
-    self.filter_clade = ('Saccharomyces', 'genus')
-    self.filter_isotype = 'All'
-    self.clade_dict = {'4930': ('Saccharomyces', 'genus')}
-    self.isotype_list = choices.ISOTYPES
+    self.factory = RequestFactory()
+    self.clade_txid = '5204'
+    self.default_clade = 'Saccharomyces (genus)'
+    self.default_isotype = 'All'
+    self.clade = 'Basidiomycota (phylum)'
+    self.isotype = 'Asn'
 
-
-  def test_summary_redirects(self):
-    response = self.client.get('/')
-    self.assertEqual(response.status_code, 302)
-    response = self.client.get('/summary')
-    self.assertEqual(response.status_code, 301)
-
-  def test_summary_get(self):
-    response = self.client.get('/summary/')
+  def test_summary_view_get(self):
+    request = self.factory.get(reverse('explorer:summary'))
+    response = views.summary(request)
     self.assertEqual(response.status_code, 200)
+    self.assertContains(response, '<td>{}</td>'.format(self.default_clade))
+    self.assertContains(response, '<td>{}</td>'.format(self.default_isotype))
 
-  def test_summary_valid_post(self):
-    response = self.client.post('/summary/', {
-      'clade': self.filter_clade,
-      'clade_txid': self.filter_taxid,
-      'isotype': self.filter_isotype,
-      'clade_dict': self.clade_dict,
-      'isotype_list': self.isotype_list})
-
-
-class CompareViewTests(TestCase):
-  def setUp(self):
-    self.client = Client()
-
-  def test_compare_get_response(self):
-    response = self.client.get('/compare/')
+  def test_summary_view_valid_post(self):
+    request = self.factory.post(reverse('explorer:summary'), {
+      'clade': self.clade_txid,
+      'isotype': self.isotype
+    })
+    response = views.summary(request)
     self.assertEqual(response.status_code, 200)
-
-
-
-class VariationViewTests(TestCase):
-  def setUp(self):
-    self.client = Client()
-
-  def test_variation_distribution_get_response(self):
-    response = self.client.get('/variation/distribution')
+    self.assertContains(response, '<td>{}</td>'.format(self.clade))
+    self.assertContains(response, '<td>{}</td>'.format(self.isotype))
+  
+  def test_summary_view_invalid_post(self):
+    request = self.factory.post(reverse('explorer:summary'), {
+      'clade': 'invalid',
+      'isotype': 'void'
+    })
+    response = views.summary(request)
     self.assertEqual(response.status_code, 200)
-
-  def test_species_distribution_get_response(self):
-    response = self.client.get('/variation/species')
-    self.assertEqual(response.status_code, 200)
-
+    self.assertContains(response, 'Error in clade')
+    self.assertContains(response, 'Error in isotype')
+    self.assertContains(response, '<td>{}</td>'.format(self.default_clade))
+    self.assertContains(response, '<td>{}</td>'.format(self.default_isotype))

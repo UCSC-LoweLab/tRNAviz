@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.http import JsonResponse
+from django.contrib import messages
 
 import os
 import re
@@ -74,31 +75,26 @@ HUMAN_LABELS.update(PAIRED_FEATURES)
 ISOTYPES = ['Ala', 'Arg', 'Asn', 'Asp', 'Cys', 'Gln', 'Glu', 'Gly', 'His', 'Ile', 'iMet', 'Leu', 'Lys', 'Met', 'Phe', 'Pro', 'Ser', 'Thr', 'Trp', 'Tyr', 'Val']
 
 
-def summary(request):
-  if request.method != 'POST':
-    form = forms.SummaryForm()
-    for clade_taxid, clade in forms.CLADES:
-      if clade_taxid == '4930': break
-
-    return render(request, 'explorer/summary.html', {
-      'form': form,
-      'clade': clade, 
-      'clade_txid': clade_taxid, 
-      'isotype': form['isotype'].value()
-    })
-
-  form = forms.SummaryForm(request.POST)
-  if not form.is_valid():
-    print(form.errors)
-  for clade_taxid, clade in forms.CLADES:
-    if clade_taxid == form['clade'].value(): break
-
+def summary(request):  
+  clade = 'Saccharomyces (genus)'
+  clade_txid = '4930'
+  isotype = 'All'
+  form = forms.SummaryForm()
+  if request.method == 'POST':
+    form = forms.SummaryForm(request.POST)
+    if form.is_valid():
+      for clade_taxid, clade in forms.CLADES:
+        if clade_taxid == form['clade'].value(): break
+      isotype = form['isotype'].value()
+  
   return render(request, 'explorer/summary.html', {
     'form': form,
-    'clade': clade, 
-    'clade_txid': form['clade'].value(), 
-    'isotype': form['isotype'].value()
+    'clade': clade,
+    'clade_txid': clade_txid,
+    'isotype': isotype
   })
+
+
 
 def variation_distribution(request):
   filter_clades = [{'4930': ('Saccharomyces', 'genus')}]
