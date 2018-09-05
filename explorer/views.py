@@ -153,68 +153,6 @@ def variation_species(request):
 
   })
 
-def distribution(request, clade_txids, isotypes, positions):
-
-  # reconstruct clade dict based on ids
-  clade_groups = [[taxid for taxid in clade_group.split(',')] for clade_group in clade_txids.split(';')]
-  clades = []
-  for clade_group in clade_groups: clades.extend([taxid for taxid in clade_group])
-  
-  clade_info = {clade['taxid']: (clade['name'], clade['rank']) for clade in models.Taxonomy.objects.filter(taxid__in = clades).values()}
-  isotypes = ISOTYPES if 'All' in isotypes else isotypes.split(',')
-
-  positions = positions.split(',')
-  query_positions = []
-  if 'single' in positions:
-    query_positions.extend(SINGLE_POSITIONS)
-    positions.remove('single')
-  if 'paired' in positions:
-    query_positions.extend(PAIRED_POSITIONS)
-    positions.remove('paired')
-  if 'tertiary' in positions:
-    query_positions.extend(TERTIARY_INTERACTIONS)
-    positions.remove('tertiary')
-  if 'variable' in positions:
-    query_positions.extend(VARIABLE_LOOP_POSITIONS)
-    positions.remove('variable')
-  query_positions.extend(positions)
-  query_positions = ['p{}'.format(position.replace(':', '_')) for position in list(set(query_positions))]
-  query_positions = query_positions + ['isotype']
-
-  # Filter tRNA set with user queries
-  # For filtering clades, the query is a series of or'd Q statements, e.g. Q('Genus' = 'Saccharomyces') 
-  trnas = []
-  for i, clade_group in enumerate(clade_groups):
-    q_list = []
-    for taxid in clade_info:
-      if taxid not in clade_group: continue
-      name, rank = clade_info[taxid]
-      if rank == 'class':
-        rank = 'taxclass'
-      q_list.append(Q(**{str(rank): name}))
-    query_filter_args = Q()
-    for q in q_list:
-      query_filter_args = query_filter_args | q
-    trna_qs = models.tRNA.objects.filter(*(query_filter_args,)).filter(isotype__in = isotypes).values(*query_positions)
-    df = read_frame(trna_qs)
-    df['group'] = str(i + 1)
-    trnas.append(df)
-  trnas = pd.concat(trnas)
-  freqs = trnas.groupby(['isotype', 'group']).apply(lambda position_counts: position_counts.drop(['isotype', 'group'], axis = 1).apply(lambda x: x.value_counts()).fillna(0))
-  freqs = freqs.unstack(fill_value = 0).stack(0).reset_index().rename(columns = {'level_2': 'position'})
-  freqs['position'] = freqs['position'].apply(lambda position: position[1:].replace('_', ':'))
-  cols = ['isotype', 'position', 'group'] + ['A', 'C', 'G', 'U', '-'] + list(PAIRED_FEATURES.values())
-  freqs = freqs.loc[:, freqs.columns.intersection(cols)]
-  freqs = freqs.set_index(['isotype', 'position', 'group'], drop = False)
-
-  # convert to d3-friendly format
-  plot_data = defaultdict(dict)
-  for isotype in freqs.index.levels[0]:
-    for position in freqs.index.levels[1]:
-      plot_data[isotype][position] = list(pd.DataFrame(freqs.loc[isotype, position]).to_dict(orient = 'index').values())
-
-  return JsonResponse(json.dumps(plot_data), safe = False)
-
 def species_distribution(request, clade_txids, foci):
   # reconstruct clade dict based on ids
   clade_groups = [[taxid for taxid in clade_group.split(',')] for clade_group in clade_txids.split(';')]

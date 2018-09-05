@@ -1,19 +1,13 @@
-var isotypes, positions, parent, bar_x_scale, assembly_group_scale, focus_scale;
-var stacked, y_axis_labels;
-var adata, idata, isotype_scale, position_scale, distro_data;
-var isotype_axis, position_axis, svg;
-var assemblies;
 var all_features = ['A', 'C', 'G', 'U', '-', 'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'A:A', 'A:C', 'A:G', 'C:A', 'C:C', 'C:U', 'G:A', 'G:G', 'U:C', 'U:U', '-:A', '-:C', '-:G', '-:U']
 var sorted_positions = ['1:72', '2:71', '3:70', '4:69', '5:68', '6:67', '7:66', '8', '9', '10:25', '11:24', '12:23', '13:22', '14', '15', '16', '17', '17a', '18', '19', '20', '20a', '20b', '21', '26', '27:43', '28:42', '29:41', '30:40', '31:39', '32', '33', '34', '35', '36', '37', '38', '44', '45', '46', '47', '48', 'V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27', 'V1', 'V2', 'V3', 'V4', 'V5', '49:65', '50:64', '51:63', '52:62', '53:61', '54', '55', '56', '57', '58', '59', '60', '73']
 
 var draw_distribution = function(plot_data) {
-  distro_data = JSON.parse(plot_data);
   d3.select('#distribution-area .loading-overlay').style('display', 'none');
 
-  var isotypes = Object.keys(distro_data).sort();
-  var positions = Object.keys(distro_data[isotypes[0]]).sort((position1, position2) => sorted_positions.indexOf(position1) - sorted_positions.indexOf(position2));
-  var features = Object.keys(distro_data[isotypes[0]][positions[0]][0]).filter(d => all_features.includes(d))
-  var num_groups = distro_data[isotypes[0]][positions[0]].length;
+  var isotypes = Object.keys(plot_data).sort();
+  var positions = Object.keys(plot_data[isotypes[0]]).sort((position1, position2) => sorted_positions.indexOf(position1) - sorted_positions.indexOf(position2));
+  var features = Object.keys(plot_data[isotypes[0]][positions[0]][0]).filter(d => all_features.includes(d))
+  var num_groups = plot_data[isotypes[0]][positions[0]].length;
 
   var plot_width = 60 * isotypes.length;
   var plot_height = 65 * positions.length;
@@ -70,7 +64,7 @@ var draw_distribution = function(plot_data) {
   var draw_facet = function(isotype, position, data) {
 
     var current_facet = isotype + '-' + position;
-    stacked = d3.stack().keys(features)
+    var stacked = d3.stack().keys(features)
       .offset(d3.stackOffsetExpand)(data);    
 
     var bar_x_scale = d3.scaleBand()
@@ -113,7 +107,7 @@ var draw_distribution = function(plot_data) {
       .on('mouseover', d => {
         tooltip_feature.html(d.key);
         tooltip_feature.style('text-color', feature_scale(d.key));
-        // tooltip_count.html(distro_data)
+        // tooltip_count.html(plot_data)
       })
       .selectAll('rect')
       .data(d => d)
@@ -131,7 +125,7 @@ var draw_distribution = function(plot_data) {
         tooltip_isotype.html(isotype);
         tooltip_group.html(d.data.group);
         tooltip_freq.html(Math.round((d[1] - d[0]) * 100) / 100)
-        tooltip_count.html(distro_data[isotype][position].filter(x => x['group'] == d.data.group)[0][d3.select('#tooltip-feature').html()]);
+        tooltip_count.html(plot_data[isotype][position].filter(x => x['group'] == d.data.group)[0][d3.select('#tooltip-feature').html()]);
         tooltip.transition()
           .duration(100)
           .style('opacity', .9)
@@ -144,7 +138,7 @@ var draw_distribution = function(plot_data) {
       })
       .on('mousemove', function(d, i) {  
         tooltip_freq.html(Math.round((d[1] - d[0]) * 100) / 100)
-        tooltip_count.html(distro_data[isotype][position].filter(x => x['group'] == d.data.group)[0][d3.select('#tooltip-feature').html()]);
+        tooltip_count.html(plot_data[isotype][position].filter(x => x['group'] == d.data.group)[0][d3.select('#tooltip-feature').html()]);
         tooltip.style('left', d3.event.pageX + 'px')
           .style('top', d3.event.pageY + 'px');
         })
@@ -162,7 +156,7 @@ var draw_distribution = function(plot_data) {
 
   for (isotype of isotypes) {
     for (position of positions) {
-      draw_facet(isotype, position, distro_data[isotype][position]);
+      draw_facet(isotype, position, plot_data[isotype][position]);
     };
   };
 
@@ -178,13 +172,12 @@ var draw_distribution = function(plot_data) {
 
 
 var draw_species_distribution = function(plot_data) {
-  distro_data = JSON.parse(plot_data);
   d3.select('#distribution-area .loading-overlay').style('display', 'none');
 
-  var foci = Object.keys(distro_data).sort();
+  var foci = Object.keys(plot_data).sort();
   var assembly_groups = []
   for (focus of foci) {
-    assembly_groups = assembly_groups.concat(distro_data[focus].map(d => [d['assembly'], d['group']]))
+    assembly_groups = assembly_groups.concat(plot_data[focus].map(d => [d['assembly'], d['group']]))
   }
   assembly_groups = Array.from(new Set(assembly_groups.map(x => JSON.stringify(x)))).map(x => JSON.parse(x))
   var assemblies = assembly_groups.map(x => x[0])
@@ -209,7 +202,7 @@ var draw_species_distribution = function(plot_data) {
     .append('g')
     .attr('id', 'distribution-plots');
 
-  focus_scale = d3.scaleBand()
+  var focus_scale = d3.scaleBand()
     .domain(foci)
     .range([10, foci.length * facet_width])
     .padding(0.1);
@@ -265,7 +258,7 @@ var draw_species_distribution = function(plot_data) {
   var draw_facet = function(focus, group, data) {
 
     var current_facet = focus + '-' + group;
-    stacked = d3.stack().keys(all_features)
+    var stacked = d3.stack().keys(all_features)
       .offset(d3.stackOffsetExpand)(data); 
 
 
@@ -301,7 +294,7 @@ var draw_species_distribution = function(plot_data) {
       .on('mouseover', d => {
         tooltip_feature.html(d.key);
         tooltip_feature.style('text-color', feature_scale(d.key));
-        // tooltip_count.html(distro_data)
+        // tooltip_count.html(plot_data)
       })
       .selectAll('rect')
       .data(d => d)
@@ -321,7 +314,7 @@ var draw_species_distribution = function(plot_data) {
         tooltip_isotype.html(d.data.focus.split('-')[0]);
         tooltip_group.html(d.data.group);
         tooltip_freq.html(Math.round((d[1] - d[0]) * 100) / 100)
-        tooltip_count.html(distro_data[d.data.focus].filter(x => x['group'] == d.data.group && x['assembly'] == d.data.assembly)[0][d3.select('#tooltip-feature').html()]);
+        tooltip_count.html(plot_data[d.data.focus].filter(x => x['group'] == d.data.group && x['assembly'] == d.data.assembly)[0][d3.select('#tooltip-feature').html()]);
         tooltip.transition()
           .duration(100)
           .style('opacity', .9)
@@ -335,7 +328,7 @@ var draw_species_distribution = function(plot_data) {
       .on('mousemove', function(d, i) {  
         tooltip_freq.html(Math.round((d[1] - d[0]) * 100) / 100)
         var feature = d3.select('#tooltip-feature').html()
-        tooltip_count.html(distro_data[d.data.focus].filter(x => x['group'] == d.data.group && x['assembly'] == d.data.assembly)[0][d3.select('#tooltip-feature').html()]);
+        tooltip_count.html(plot_data[d.data.focus].filter(x => x['group'] == d.data.group && x['assembly'] == d.data.assembly)[0][d3.select('#tooltip-feature').html()]);
         tooltip.style('left', d3.event.pageX + 'px')
           .style('top', d3.event.pageY + 'px');
         })
@@ -353,8 +346,8 @@ var draw_species_distribution = function(plot_data) {
 
   for (focus of foci) {
     for (group of groups) {
-      draw_facet(focus, group, distro_data[focus].filter(x => x['group'] == group));
-      console.log(distro_data[focus].filter(x => x['group'] == group).length)
+      draw_facet(focus, group, plot_data[focus].filter(x => x['group'] == group));
+      console.log(plot_data[focus].filter(x => x['group'] == group).length)
     };
   };
 
