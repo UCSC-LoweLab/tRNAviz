@@ -145,3 +145,4 @@ def tilemap(request, clade_txid):
   freqs = gather_tilemap_freqs(clade_txid)
   plot_data = annotate_tiles(cons, freqs)
   return JsonResponse(plot_data, safe = False)
+

@@ -18,6 +18,7 @@ from django_pandas.io import read_frame
 from django.conf import settings
 from . import models
 from . import forms
+from . import choices
 
 SINGLE_POSITIONS = [
   '8', '9',
@@ -83,10 +84,10 @@ def summary(request):
   if request.method == 'POST':
     form = forms.SummaryForm(request.POST)
     if form.is_valid():
-      for clade_taxid, clade in forms.CLADES:
+      for clade_taxid, clade in choices.CLADES:
         if clade_taxid == form['clade'].value(): break
       isotype = form['isotype'].value()
-  
+
   return render(request, 'explorer/summary.html', {
     'form': form,
     'clade': clade,
@@ -94,33 +95,35 @@ def summary(request):
     'isotype': isotype
   })
 
-
-
 def variation_distribution(request):
-  filter_clades = [{'4930': ('Saccharomyces', 'genus')}]
-  filter_isotypes = ['All']
-  filter_positions = ['single']
+  clade_groups = [['4930', '4895'], ['5204']]
+  isotypes = ['All']
+  positions  = ['8', '9', '14', '35', '36', '37', '46', '73', '12:23', '18:55', '11:24']
 
-  clade_list = {}
-  for taxonomy in models.Taxonomy.objects.values():
-    clade_list[taxonomy['taxid']] = taxonomy['name'], taxonomy['rank']
-
+  form = forms.DistributionForm()
+  fields = ['isotypes', 'positions', 'clade_group_1', 'clade_group_2', 'clade_group_3', 'clade_group_4', 'clade_group_5']
   if request.method == "POST":
-    clade_groups = [request.POST.getlist('form_clades_1'), request.POST.getlist('form_clades_2'), request.POST.getlist('form_clades_3'), request.POST.getlist('form_clades_4'), request.POST.getlist('form_clades_5')]
-    filter_clades = []
-    for clade_group in clade_groups:
-      if len(clade_group) == 0: continue
-      filter_clades.append({taxid: clade_list[taxid] for taxid in clade_group})
-    filter_isotypes = request.POST.getlist('form_isotypes')
-    filter_positions = request.POST.getlist('form_positions')
+    # Django doesn't return multiple choice field properly, so need to grab lists manually
+    form = forms.DistributionForm({field: request.POST.getlist(field) for field in fields})
+    if form.is_valid():
+      clade_groups = form.get_clade_groups()
+      isotypes = form['isotypes'].value()
+      positions = form['positions'].value()
+
+  clade_group_names = []
+  for clade_group in clade_groups:
+    names = []
+    for clade_taxid, clade in choices.CLADES:
+      if clade_taxid in clade_group: 
+        names.append(clade)
+    clade_group_names.append(names)
 
   return render(request, 'explorer/distribution.html', {
-    'plot_clades': filter_clades,
-    'isotypes': filter_isotypes,
-    'positions': filter_positions,
-    'clade_list': clade_list,
-    'isotypes_list': ISOTYPES,
-    'positions_list': POSITIONS
+    'form': form,
+    'clade_groups': clade_groups,
+    'isotypes': isotypes,
+    'positions': positions,
+    'clade_group_names': clade_group_names
   })
 
 def variation_species(request):

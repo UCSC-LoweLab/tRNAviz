@@ -34,6 +34,64 @@ class SummaryFormTests(TestCase):
     form = forms.SummaryForm(data = form_data)
     self.assertFalse(form.is_valid())
 
+
+@tag('variation', 'distribution')
+class DistributionFormTests(TestCase):
+  def setUp(self):
+    self.form_data = {
+      'clade-group-1': ['4930', '4895'], 
+      'clade-group-2': ['5204'],
+      'clade-group-3': [],
+      'clade-group-4': [],
+      'clade-group-5': [],
+      'isotypes': ['Arg', 'Glu', 'His'],
+      'positions': ['8', '9', '14', '35', '36', '37', '46', '73', '12:23', '18:55', '11:24']
+    }
+    self.invalid_form_data = {
+      'clade-group-1': ['0', 'invalid'], 
+      'clade-group-2': [],
+      'clade-group-3': [],
+      'clade-group-4': [],
+      'clade-group-5': [],
+      'isotypes': ['not an isotype', 'also not an isotype'],
+      'positions': ['p8', 'p9', 'p24']
+    }
+
+  def test_distribution_form_valid_select(self):
+    form = forms.DistributionForm(data = self.form_data)
+    self.assertTrue(form.is_valid())
+
+  def test_distribution_form_invalid_select(self):
+    form = forms.DistributionForm(data = self.invalid_form_data)
+    self.assertFalse(form.is_valid())
+
+  def test_distribution_form_malformed_form(self):
+    form = forms.DistributionForm(data = {'invalid': 'void'})
+    self.assertFalse(form.is_valid())
+
+@tag('variation', 'species')
+class DistributionFormTests(TestCase):
+  def setUp(self):
+    pass
+
+  def test_species_form_valid_select(self):
+    pass
+
+  def test_species_form_invalid_select(self):
+    pass
+
+
+  def test_species_form_malformed_form(self):
+    pass
+
+   
+
+
+
+
+
+
+
 @tag('compare')
 class CompareFormTests(TestCase):
   def test_compare_form_valid_select(self):
