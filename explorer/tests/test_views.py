@@ -47,6 +47,9 @@ class SummaryViewTests(TestCase):
 class VariationViewTests(TestCase):
   def setUp(self):
     self.factory = RequestFactory()
+    self.clade_txids = [['4930'], ['5204'], ['6033']]
+    self.positions = ['paired', '1:72', 'variable' ,'2:71', '8']
+    self.isotypes = ['His', 'Met', 'Phe']
 
   @tag('distribution')
   def test_distribution_view_get(self):
@@ -58,12 +61,28 @@ class VariationViewTests(TestCase):
     self.assertContains(response, '<td>All</td>')
     self.assertContains(response, '<td>8, 9, 14, 35, 36, 37, 46, 73, 12:23, 18:55, 11:24</td>')
 
+  @tag('species')
   def test_species_view_get(self):
     request = self.factory.get(reverse('explorer:variation_species'))
     response = views.variation_distribution(request)
     self.assertEqual(response.status_code, 200)
-    self.assertContains(response, '<td><p>Group 1: Schizosaccharomyces (genus)<br>Group 2: Saccharomyces (genus)</p></td>')
+    self.assertContains(response, '<td><p>Group 1: Schizosaccharomyces (genus)')
+    self.assertContains(response, 'Group 2: Saccharomyces (genus)</p></td>')
     self.assertContains(response, '<td><p>Ala, 3:70<br>Gly, 3:70<br>Ala, 46<br>Gly, 46</p></td>')
 
-  # def test_distribution_view_valid_post(self):
-  #   request = self.factory.post(reverse('explorer:variation_distribution'), {'form_clades_1': [{'4930': ('Saccharomyces', 'genus')}]})
+  @tag('distribution')
+  def test_distribution_view_valid_post(self):
+    request = self.factory.post(reverse('explorer:variation_distribution'), {
+      'clade_group_1': self.clade_txids[0],
+      'clade_group_2': self.clade_txids[1],
+      'clade_group_3': self.clade_txids[2],
+      'isotypes': self.isotypes,
+      'positions': self.positions
+    })
+    response = views.variation_distribution(request)
+    self.assertEqual(response.status_code, 200)
+    self.assertContains(response, 'Group 1: Saccharomyces (genus)')
+    self.assertContains(response, 'Group 2: Basidiomycota (phylum)')
+    self.assertContains(response, 'Group 3: Encephalitozoon (genus)')
+    self.assertContains(response, 'paired, 1:72, variable, 2:71, 8')
+    self.assertContains(response, 'His, Met, Phe')

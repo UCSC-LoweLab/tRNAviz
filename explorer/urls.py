@@ -21,7 +21,7 @@ urlpatterns = [
   path('variation/distribution', views.variation_distribution, name = 'variation_distribution'),
   path('variation/species', views.variation_species, name = 'variation_species'),
   path('api/distribution/<str:clade_txids>/<str:isotypes>/<str:positions>/', services.distribution, name = 'distribution'),
-  path('api/species/<str:clade_txids>/<str:foci>/', views.species_distribution, name = 'species_distribution'),
+  path('api/species/<str:clade_txids>/<str:foci>/', services.species_distribution, name = 'species_distribution'),
 
   path('compare/', views.compare, name = 'compare'),
   re_path('api/bitchart/(.*)', views.bitchart, name = 'bitchart'),

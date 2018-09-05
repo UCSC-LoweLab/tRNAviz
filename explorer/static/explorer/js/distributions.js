@@ -3,7 +3,6 @@ var sorted_positions = ['1:72', '2:71', '3:70', '4:69', '5:68', '6:67', '7:66', 
 
 var draw_distribution = function(plot_data) {
   d3.select('#distribution-area .loading-overlay').style('display', 'none');
-
   var isotypes = Object.keys(plot_data).sort();
   var positions = Object.keys(plot_data[isotypes[0]]).sort((position1, position2) => sorted_positions.indexOf(position1) - sorted_positions.indexOf(position2));
   var features = Object.keys(plot_data[isotypes[0]][positions[0]][0]).filter(d => all_features.includes(d))

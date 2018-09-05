@@ -5,6 +5,8 @@ from django.http import JsonResponse
 import json
 from collections import defaultdict
 from django.db.models import Q
+import warnings
+warnings.filterwarnings('ignore')
 import pandas as pd
 from django_pandas.io import read_frame
 
@@ -153,28 +155,61 @@ def reconstruct_clade_group_info(clade_txids):
   clade_groups = [[txid for txid in clade_group.split(',')] for clade_group in clade_txids.split(';')]
   all_clades = []
   for clade_group in clade_groups: all_clades.extend([txid for txid in clade_group])
-  clade_info = {taxid: (clade.split(', ')[0], clade.split(', ')[1][1:-1]) for taxid, clade in choices.CLADES if taxid in all_clades}
+  clade_info = {taxid: (clade.rsplit(' ', 1)[0], clade.rsplit(' ', 1)[1][1:-1]) for taxid, clade in choices.CLADES if taxid in all_clades}
   return clade_groups, clade_info
+
+def position_sort_key(position):
+  if 'V' not in position:
+    if 'a' in position: return 20.1
+    elif 'b' in position: return 20.2
+    else: return int(position.split(':')[0])
+  else: return int(position[1:].split(':')[0]) * 0.1 + 45
 
 def uniquify_positions(positions):
   positions = positions.split(',')
   query_positions = []
   if 'single' in positions:
-    query_positions.extend([x for x, y in choices.SINGLE_POSITIONS])
+    query_positions.extend([y for x, y in choices.SINGLE_POSITIONS])
+    query_positions.remove('Single positions')
     positions.remove('single')
   if 'paired' in positions:
-    query_positions.extend([x for x, y in choices.PAIRED_POSITIONS])
+    query_positions.extend([y for x, y in choices.PAIRED_POSITIONS])
+    query_positions.remove('Paired positions')
     positions.remove('paired')
   if 'tertiary' in positions:
-    query_positions.extend([x for x, y in choices.TERTIARY_INTERACTIONS])
+    query_positions.extend([y for x, y in choices.TERTIARY_INTERACTIONS])
+    query_positions.remove('Tertiary interactions')
     positions.remove('tertiary')
   if 'variable' in positions:
-    query_positions.extend([x for x, y in choices.VARIABLE_ARM])
+    query_positions.extend([y for x, y in choices.VARIABLE_ARM])
+    query_positions.remove('Variable arm')
     positions.remove('variable')
   query_positions.extend(positions)
   # rough position sort
-  query_positions = sorted(sorted(list(set(query_positions))), lambda x: len(x))
-  return positions
+  query_positions = sorted(list(set(query_positions)), key = position_sort_key)
+  return query_positions
+
+def query_trnas_for_distribution(clade_groups, clade_info, isotypes, positions):
+  # Filter tRNA set with user queries
+  trnas = []
+  for i, clade_group in enumerate(clade_groups):
+    # For filtering clades, the query is a series of or'd Q statements, e.g. Q('genus' = 'Saccharomyces') 
+    q_list = []
+    for taxid in clade_info:
+      if taxid not in clade_group: continue
+      name, rank = clade_info[taxid]
+      if rank == 'class': rank = 'taxclass'
+      q_list.append(Q(**{str(rank): name}))
+    query_filter_args = Q()
+    for q in q_list:
+      query_filter_args = query_filter_args | q
+
+    trna_qs = models.tRNA.objects.filter(*(query_filter_args,)).filter(isotype__in = isotypes).values(*positions)
+    df = read_frame(trna_qs)
+    df['group'] = str(i + 1)
+    trnas.append(df)
+
+  return pd.concat(trnas)
   
 def convert_trnas_to_freqs_df(trnas):
   freqs = trnas.groupby(['isotype', 'group']).apply(lambda position_counts: position_counts.drop(['isotype', 'group'], axis = 1).apply(lambda x: x.value_counts()).fillna(0))
@@ -185,38 +220,24 @@ def convert_trnas_to_freqs_df(trnas):
   freqs = freqs.set_index(['isotype', 'position', 'group'], drop = False)
   return freqs
 
-def distribution(request, clade_txids, isotypes, positions):
-  clade_groups, clade_info = reconstruct_clade_group_info(clade_txids)
-  isotypes = [x for x, y in choices.ISOTYPES] if 'All' in isotypes else isotypes.split(',')
-  query_positions = uniquify_positions(positions) + ['isotype']
-
-  # Filter tRNA set with user queries
-  # For filtering clades, the query is a series of or'd Q statements, e.g. Q('Genus' = 'Saccharomyces') 
-  trnas = []
-  for i, clade_group in enumerate(clade_groups):
-    q_list = []
-    for taxid in clade_info:
-      if taxid not in clade_group: continue
-      name, rank = clade_info[taxid]
-      if rank == 'class': rank = 'taxclass'
-      q_list.append(Q(**{str(rank): name}))
-    query_filter_args = Q()
-    for q in q_list:
-      query_filter_args = query_filter_args | q
-    trna_qs = models.tRNA.objects.filter(*(query_filter_args,)).filter(isotype__in = isotypes).values(*query_positions)
-    df = read_frame(trna_qs)
-    df['group'] = str(i + 1)
-    trnas.append(df)
-
-  trnas = pd.concat(trnas)
-  freqs = convert_trnas_to_freqs_df(trnas)
-
+def convert_freqs_to_dict(freqs):
   # convert to d3-friendly format
   plot_data = defaultdict(dict)
   for isotype in freqs.index.levels[0]:
     for position in freqs.index.levels[1]:
       plot_data[isotype][position] = list(pd.DataFrame(freqs.loc[isotype, position]).to_dict(orient = 'index').values())
+  return plot_data
 
+def distribution(request, clade_txids, isotypes, positions):
+  clade_groups, clade_info = reconstruct_clade_group_info(clade_txids)
+  isotypes = [x for x, y in choices.ISOTYPES] if 'All' in isotypes else isotypes.split(',')
+  # Format positions into column names
+  positions = uniquify_positions(positions)
+  query_positions = ['p{}'.format(position.replace(':', '_')) for position in positions] + ['isotype']
+  
+  trnas = query_trnas_for_distribution(clade_groups, clade_info, isotypes, query_positions)
+  freqs = convert_trnas_to_freqs_df(trnas)
+  plot_data = convert_freqs_to_dict(freqs)
   return JsonResponse(plot_data)
 
 def species_convert_trnas_to_freqs_df(trnas):
@@ -263,67 +284,5 @@ def species_distribution(request, clade_txids, foci):
   for focus in freqs.index.levels[0]:
     plot_data[focus] = list(pd.DataFrame(freqs.loc[focus]).to_dict(orient = 'index').values())
 
-  return JsonResponse(plot_data)
+  return JsonResponse(plot_data, safe = True)
 
-
-# def distribution(request, clade_txids, isotypes, positions):
-
-#   # reconstruct clade dict based on ids
-#   clade_groups = [[taxid for taxid in clade_group.split(',')] for clade_group in clade_txids.split(';')]
-#   clades = []
-#   for clade_group in clade_groups: clades.extend([taxid for taxid in clade_group])
-  
-#   clade_info = {clade['taxid']: (clade['name'], clade['rank']) for clade in models.Taxonomy.objects.filter(taxid__in = clades).values()}
-#   isotypes = ISOTYPES if 'All' in isotypes else isotypes.split(',')
-
-#   positions = positions.split(',')
-#   query_positions = []
-#   if 'single' in positions:
-#     query_positions.extend(SINGLE_POSITIONS)
-#     positions.remove('single')
-#   if 'paired' in positions:
-#     query_positions.extend(PAIRED_POSITIONS)
-#     positions.remove('paired')
-#   if 'tertiary' in positions:
-#     query_positions.extend(TERTIARY_INTERACTIONS)
-#     positions.remove('tertiary')
-#   if 'variable' in positions:
-#     query_positions.extend(VARIABLE_LOOP_POSITIONS)
-#     positions.remove('variable')
-#   query_positions.extend(positions)
-#   query_positions = ['p{}'.format(position.replace(':', '_')) for position in list(set(query_positions))]
-#   query_positions = query_positions + ['isotype']
-
-#   # Filter tRNA set with user queries
-#   # For filtering clades, the query is a series of or'd Q statements, e.g. Q('Genus' = 'Saccharomyces') 
-#   trnas = []
-#   for i, clade_group in enumerate(clade_groups):
-#     q_list = []
-#     for taxid in clade_info:
-#       if taxid not in clade_group: continue
-#       name, rank = clade_info[taxid]
-#       if rank == 'class':
-#         rank = 'taxclass'
-#       q_list.append(Q(**{str(rank): name}))
-#     query_filter_args = Q()
-#     for q in q_list:
-#       query_filter_args = query_filter_args | q
-#     trna_qs = models.tRNA.objects.filter(*(query_filter_args,)).filter(isotype__in = isotypes).values(*query_positions)
-#     df = read_frame(trna_qs)
-#     df['group'] = str(i + 1)
-#     trnas.append(df)
-#   trnas = pd.concat(trnas)
-#   freqs = trnas.groupby(['isotype', 'group']).apply(lambda position_counts: position_counts.drop(['isotype', 'group'], axis = 1).apply(lambda x: x.value_counts()).fillna(0))
-#   freqs = freqs.unstack(fill_value = 0).stack(0).reset_index().rename(columns = {'level_2': 'position'})
-#   freqs['position'] = freqs['position'].apply(lambda position: position[1:].replace('_', ':'))
-#   cols = ['isotype', 'position', 'group'] + ['A', 'C', 'G', 'U', '-'] + list(PAIRED_FEATURES.values())
-#   freqs = freqs.loc[:, freqs.columns.intersection(cols)]
-#   freqs = freqs.set_index(['isotype', 'position', 'group'], drop = False)
-
-#   # convert to d3-friendly format
-#   plot_data = defaultdict(dict)
-#   for isotype in freqs.index.levels[0]:
-#     for position in freqs.index.levels[1]:
-#       plot_data[isotype][position] = list(pd.DataFrame(freqs.loc[isotype, position]).to_dict(orient = 'index').values())
-
-#   return JsonResponse(json.dumps(plot_data), safe = False)

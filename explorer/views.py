@@ -98,7 +98,7 @@ def summary(request):
 def variation_distribution(request):
   clade_groups = [['4930', '4895'], ['5204']]
   isotypes = ['All']
-  positions  = ['8', '9', '14', '35', '36', '37', '46', '73', '12:23', '18:55', '11:24']
+  positions = ['8', '9', '14', '35', '36', '37', '46', '73', '12:23', '18:55', '11:24']
 
   form = forms.DistributionForm()
   fields = ['isotypes', 'positions', 'clade_group_1', 'clade_group_2', 'clade_group_3', 'clade_group_4', 'clade_group_5']
@@ -152,54 +152,6 @@ def variation_species(request):
     'positions_list': POSITIONS
 
   })
-
-def species_distribution(request, clade_txids, foci):
-  # reconstruct clade dict based on ids
-  clade_groups = [[taxid for taxid in clade_group.split(',')] for clade_group in clade_txids.split(';')]
-  clades = []
-  for clade_group in clade_groups: clades.extend([taxid for taxid in clade_group])
-  
-  clade_info = {clade['taxid']: (clade['name'], clade['rank']) for clade in models.Taxonomy.objects.filter(taxid__in = clades).values()}
-  foci = [tuple(focus.split(',')) for focus in foci.split(';')]
-  isotypes = [isotype for isotype, position in foci]
-  positions = [position for isotype, position in foci]
-  query_positions = ['p{}'.format(position.replace(':', '_')) for position in positions]
-  query_positions = query_positions + ['isotype', 'assembly']
-
-  # Filter tRNA set with user queries
-  # For filtering clades, the query is a series of or'd Q statements, e.g. Q('Genus' = 'Saccharomyces') 
-  trnas = []
-  for i, clade_group in enumerate(clade_groups):
-    q_list = []
-    for taxid in clade_info:
-      if taxid not in clade_group: continue
-      name, rank = clade_info[taxid]
-      if rank == 'class':
-        rank = 'taxclass'
-      q_list.append(Q(**{str(rank): name}))
-    query_filter_args = Q()
-    for q in q_list:
-      query_filter_args = query_filter_args | q
-    trna_qs = models.tRNA.objects.filter(*(query_filter_args,)).filter(isotype__in = isotypes).values(*query_positions)
-    df = read_frame(trna_qs)
-    df['group'] = str(i + 1)
-    trnas.append(df)
-  trnas = pd.concat(trnas)
-  freqs = trnas.groupby(['isotype', 'group', 'assembly']).apply(lambda position_counts: position_counts.drop(['isotype', 'group', 'assembly'], axis = 1).apply(lambda x: x.value_counts()).fillna(0))
-  freqs = freqs.unstack(fill_value = 0).stack(0).reset_index().rename(columns = {'level_3': 'position'})
-  freqs['position'] = freqs['position'].apply(lambda position: position[1:].replace('_', ':'))
-  freqs['focus'] = freqs.apply(lambda row: '{}-{}'.format(row['isotype'], row['position']), axis = 1)
-  freqs = freqs[freqs['focus'].isin(['{}-{}'.format(isotype, position) for isotype, position in zip(isotypes, positions)])]
-  cols = ['focus', 'group', 'assembly'] + ['A', 'C', 'G', 'U', '-'] + list(PAIRED_FEATURES.values())
-  freqs = freqs.loc[:, freqs.columns.intersection(cols)]
-  freqs = freqs.set_index(['focus', 'group', 'assembly'], drop = False)
-
-  # convert to d3-friendly format
-  plot_data = defaultdict(dict)
-  for focus in freqs.index.levels[0]:
-    plot_data[focus] = list(pd.DataFrame(freqs.loc[focus]).to_dict(orient = 'index').values())
-
-  return JsonResponse(json.dumps(plot_data), safe = False)
 
 def compare(request):
   if request.method != 'POST':

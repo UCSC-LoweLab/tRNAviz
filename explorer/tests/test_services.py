@@ -82,3 +82,73 @@ class SummaryServicesTests(TestCase):
     json_response = services.tilemap(request, self.clade_txid)
     plot_data = json.loads(json_response.content.decode('utf8'))
     self.assertEqual(len(plot_data), 1995) # 21 isotypes * 95 positions
+
+@tag('api', 'variation')
+class VariationServicesTests(TestCase):
+  def setUp(self):
+    self.factory = RequestFactory()
+    self.api_txids = '4930,4895;5204'
+    self.api_positions = 'paired,1:72,variable,2:71,8'
+    self.api_isotypes = 'His,Met,Phe'
+    self.clade_groups = [['4930', '4895'], ['5204']]
+    self.num_groups = 2
+    self.clade_info = {
+      '5204': ('Basidiomycota', 'phylum'), 
+      '4895': ('Schizosaccharomyces', 'genus'), 
+      '4930': ('Saccharomyces', 'genus')
+    }
+    self.positions = ['1:72', '2:71', '3:70', '4:69', '5:68', '6:67', '7:66', '8', '10:25', '11:24', '12:23', '13:22', '27:43', '28:42', '29:41', '30:40', '31:39', 'V1', 'V2', 'V3', 'V4', 'V5', 'V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27', '49:65', '50:64', '51:63', '52:62', '53:61']
+    self.query_positions = ['p1_72', 'p2_71', 'p3_70', 'p4_69', 'p5_68', 'p6_67', 'p7_66', 'p8', 'p10_25', 'p11_24', 'p12_23', 'p13_22', 'p27_43', 'p28_42', 'p29_41', 'p30_40', 'p31_39', 'pV1', 'pV2', 'pV3', 'pV4', 'pV5', 'pV11_V21', 'pV12_V22', 'pV13_V23', 'pV14_V24', 'pV15_V25', 'pV16_V26', 'pV17_V27', 'p49_65', 'p50_64', 'p51_63', 'p52_62', 'p53_61']
+    self.query_positions.append('isotype')
+    self.isotypes = ['His', 'Met', 'Phe']
+    self.trnas = services.query_trnas_for_distribution(self.clade_groups, self.clade_info, self.isotypes, self.query_positions)
+    self.freqs = services.convert_trnas_to_freqs_df(self.trnas)
+    self.plot_data = services.convert_freqs_to_dict(self.freqs)
+
+  @tag('distribution')
+  def test_services_reconstruct_clade_group_info(self):
+    clade_groups, clade_info = services.reconstruct_clade_group_info(self.api_txids)
+    self.assertEqual(len(clade_groups), 2)
+    self.assertEqual(len(clade_info), 3)
+    self.assertEqual(clade_info['5204'], ('Basidiomycota', 'phylum'))
+
+  @tag('distribution')
+  def test_services_uniquify_positions(self):
+    positions = services.uniquify_positions('8,9')
+    self.assertEqual(positions, ['8', '9'])
+    positions = services.uniquify_positions(self.api_positions)
+    self.assertEqual(positions, self.positions)
+  
+
+  @tag('distribution')
+  def test_services_query_trnas_for_distribution(self):
+    self.assertEqual(len(self.trnas.columns), 36)
+    self.assertIn('group', self.trnas.columns)
+    self.assertIn('isotype', self.trnas.columns)
+
+  @tag('distribution')
+  def test_services_convert_trnas_to_freqs_df(self):
+    self.assertIn('isotype', self.freqs.columns)
+    self.assertIn('group', self.freqs.columns)
+    self.assertIn('position', self.freqs.columns)
+    self.assertEqual(len(self.freqs.index.levels), 3)
+    self.assertEqual(set(self.isotypes), set(self.freqs.index.levels[0]))
+    self.assertEqual(set(self.positions), set(self.freqs.index.levels[1]))
+
+  @tag('distribution')
+  def test_services_convert_freqs_to_dict(self):
+    self.assertEqual(len(self.plot_data), len(self.isotypes))
+    for isotype in self.isotypes:
+      with self.subTest(isotype = isotype):
+        self.assertEqual(len(self.plot_data[isotype]), len(self.positions))
+        for position in self.positions:
+          with self.subTest(position = position):
+            self.assertEqual(len(self.plot_data[isotype][position]), self.num_groups)
+
+  @tag('distribution')
+  def test_services_distribution(self):
+    request = self.factory.post('/api/distribution')
+    json_response = services.distribution(request, self.api_txids, self.api_isotypes, self.api_positions)
+    plot_data = json.loads(json_response.content.decode('utf8'))
+    self.assertEqual(type(plot_data), dict)
+    self.assertTrue(len(plot_data) > 0)
