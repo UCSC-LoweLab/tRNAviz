@@ -54,6 +54,11 @@ class DistributionForm(forms.Form):
     return clade_groups
 
 
+  def clean(self):
+    super().clean()
+    if len(self.get_clade_groups()) == 0:
+      raise forms.ValidationError('no clades specified')
+
 class CompareForm(forms.Form):
   name = forms.CharField(widget = forms.TextInput({
     'class': 'form-control name-input',

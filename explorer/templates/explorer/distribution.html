@@ -36,9 +36,14 @@ d3.json('{% url "explorer:distribution" clade_txids=clade_groups|clade_groups_to
 
 {% if form.errors %}
 <div class='alert alert-danger'>
+	{% if form.non_field_errors %}
+		{% for error in form.non_field_errors %}
+			<li>Form error: {{ error|escape }}</li>
+		{% endfor %}
+	{% endif %}
 	{% for field in form %}
 		{% for error in field.errors %}
-			<li>Error in {{ field.name }}: {{ error|escape }}</li>
+			<li>Error in field {{ field.name }}: {{ error|escape }}</li>
 		{% endfor %}
 	{% endfor %}
 </div>
