@@ -72,9 +72,7 @@ HUMAN_LABELS = {
 HUMAN_LABELS.update(SINGLE_FEATURES)
 HUMAN_LABELS.update(PAIRED_FEATURES)
 
-
 ISOTYPES = ['Ala', 'Arg', 'Asn', 'Asp', 'Cys', 'Gln', 'Glu', 'Gly', 'His', 'Ile', 'iMet', 'Leu', 'Lys', 'Met', 'Phe', 'Pro', 'Ser', 'Thr', 'Trp', 'Tyr', 'Val']
-
 
 def summary(request):  
   clade = 'Saccharomyces (genus)'
@@ -97,26 +95,18 @@ def summary(request):
 
 def variation_distribution(request):
   clade_groups = [['4930', '4895'], ['5204']]
+  clade_group_names = [['Saccharomyces (genus)', 'Schizosaccharomyces (genus)'], ['Basidiomycota (phylum)']]
   isotypes = ['All']
   positions = ['8', '9', '14', '35', '36', '37', '46', '73', '12:23', '18:55', '11:24']
 
   form = forms.DistributionForm()
-  fields = ['isotypes', 'positions', 'clade_group_1', 'clade_group_2', 'clade_group_3', 'clade_group_4', 'clade_group_5']
   if request.method == "POST":
-    # Django doesn't return multiple choice field properly, so need to grab lists manually
-    form = forms.DistributionForm({field: request.POST.getlist(field) for field in fields})
+    form = forms.DistributionForm(request.POST)
     if form.is_valid():
       clade_groups = form.get_clade_groups()
       isotypes = form['isotypes'].value()
       positions = form['positions'].value()
-
-  clade_group_names = []
-  for clade_group in clade_groups:
-    names = []
-    for clade_taxid, clade in choices.CLADES:
-      if clade_taxid in clade_group: 
-        names.append(clade)
-    clade_group_names.append(names)
+      clade_group_names = form.get_clade_group_names()
 
   return render(request, 'explorer/distribution.html', {
     'form': form,
@@ -127,30 +117,24 @@ def variation_distribution(request):
   })
 
 def variation_species(request):
-  filter_clades = [{'4895': ('Schizosaccharomyces', 'genus')}, {'4930': ('Saccharomyces', 'genus')}]
+  clade_groups = [['4930', '4895'], ['5204']]
   foci = [('Ala', '3:70'), ('Gly', '3:70'), ('Ala', '46'), ('Gly', '46')]
 
-  clade_list = {}
-  for taxonomy in models.Taxonomy.objects.values():
-    clade_list[taxonomy['taxid']] = taxonomy['name'], taxonomy['rank']
-
+  form = forms.SpeciesDistributionForm()
+  
   if request.method == "POST":
-    clade_groups = [request.POST.getlist('form_clades_1'), request.POST.getlist('form_clades_2'), request.POST.getlist('form_clades_3'), request.POST.getlist('form_clades_4'), request.POST.getlist('form_clades_5')]
-    filter_clades = []
-    for clade_group in clade_groups:
-      if len(clade_group) == 0: continue
-      filter_clades.append({taxid: clade_list[taxid] for taxid in clade_group})
+    form = forms.SpeciesDistributionForm(request.POST)
+    if form.is_valid():
+      clade_groups = form.get_clade_groups()
+      foci = form.get_foci()
 
-    foci = list(zip(request.POST.getlist('form_isotypes'), request.POST.getlist('form_positions')))
-    foci = [focus for focus in foci if focus[0] != '']
+  clade_group_names = form.get_clade_group_names()
 
   return render(request, 'explorer/species.html', {
-    'plot_clades': filter_clades,
+    'form': form,
+    'clade_groups': clade_groups,
     'foci': foci,
-    'clade_list': clade_list,
-    'isotypes_list': ISOTYPES,
-    'positions_list': POSITIONS
-
+    'clade_group_names': clade_groups
   })
 
 def compare(request):

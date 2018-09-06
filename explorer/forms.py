@@ -1,6 +1,8 @@
 from django import forms
 from django.forms import formset_factory
 from . import choices
+from django.utils.safestring import mark_safe
+from django.core.exceptions import ValidationError
 
 class SummaryForm(forms.Form):
   clade = forms.ChoiceField(
@@ -21,7 +23,32 @@ class CladeGroupField(forms.MultipleChoiceField):
     self.choices = choices.CLADES
     self.required = False
 
-class DistributionForm(forms.Form):
+class CladeGroupForm(forms.Form):
+  '''Abstract for any forms that use clade groups'''
+  def get_clade_groups(self):
+    clade_groups = []
+    for i in range(1, 6):
+      clade_group = self['clade_group_{}'.format(i)].value()
+      if clade_group is not None and len(clade_group) > 0:
+        clade_groups.append(clade_group)
+    return clade_groups
+
+  def get_clade_group_names(self):
+    clade_group_names = []
+    for clade_group in self.get_clade_groups():
+      names = []
+      for clade_taxid, clade in choices.CLADES:
+        if clade_taxid in clade_group: 
+          names.append(clade)
+      clade_group_names.append(names)
+    return clade_group_names
+
+  def clean(self):
+    super().clean()
+    if len(self.get_clade_groups()) == 0:
+      raise forms.ValidationError('no clades specified')
+
+class DistributionForm(CladeGroupForm):
   clade_group_1 = CladeGroupField()
   clade_group_2 = CladeGroupField()
   clade_group_3 = CladeGroupField()
@@ -45,19 +72,78 @@ class DistributionForm(forms.Form):
       'positions': self['positions'].value(),
     }
 
-  def get_clade_groups(self):
-    clade_groups = []
+class FocusWidget(forms.MultiWidget):
+  def __init__(self,*args,**kwargs):
+    widgets = (
+      forms.Select({'class': 'form-control multiselect isotype-select'}, choices = choices.ISOTYPES_DISTINCT), 
+      forms.Select({'class': 'form-control multiselect position-select'}, choices = choices.POSITIONS_DISTINCT)
+    )
+    super(FocusWidget, self).__init__(widgets, *args, **kwargs)
+  
+  def decompress(self, value):
+    return [value[0], value[1]] if value else [None, None]
+
+  def format_output(self, rendered_widgets):
+    return ''.join(rendered_widgets)
+
+  def render(self, name, value, attrs=None):
+    if self.is_localized:
+      for widget in self.widgets:
+        widget.is_localized = self.is_localized
+    if not isinstance(value, list):
+        value = self.decompress(value)
+    output = []
+    final_attrs = self.build_attrs(attrs)
+    id_ = final_attrs.get('id', None)
+    for i, widget in enumerate(self.widgets):
+        try: widget_value = value[i]
+        except IndexError: widget_value = None
+        if id_: final_attrs = dict(final_attrs, id='%s_%s' % (id_, i))
+        output.append(widget.render(name + '_%s' % i, widget_value, final_attrs))
+    # Original:
+    # return mark_safe(self.format_output(output))
+    # Only this line was written by myself:
+    return {'isotype': mark_safe(self.format_output(output[0])), 'position': mark_safe(self.format_output(output[1]))}
+
+class FocusField(forms.MultiValueField):
+  widget = FocusWidget
+
+  def __init__(self, *args, **kwargs):
+    fields = (
+      forms.ChoiceField(choices = choices.ISOTYPES_DISTINCT),
+      forms.ChoiceField(choices = choices.POSITIONS_DISTINCT)
+    )
+    super(FocusField, self).__init__(fields, required = False, *args, **kwargs)
+
+  def compress(self, data_list):
+    if data_list:
+      if data_list[0] in self.empty_values:
+          raise ValidationError('Did not select an isotype/position pair', code = 'invalid_isotype')
+      if data_list[1] in self.empty_values:
+          raise ValidationError('Did not select an isotype/position pair', code = 'invalid_position')
+      return tuple(data_list)
+    return None
+
+class SpeciesDistributionForm(CladeGroupForm):
+  clade_group_1 = CladeGroupField()
+  clade_group_2 = CladeGroupField()
+  clade_group_3 = CladeGroupField()
+  clade_group_4 = CladeGroupField()
+  clade_group_5 = CladeGroupField()
+  focus_1 = FocusField()
+  focus_2 = FocusField()
+  focus_3 = FocusField()
+  focus_4 = FocusField()
+  focus_5 = FocusField()
+
+  def get_foci(self):
+    foci = []
     for i in range(1, 6):
-      clade_group = self['clade_group_{}'.format(i)].value()
-      if len(clade_group) > 0:
-        clade_groups.append(clade_group)
-    return clade_groups
+      isotype, position = self['focus_{}'.format(i)].value()
+      if isotype != '' and position != '':
+        foci.append((isotype, position))
+    return foci
 
-
-  def clean(self):
-    super().clean()
-    if len(self.get_clade_groups()) == 0:
-      raise forms.ValidationError('no clades specified')
 
 class CompareForm(forms.Form):
   name = forms.CharField(widget = forms.TextInput({

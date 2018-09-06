@@ -9,19 +9,21 @@
 
 <script>	
 $(document).ready(function() {
-	$('#clade-select-1').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
-	$('#clade-select-2').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
-	$('#clade-select-3').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
-	$('#clade-select-4').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
-	$('#clade-select-5').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
-	$('#isotype-select-1').select2({width: "100%", allowClear: true, placeholder: "Select isotype/position"});
-	$('#position-select-1').select2({width: "100%", allowClear: true, placeholder: "Select isotype/position"});
-	$('#isotype-select-2').select2({width: "100%", allowClear: true, placeholder: "Select isotype/position"});
-	$('#position-select-2').select2({width: "100%", allowClear: true, placeholder: "Select isotype/position"});
-	$('#isotype-select-3').select2({width: "100%", allowClear: true, placeholder: "Select isotype/position"});
-	$('#position-select-3').select2({width: "100%", allowClear: true, placeholder: "Select isotype/position"});
-	$('#isotype-select-4').select2({width: "100%", allowClear: true, placeholder: "Select isotype/position"});
-	$('#position-select-4').select2({width: "100%", allowClear: true, placeholder: "Select isotype/position"});
+	$('#id_clade_group_1').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
+	$('#id_clade_group_2').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
+	$('#id_clade_group_3').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
+	$('#id_clade_group_4').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
+	$('#id_clade_group_5').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
+	$('#id_focus_1_0').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
+	$('#id_focus_1_1').select2({width: "100%", allowClear: true, placeholder: "Select position"});
+	$('#id_focus_2_0').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
+	$('#id_focus_2_1').select2({width: "100%", allowClear: true, placeholder: "Select position"});
+	$('#id_focus_3_0').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
+	$('#id_focus_3_1').select2({width: "100%", allowClear: true, placeholder: "Select position"});
+	$('#id_focus_4_0').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
+	$('#id_focus_4_1').select2({width: "100%", allowClear: true, placeholder: "Select position"});
+	$('#id_focus_5_0').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
+	$('#id_focus_5_1').select2({width: "100%", allowClear: true, placeholder: "Select position"});
 })
 </script>
 {% endblock %}
@@ -32,13 +34,31 @@ $(document).ready(function() {
 <script src="{% static 'explorer/js/distributions.js' %}"></script>
 <script type = "text/javascript">
 
-d3.json('{% url "explorer:species_distribution" clade_txids=plot_clades|clade_dicts_to_url_string foci=foci|foci_to_url_string %}', draw_species_distribution);
+d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_groups_to_url_string foci=foci|foci_to_url_string %}', draw_species_distribution);
 </script>
 {% endblock %}
 
 
 
 {% block filter %}
+
+
+{% if form.errors %}
+<div class='alert alert-danger'>
+	{% if form.non_field_errors %}
+		{% for error in form.non_field_errors %}
+			<li>Form error: {{ error|escape }}</li>
+		{% endfor %}
+	{% endif %}
+	{% for field in form %}
+		{% for error in field.errors %}
+			<li>Error in field {{ field.name }}: {{ error|escape }}</li>
+		{% endfor %}
+	{% endfor %}
+</div>
+{% endif %}
+
+
 <div class='p-3'>
 	<div class='row vertical-align select-bar data-select-bar'>
 		<div class='col-md-2 p-3'>
@@ -49,114 +69,67 @@ d3.json('{% url "explorer:species_distribution" clade_txids=plot_clades|clade_di
 			<form id='data-select-form' action='{% url "explorer:variation_species" %}' method="POST">
 				{% csrf_token %}
 				<div class='my-2'>
-					<select class='multiselect' name="form_clades_1" multiple="multiple" id="clade-select-1">
-						{% for taxid, clade in clade_list.items %}
-							{% if clade.0 == "Eukaryota" %}
-							<option value="{{ taxid }}" selected="selected">{{ clade.0 }} ({{ clade.1 }})</option>
-							{% else %}
-							<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
-							{% endif %}
-						{% endfor %}
-					</select>
-					<select class='multiselect' name="form_clades_2" multiple="multiple" id="clade-select-2">
-						{% for taxid, clade in clade_list.items %}
-						<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
-						{% endfor %}
-					</select>
-					<select class='multiselect' name="form_clades_3" multiple="multiple" id="clade-select-3">
-						{% for taxid, clade in clade_list.items %}
-						<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
-						{% endfor %}
-					</select>
-					<select class='multiselect' name="form_clades_4" multiple="multiple" id="clade-select-4">
-						{% for taxid, clade in clade_list.items %}
-						<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
-						{% endfor %}
-					</select>
-					<select class='multiselect' name="form_clades_5" multiple="multiple" id="clade-select-5">
-						{% for taxid, clade in clade_list.items %}
-						<option value="{{ taxid }}">{{ clade.0 }} ({{ clade.1 }})</option>
-						{% endfor %}
-					</select>
+					{{ form.clade_group_1 }}
 				</div>
 				<div class='my-2'>
-					<div class="row">
-						<div class="col">
-							<select name="form_isotypes" id="isotype-select-1">
-								<option></option>
-								{% for isotype in isotypes_list %}
-								<option value="{{ isotype }}">{{ isotype }}</option>
-								{% endfor %}
-							</select>
+					{{ form.clade_group_2 }}
+				</div>
+				<div class='my-2'>
+					{{ form.clade_group_3 }}
+				</div>
+				<div class='my-2'>
+					{{ form.clade_group_4 }}
+				</div>
+				<div class='my-2'>
+					{{ form.clade_group_5 }}
+				</div>
+				<div class='my-2'>
+					<div class='row'>
+						<div class='col'>
+							{{ form.focus_1.as_widget.isotype }}
 						</div>
-						<div class="col">
-							<select name="form_positions" id="position-select-1">
-								<option></option>
-								{% for position in positions_list %}
-								<option value="{{ position }}">{{ position }}</option>
-								{% endfor %}
-							</select>
+						<div class='col'>
+							{{ form.focus_1.as_widget.position }}
 						</div>
 					</div>
 				</div>
 				<div class='my-2'>
-					<div class="row">
-						<div class="col">
-							<select name="form_isotypes" id="isotype-select-2">
-								<option></option>
-								{% for isotype in isotypes_list %}
-								<option value="{{ isotype }}">{{ isotype }}</option>
-								{% endfor %}
-							</select>
+					<div class='row'>
+						<div class='col'>
+							{{ form.focus_2.as_widget.isotype }}
 						</div>
-						<div class="col">
-							<select name="form_positions" id="position-select-2">
-								<option></option>
-								{% for position in positions_list %}
-								<option value="{{ position }}">{{ position }}</option>
-								{% endfor %}
-							</select>
+						<div class='col'>
+							{{ form.focus_2.as_widget.position }}
 						</div>
 					</div>
 				</div>
 				<div class='my-2'>
-					<div class="row">
-						<div class="col">
-							<select name="form_isotypes" id="isotype-select-3">
-								<option></option>
-								{% for isotype in isotypes_list %}
-								<option value="{{ isotype }}">{{ isotype }}</option>
-								{% endfor %}
-							</select>
+					<div class='row'>
+						<div class='col'>
+							{{ form.focus_3.as_widget.isotype }}
 						</div>
-						<div class="col">
-							<select name="form_positions" id="position-select-3">
-								<option></option>
-								{% for position in positions_list %}
-								<option value="{{ position }}">{{ position }}</option>
-								{% endfor %}
-							</select>
+						<div class='col'>
+							{{ form.focus_3.as_widget.position }}
 						</div>
 					</div>
 				</div>
 				<div class='my-2'>
-					<div class="row">
-						<div class="col">
-							<select name="form_isotypes" id="isotype-select-4">
-								<option></option>
-								<option value="All">All isotypes</option>
-								{% for isotype in isotypes_list %}
-								<option value="{{ isotype }}">{{ isotype }}</option>
-								{% endfor %}
-							</select>
+					<div class='row'>
+						<div class='col'>
+							{{ form.focus_4.as_widget.isotype }}
 						</div>
-						<div class="col">
-							<select name="form_positions" id="position-select-4">
-								<option></option>
-								{% for position in positions_list %}
-								<option value="{{ position }}">{{ position }}</option>
-								{% endfor %}
-							</select>
+						<div class='col'>
+							{{ form.focus_4.as_widget.position }}
+						</div>
+					</div>
+				</div>
+				<div class='my-2'>
+					<div class='row'>
+						<div class='col'>
+							{{ form.focus_5.as_widget.isotype }}
+						</div>
+						<div class='col'>
+							{{ form.focus_5.as_widget.position }}
 						</div>
 					</div>
 				</div>
@@ -175,7 +148,7 @@ d3.json('{% url "explorer:species_distribution" clade_txids=plot_clades|clade_di
 	<tbody>
 		<tr>
 			<th scope="row">Clade groups</th>
-			<td>{{ plot_clades|clade_dicts_to_pretty_string|linebreaks }}</td>
+			<td>{{ clade_groups|linebreaks }}</td>
 		</tr>
 		<tr>
 			<th scope="row">Foci</th>
