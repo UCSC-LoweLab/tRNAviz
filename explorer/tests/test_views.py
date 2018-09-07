@@ -88,18 +88,23 @@ class SpeciesViewTests(TestCase):
       'clade_group_2': self.clade_txids[1],
       'clade_group_3': self.clade_txids[2],
       'focus_1_0': ['Asn'],
-      'focus_1_1': ['8']
+      'focus_1_1': ['46'],
+      'focus_2_0': ['Met'],
+      'focus_2_1': ['46']
     }
 
   def test_species_view_get(self):
-    self.assertEqual(response.status_code, 200)
-    self.assertContains(response, '<td><p>Group 1: Schizosaccharomyces (genus)')
-    self.assertContains(response, 'Group 2: Saccharomyces (genus)</p></td>')
-    self.assertContains(response, '<td><p>Ala, 3:70<br>Gly, 3:70<br>Ala, 46<br>Gly, 46</p></td>')
-
-  @tag('current')
-  def test_species_view_post(self):
-    request = self.factory.post(reverse('explorer:variation_species'), self.valid_post_data)
-    import pdb
-    pdb.set_trace()
+    request = self.factory.get(reverse('explorer:variation_species'))
     response = views.variation_species(request)
+    self.assertEqual(response.status_code, 200)
+    self.assertContains(response, '<td><p>Group 1: Saccharomyces (genus), Schizosaccharomyces (genus)')
+    self.assertContains(response, '<p>Ala, 3:70<br />Gly, 3:70<br />Ala, 46<br />Gly, 46</p>')
+
+  def test_species_view_valid_post(self):
+    request = self.factory.post(reverse('explorer:variation_species'), self.valid_post_data)
+    response = views.variation_species(request)
+    self.assertEqual(response.status_code, 200)
+    self.assertContains(response, 'Group 1: Saccharomyces (genus)')
+    self.assertContains(response, 'Group 2: Basidiomycota (phylum)')
+    self.assertContains(response, 'Group 3: Encephalitozoon (genus)')
+    self.assertContains(response, 'Asn, 46<br />Met, 46')

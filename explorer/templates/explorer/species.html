@@ -148,7 +148,7 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 	<tbody>
 		<tr>
 			<th scope="row">Clade groups</th>
-			<td>{{ clade_groups|linebreaks }}</td>
+			<td>{{ clade_group_names|clade_names_to_pretty_string|linebreaks }}</td>
 		</tr>
 		<tr>
 			<th scope="row">Foci</th>

@@ -44,9 +44,9 @@ class CladeGroupForm(forms.Form):
     return clade_group_names
 
   def clean(self):
-    super().clean()
     if len(self.get_clade_groups()) == 0:
-      raise forms.ValidationError('no clades specified')
+      raise ValidationError('no clades specified')
+    return self.cleaned_data
 
 class DistributionForm(CladeGroupForm):
   clade_group_1 = CladeGroupField()
@@ -140,7 +140,7 @@ class SpeciesDistributionForm(CladeGroupForm):
     foci = []
     for i in range(1, 6):
       isotype, position = self['focus_{}'.format(i)].value()
-      if isotype != '' and position != '':
+      if isotype is not None and position is not None and isotype != '' and position != '':
         foci.append((isotype, position))
     return foci
 

@@ -118,6 +118,7 @@ def variation_distribution(request):
 
 def variation_species(request):
   clade_groups = [['4930', '4895'], ['5204']]
+  clade_group_names = [['Saccharomyces (genus)', 'Schizosaccharomyces (genus)'], ['Basidiomycota (phylum)']]
   foci = [('Ala', '3:70'), ('Gly', '3:70'), ('Ala', '46'), ('Gly', '46')]
 
   form = forms.SpeciesDistributionForm()
@@ -127,14 +128,13 @@ def variation_species(request):
     if form.is_valid():
       clade_groups = form.get_clade_groups()
       foci = form.get_foci()
-
-  clade_group_names = form.get_clade_group_names()
+      clade_group_names = form.get_clade_group_names()
 
   return render(request, 'explorer/species.html', {
     'form': form,
     'clade_groups': clade_groups,
     'foci': foci,
-    'clade_group_names': clade_groups
+    'clade_group_names': clade_group_names
   })
 
 def compare(request):

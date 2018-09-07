@@ -240,7 +240,7 @@ def distribution(request, clade_txids, isotypes, positions):
   plot_data = convert_freqs_to_dict(freqs)
   return JsonResponse(plot_data)
 
-def species_convert_trnas_to_freqs_df(trnas):
+def species_convert_trnas_to_freqs_df(trnas, isotypes, positions):
   freqs = trnas.groupby(['isotype', 'group', 'assembly']).apply(lambda position_counts: position_counts.drop(['isotype', 'group', 'assembly'], axis = 1).apply(lambda x: x.value_counts()).fillna(0))
   freqs = freqs.unstack(fill_value = 0).stack(0).reset_index().rename(columns = {'level_3': 'position'})
   freqs['position'] = freqs['position'].apply(lambda position: position[1:].replace('_', ':'))
@@ -256,28 +256,9 @@ def species_distribution(request, clade_txids, foci):
   foci = [tuple(focus.split(',')) for focus in foci.split(';')]
   isotypes, positions = zip(*foci)
   positions = [position for isotype, position in foci]
-  query_positions = query_positions + ['isotype', 'assembly']
-
-  # Filter tRNA set with user queries
-  # For filtering clades, the query is a series of or'd Q statements, e.g. Q('Genus' = 'Saccharomyces') 
-  trnas = []
-  for i, clade_group in enumerate(clade_groups):
-    q_list = []
-    for taxid in clade_info:
-      if taxid not in clade_group: continue
-      name, rank = clade_info[taxid]
-      if rank == 'class':
-        rank = 'taxclass'
-      q_list.append(Q(**{str(rank): name}))
-    query_filter_args = Q()
-    for q in q_list:
-      query_filter_args = query_filter_args | q
-    trna_qs = models.tRNA.objects.filter(*(query_filter_args,)).filter(isotype__in = isotypes).values(*query_positions)
-    df = read_frame(trna_qs)
-    df['group'] = str(i + 1)
-    trnas.append(df)
-  trnas = pd.concat(trnas)
-  freqs = species_convert_trnas_to_freqs_df(trnas)
+  query_positions = ['p{}'.format(position.replace(':', '_')) for position in positions] + ['isotype', 'assembly']
+  trnas = query_trnas_for_distribution(clade_groups, clade_info, isotypes, query_positions)
+  freqs = species_convert_trnas_to_freqs_df(trnas, isotypes, positions)
 
   # convert to d3-friendly format
   plot_data = defaultdict(dict)

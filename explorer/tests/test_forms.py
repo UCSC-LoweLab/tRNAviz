@@ -6,6 +6,8 @@ from explorer import choices
 from explorer import forms
 from explorer import views
 
+from django.core.exceptions import ValidationError
+
 @tag('summary')
 class SummaryFormTests(TestCase):
   def setUp(self):
@@ -38,24 +40,41 @@ class SummaryFormTests(TestCase):
 @tag('variation', 'distribution')
 class DistributionFormTests(TestCase):
   def setUp(self):
+    self.clade_groups = [['4930', '4895'], ['5204']]
+    self.clade_group_names = [['Saccharomyces (genus)', 'Schizosaccharomyces (genus)'], ['Basidiomycota (phylum)']]
     self.form_data = {
-      'clade-group-1': ['4930', '4895'], 
-      'clade-group-2': ['5204'],
-      'clade-group-3': [],
-      'clade-group-4': [],
-      'clade-group-5': [],
+      'clade_group_1': self.clade_groups[0], 
+      'clade_group_2': self.clade_groups[1],
       'isotypes': ['Arg', 'Glu', 'His'],
       'positions': ['8', '9', '14', '35', '36', '37', '46', '73', '12:23', '18:55', '11:24']
     }
     self.invalid_form_data = {
-      'clade-group-1': ['0', 'invalid'], 
-      'clade-group-2': [],
-      'clade-group-3': [],
-      'clade-group-4': [],
-      'clade-group-5': [],
+      'clade_group_1': ['0', 'invalid'],
       'isotypes': ['not an isotype', 'also not an isotype'],
       'positions': ['p8', 'p9', 'p24']
     }
+    self.empty_clade_form_data = {
+      'isotypes': ['Arg', 'Glu', 'His'],
+      'positions': ['8', '9', '14', '35', '36', '37', '46', '73', '12:23', '18:55', '11:24']
+    }
+
+  @tag('species')
+  def test_get_clade_groups(self):
+    form = forms.DistributionForm(self.form_data)
+    clade_groups = form.get_clade_groups()
+    self.assertEqual(clade_groups, self.clade_groups)
+
+  @tag('species')
+  def test_get_clade_group_names(self):
+    form = forms.DistributionForm(self.form_data)
+    clade_group_names = form.get_clade_group_names()
+    self.assertEqual(clade_group_names, self.clade_group_names)
+
+  @tag('species')
+  def test_clade_group_form_clean_raises_error(self):
+    form = forms.DistributionForm(self.empty_clade_form_data)
+    with self.assertRaisesMessage(ValidationError, 'no clades specified'):
+      form.clean()
 
   def test_distribution_form_valid_select(self):
     form = forms.DistributionForm(data = self.form_data)
@@ -70,27 +89,53 @@ class DistributionFormTests(TestCase):
     self.assertFalse(form.is_valid())
 
 @tag('variation', 'species')
-class DistributionFormTests(TestCase):
+class SpeciesFormTests(TestCase):
   def setUp(self):
-    pass
+    self.clade_groups = [['4930', '4895'], ['5204']]
+    self.form_data = {
+      'clade_group_1': self.clade_groups[0], 
+      'clade_group_2': self.clade_groups[1],
+      'focus_1_0': 'Asn',
+      'focus_1_1': '46',
+      'focus_2_0': 'Met',
+      'focus_2_1': '46'
+    }
+    self.foci = [('Asn', '46'), ('Met', '46')]
 
+    self.invalid_form_data = {
+      'clade_group_1': ['0', 'invalid'],
+      'focus_1_0': 'n/a',
+      'focus_1_1': 'n/a'
+    }
+    self.empty_focus_form_data = {
+      'clade_group_1': self.clade_groups[0], 
+      'clade_group_2': self.clade_groups[1],
+      'focus_1_0': 'Met',
+      'focus_1_1': '',
+
+    }
   def test_species_form_valid_select(self):
-    pass
+    form = forms.SpeciesDistributionForm(data = self.form_data)
+    self.assertTrue(form.is_valid())
 
   def test_species_form_invalid_select(self):
-    pass
-
+    form = forms.SpeciesDistributionForm(data = self.invalid_form_data)
+    self.assertFalse(form.is_valid())
 
   def test_species_form_malformed_form(self):
-    pass
+    form = forms.SpeciesDistributionForm(data = {'invalid': 'void'})
+    self.assertFalse(form.is_valid())
 
-   
+  def test_focus_form_clean_raises_error(self):
+    form = forms.SpeciesDistributionForm(self.empty_focus_form_data)
+    self.assertFalse(form.is_valid())
+    self.assertIn('Did not select an isotype/position pair', form.errors['focus_1'])
 
-
-
-
-
-
+  def test_get_foci(self):
+    form = forms.SpeciesDistributionForm(self.form_data)
+    self.assertTrue(form.is_valid())
+    foci = form.get_foci()
+    self.assertEqual(foci, self.foci)
 
 @tag('compare')
 class CompareFormTests(TestCase):

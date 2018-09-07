@@ -32,11 +32,11 @@ class SummaryServicesTests(TestCase):
     num_positions = len(freqs)
     self.assertEqual(num_positions, 67)
     self.assertEqual(len(freqs['17a']), 5)
-    for feature in services.SUMMARY_SINGLE_FEATURES:
+    for feature in services.SINGLE_FEATURES:
       with self.subTest(feature = feature):
         self.assertIn(feature, freqs['17a'])
     self.assertEqual(len(freqs['3:70']), 25)
-    for feature in services.SUMMARY_PAIRED_FEATURES.values():
+    for feature in services.PAIRED_FEATURES.values():
       with self.subTest(feature = feature):
         self.assertIn(feature, freqs['3:70'])
     
@@ -83,8 +83,8 @@ class SummaryServicesTests(TestCase):
     plot_data = json.loads(json_response.content.decode('utf8'))
     self.assertEqual(len(plot_data), 1995) # 21 isotypes * 95 positions
 
-@tag('api', 'variation')
-class VariationServicesTests(TestCase):
+@tag('api', 'variation', 'distribution')
+class DistributionServicesTests(TestCase):
   def setUp(self):
     self.factory = RequestFactory()
     self.api_txids = '4930,4895;5204'
@@ -105,28 +105,25 @@ class VariationServicesTests(TestCase):
     self.freqs = services.convert_trnas_to_freqs_df(self.trnas)
     self.plot_data = services.convert_freqs_to_dict(self.freqs)
 
-  @tag('distribution')
+  @tag('species')
   def test_services_reconstruct_clade_group_info(self):
     clade_groups, clade_info = services.reconstruct_clade_group_info(self.api_txids)
     self.assertEqual(len(clade_groups), 2)
     self.assertEqual(len(clade_info), 3)
     self.assertEqual(clade_info['5204'], ('Basidiomycota', 'phylum'))
 
-  @tag('distribution')
   def test_services_uniquify_positions(self):
     positions = services.uniquify_positions('8,9')
     self.assertEqual(positions, ['8', '9'])
     positions = services.uniquify_positions(self.api_positions)
     self.assertEqual(positions, self.positions)
   
-
-  @tag('distribution')
+  @tag('species')
   def test_services_query_trnas_for_distribution(self):
     self.assertEqual(len(self.trnas.columns), 36)
     self.assertIn('group', self.trnas.columns)
     self.assertIn('isotype', self.trnas.columns)
 
-  @tag('distribution')
   def test_services_convert_trnas_to_freqs_df(self):
     self.assertIn('isotype', self.freqs.columns)
     self.assertIn('group', self.freqs.columns)
@@ -135,7 +132,6 @@ class VariationServicesTests(TestCase):
     self.assertEqual(set(self.isotypes), set(self.freqs.index.levels[0]))
     self.assertEqual(set(self.positions), set(self.freqs.index.levels[1]))
 
-  @tag('distribution')
   def test_services_convert_freqs_to_dict(self):
     self.assertEqual(len(self.plot_data), len(self.isotypes))
     for isotype in self.isotypes:
@@ -145,10 +141,45 @@ class VariationServicesTests(TestCase):
           with self.subTest(position = position):
             self.assertEqual(len(self.plot_data[isotype][position]), self.num_groups)
 
-  @tag('distribution')
   def test_services_distribution(self):
-    request = self.factory.post('/api/distribution')
+    request = self.factory.get('/api/distribution')
     json_response = services.distribution(request, self.api_txids, self.api_isotypes, self.api_positions)
     plot_data = json.loads(json_response.content.decode('utf8'))
     self.assertEqual(type(plot_data), dict)
     self.assertTrue(len(plot_data) > 0)
+
+@tag('api', 'variation', 'species')
+class SpeciesServicesTests(TestCase):
+  def setUp(self):
+    self.factory = RequestFactory()
+    self.api_txids = '4930,4895;5204'
+    self.api_foci = 'His,1:72;Met,8'
+    self.clade_groups = [['4930', '4895'], ['5204']]
+    self.clade_info = {
+      '5204': ('Basidiomycota', 'phylum'), 
+      '4895': ('Schizosaccharomyces', 'genus'), 
+      '4930': ('Saccharomyces', 'genus')
+    }
+    self.foci = [('His', '1:72'), ('Met', '8')]
+    self.isotypes, self.positions = zip(*self.foci)
+    self.query_positions = ['p{}'.format(position.replace(':', '_')) for position in self.positions] + ['isotype', 'assembly']
+    self.trnas = services.query_trnas_for_distribution(self.clade_groups, self.clade_info, self.isotypes, self.query_positions)
+    self.freqs = services.species_convert_trnas_to_freqs_df(self.trnas, self.isotypes, self.positions)
+
+  def test_services_species_convert_trnas_to_freqs_df(self):
+    self.assertIn('focus', self.freqs.columns)
+    self.assertIn('group', self.freqs.columns)
+    self.assertIn('assembly', self.freqs.columns)
+    self.assertEqual(len(self.freqs.index.levels), 3)
+    foci = set(['{}-{}'.format(focus[0], focus[1]) for focus in self.foci])
+    self.assertEqual(foci, set(self.freqs.index.levels[0]))
+
+  def test_services_species(self):
+    request = self.factory.get('/api/species')
+    json_response = services.species_distribution(request, self.api_txids, self.api_foci)
+    plot_data = json.loads(json_response.content.decode('utf8'))
+    self.assertEqual(type(plot_data), dict)
+    for focus in plot_data:
+      for freqs_dict in plot_data[focus]:
+        with self.subTest(focus = focus, assembly = freqs_dict['assembly']):
+          self.assertEqual(len(freqs_dict), 18)
