@@ -47,7 +47,6 @@ class tRNA(models.Model):
   isoscore_ac = models.FloatField()
   dbname = models.CharField(max_length = 150)
   assembly = models.CharField(max_length = 150)
-  varietas = models.CharField(max_length = 150, blank = True, null = True)
   species = models.CharField(max_length = 100, blank = True, null = True)
   genus = models.CharField(max_length = 50, blank = True, null = True)
   family = models.CharField(max_length = 50, blank = True, null = True)
