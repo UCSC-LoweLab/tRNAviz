@@ -30,6 +30,7 @@ class Taxonomy(models.Model):
   name = models.CharField(max_length = 200)
   rank = models.CharField(max_length = 20)
   taxid = models.CharField(max_length = 10)
+  domain = models.CharField(max_length = 4)
 
   def __str__(self):
     return '{} ({})'.format(self.name, self.rank)

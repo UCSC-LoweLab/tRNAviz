@@ -76,7 +76,7 @@ ISOTYPES = ['Ala', 'Arg', 'Asn', 'Asp', 'Cys', 'Gln', 'Glu', 'Gly', 'His', 'Ile'
 
 def summary(request):  
   clade = 'Saccharomyces (genus)'
-  clade_txid = '4930'
+  clade_txid = '28889'
   isotype = 'All'
   form = forms.SummaryForm()
   if request.method == 'POST':
