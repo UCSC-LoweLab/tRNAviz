@@ -47,9 +47,16 @@ def get_coords(request):
   serializer = serializers.CoordSerializer(data, many = True)
   return JsonResponse(serializer.data, safe = False)
 
-def autocomplete(request):
+def search(request, search_type):
   query = request.GET.get('term')
-  taxonomy_qs = models.Taxonomy.objects.filter(name__icontains = query)  
+  taxonomy_qs = models.Taxonomy.objects.filter(name__icontains = query)
+  if search_type == 'clade': taxonomy_qs = taxonomy_qs.exclude(rank = 'assembly')
+  data = {'results': [{'id': tax.taxid, 'text': str(tax)} for tax in taxonomy_qs] , 'more': False}
+  return JsonResponse(data, safe = False)
+
+def taxonomy_search(request):
+  query = request.GET.get('term')
+  taxonomy_qs = models.Taxonomy.objects.filter(name__icontains = query).exclude(rank = 'assembly')
   data = {'results': [{'id': tax.taxid, 'text': str(tax)} for tax in taxonomy_qs] , 'more': False}
   return JsonResponse(data, safe = False)
 

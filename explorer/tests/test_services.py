@@ -4,24 +4,34 @@ from explorer import models
 from explorer import services
 from explorer import views
 
-@tag('current')
-class AutocompleteTests(TestCase):
+@tag('api', 'search')
+class SearchTests(TestCase):
   def setUp(self):
     self.client = Client()
     self.factory = RequestFactory()
 
   def test_nonexistent_clade_query(self):
-    request = self.factory.get('/taxonomy/search', {'term': 'sdcasdf'})
-    json_response = services.autocomplete(request)
+    request = self.factory.get('/search/', {'term': 'sdcasdf'})
+    json_response = services.search(request, 'taxonomy')
     data = json.loads(json_response.content.decode('utf8'))
     self.assertEqual(data['results'], [])
 
   def test_valid_lowercase_query(self):
-    request = self.factory.get('/taxonomy/search', {'term': 'japonicus'})
-    json_response = services.autocomplete(request)
+    request = self.factory.get('/search/', {'term': 'japonicus'})
+    json_response = services.search(request, 'taxonomy')
     data = json.loads(json_response.content.decode('utf8'))
     self.assertFalse(data['more'])
     self.assertIn({"id": "4897", "text": "Schizosaccharomyces japonicus (species)"}, data['results'])
+
+  def test_assemblies_filtered_query(self):
+    request = self.factory.get('/search/', {'term': 'Saccharomyces'})
+    json_response = services.search(request, 'clade')
+    data = json.loads(json_response.content.decode('utf8'))
+    self.assertFalse(data['more'])
+    for key in data['results']:
+      clade = key['text']
+      with self.subTest(clade = clade):
+        self.assertFalse('assembly' in clade)
 
 @tag('api', 'summary')
 class SummaryServicesTests(TestCase):

@@ -79,8 +79,6 @@ class DistributionFormTests(TestCase):
   @tag('current')
   def test_distribution_form_valid_select(self):
     form = forms.DistributionForm(data = self.form_data)
-    import pdb
-    pdb.set_trace()
     self.assertTrue(form.is_valid())
 
   def test_distribution_form_invalid_select(self):

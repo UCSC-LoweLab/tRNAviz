@@ -3,27 +3,26 @@
 {% load explorer_extras %}
 
 {% block filterjs %}
-<script src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous'></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 
 <script>	
 $(document).ready(function() {
-	$('#id_clade_group_1').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
-	$('#id_clade_group_2').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
-	$('#id_clade_group_3').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
-	$('#id_clade_group_4').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
-	$('#id_clade_group_5').select2({width: "100%", allowClear: true, placeholder: "Select clade(s)"});
-	$('#id_focus_1_0').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
-	$('#id_focus_1_1').select2({width: "100%", allowClear: true, placeholder: "Select position"});
-	$('#id_focus_2_0').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
-	$('#id_focus_2_1').select2({width: "100%", allowClear: true, placeholder: "Select position"});
-	$('#id_focus_3_0').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
-	$('#id_focus_3_1').select2({width: "100%", allowClear: true, placeholder: "Select position"});
-	$('#id_focus_4_0').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
-	$('#id_focus_4_1').select2({width: "100%", allowClear: true, placeholder: "Select position"});
-	$('#id_focus_5_0').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
-	$('#id_focus_5_1').select2({width: "100%", allowClear: true, placeholder: "Select position"});
+	for (var i = 1; i < 6; i++) {
+		$('#id_clade_group_' + i).select2({
+			width: "100%", 
+			allowClear: true, 
+			placeholder: "Select clade(s)", 
+			minimumInputLength: 3,
+		  ajax: {
+		  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
+	    	dataType: 'json'
+	  	}
+		});
+	  $('#id_focus_' + i + '_0').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
+	  $('#id_focus_' + i + '_1').select2({width: "100%", allowClear: true, placeholder: "Select position"});
+	}
 })
 </script>
 {% endblock %}
@@ -68,71 +67,27 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 
 			<form id='data-select-form' action='{% url "explorer:variation_species" %}' method="POST">
 				{% csrf_token %}
-				<div class='my-2'>
-					{{ form.clade_group_1 }}
-				</div>
-				<div class='my-2'>
-					{{ form.clade_group_2 }}
-				</div>
-				<div class='my-2'>
-					{{ form.clade_group_3 }}
-				</div>
-				<div class='my-2'>
-					{{ form.clade_group_4 }}
-				</div>
-				<div class='my-2'>
-					{{ form.clade_group_5 }}
-				</div>
-				<div class='my-2'>
-					<div class='row'>
-						<div class='col'>
-							{{ form.focus_1.as_widget.isotype }}
+
+				{% for field in form.visible_fields %}
+					<div class='my-2'>
+					{% if 'focus' in field.name %}
+						<div class='row'>
+							<div class='col'>
+								{{ field.as_widget.isotype }}
+							</div>
+							<div class='col'>
+								{{ field.as_widget.position }}
+							</div>
 						</div>
-						<div class='col'>
-							{{ form.focus_1.as_widget.position }}
-						</div>
+					{% else %}
+						<select class='form-control multiselect clade-select' multiple name="{{ field.name }}" id="id_{{ field.name }}" data-select2-id="id_{{ field.name }}">
+							{% for choice in field.value %}
+							<option value="{{ choice }}" selected >{{ choice|clade_lookup }}</option>
+							{% endfor %}
+						</select>
+					{% endif %}
 					</div>
-				</div>
-				<div class='my-2'>
-					<div class='row'>
-						<div class='col'>
-							{{ form.focus_2.as_widget.isotype }}
-						</div>
-						<div class='col'>
-							{{ form.focus_2.as_widget.position }}
-						</div>
-					</div>
-				</div>
-				<div class='my-2'>
-					<div class='row'>
-						<div class='col'>
-							{{ form.focus_3.as_widget.isotype }}
-						</div>
-						<div class='col'>
-							{{ form.focus_3.as_widget.position }}
-						</div>
-					</div>
-				</div>
-				<div class='my-2'>
-					<div class='row'>
-						<div class='col'>
-							{{ form.focus_4.as_widget.isotype }}
-						</div>
-						<div class='col'>
-							{{ form.focus_4.as_widget.position }}
-						</div>
-					</div>
-				</div>
-				<div class='my-2'>
-					<div class='row'>
-						<div class='col'>
-							{{ form.focus_5.as_widget.isotype }}
-						</div>
-						<div class='col'>
-							{{ form.focus_5.as_widget.position }}
-						</div>
-					</div>
-				</div>
+				{% endfor %}
 
 				<div class='my-2'>
 					<button class='btn btn-primary' type='submit'>Submit</button>

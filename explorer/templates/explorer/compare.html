@@ -10,7 +10,7 @@
 {% block title %}tRNAviz | Compare{% endblock %}
 
 {% block filterjs %}
-<script src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous'></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
@@ -18,10 +18,28 @@
 
 <script type='text/javascript'>
 $(document).ready(function() {
-	$('#clade-select-0').select2({width: "100%", allowClear: true, placeholder: "Select reference clade"});
+	$('#clade-select-0').select2({
+			width: "100%", 
+			allowClear: true, 
+			placeholder: "Select reference clade", 
+			minimumInputLength: 3,
+		  ajax: {
+		  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
+	    	dataType: 'json'
+	  	}
+		});
 	$('#id_form-0-isotype').select2({width: "100%", allowClear: true, placeholder: "Select reference isotype"});
 	for (var i = 2, form_rows = $('.form-row'); i < form_rows.length + 2; i++) {
-		$('#clade-select-' + i).select2({width: "100%", allowClear: true, placeholder: "Select clade"});
+		$('#clade-select-' + i).select2({
+			width: "100%", 
+			allowClear: true, 
+			placeholder: "Select clade", 
+			minimumInputLength: 3,
+		  ajax: {
+		  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
+	    	dataType: 'json'
+	  	}
+		});
 		$('#id_form-' + i + '-isotype').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
 	}
 	// Destroy bootstrap toggle for dummy, reinitialize when adding a new row
@@ -73,7 +91,16 @@ $(document).on('click', '.add-form-row', function(e){
   }
 
   $.when(addFormRow()).done( function() {
-  	clade_select.select2({width: "100%", allowClear: true, placeholder: "Select clade"});
+  	clade_select.select2({
+			width: "100%", 
+			allowClear: true, 
+			placeholder: "Select clade", 
+			minimumInputLength: 3,
+		  ajax: {
+				url: "{% url 'explorer:search' search_type='taxonomy' %}",
+	    	dataType: 'json'
+	  	}
+		});
   	isotype_select.select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
   	use_fasta_toggle.bootstrapToggle();
   });
@@ -97,10 +124,26 @@ $(document).on('click', '.remove-form-row', function(e){
       if ($(this).prop('tagName') != "SELECT") return true;
 
       // remove and rebind select2 for select fields
+      // special handling for clade field, which needs to set up ajax lookups
       $(this).select2("destroy");
       $(this).attr('data-select2-id', id);
       var field = name.split('-').pop()
-      $(this).select2({width: "100%", allowClear: true, placeholder: select2_placeholders[field]});
+      if (field == "clade") {
+      	$(this).select2({
+					width: "100%", 
+					allowClear: true, 
+					placeholder: "Select clade", 
+					minimumInputLength: 3,
+				  ajax: {
+				  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
+			    	dataType: 'json'
+			  	}
+				});
+      }
+      else {
+      	$(this).select2({width: "100%", allowClear: true, placeholder: select2_placeholders[field]});
+      }
+
     });
   }
 });
@@ -160,15 +203,11 @@ $(document).ready(function () {
 					<div class='my-2 db-select' style="display: {{ form.use_fasta.value|yesno:'none,block' }};">
 						<select class='form-control multiselect clade-select' name="form-{{ forloop.counter0 }}-clade" id="clade-select-{{ forloop.counter0 }}">
 							<option></option>
-							{% for clade in form.clade.field.choices %}
-							{% if form.clade.value == None and forloop.parentloop.counter < 3 and clade.1 == "Eukaryota (domain)" %}
-							<option value="{{ clade.0 }}" selected="selected">{{ clade.1 }}</option>
-							{% elif form.clade.value == clade.0 %}
-							<option value="{{ clade.0 }}" selected="selected">{{ clade.1 }}</option>
-							{% else %}
-							<option value="{{ clade.0 }}">{{ clade.1 }}</option>
+							{% if form.clade.value == None and forloop.counter < 3 %}
+							<option value="2759" selected>Eukaryota (domain)</option>
+							{% elif form.clade.value != None %}
+							<option value="{{ form.clade.value }}" selected >{{ form.clade.value|clade_lookup }}</option>
 							{% endif %}
-							{% endfor %}
 						</select>
 					</div>
 					<div class='my-2 db-select'  style="display: {{ form.use_fasta.value|yesno:'none,block' }};">

@@ -6,13 +6,22 @@
 {% block title %}tRNAviz | Summary{% endblock %}
 
 {% block filterjs %}
-<script src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous'></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 
 <script>	
 $(document).ready(function() {
-	$('#id_clade').select2({width: "100%", allowClear: true, placeholder: "Select a clade"});
+	$('#id_clade').select2({
+		width: "100%", 
+		allowClear: true, 
+		placeholder: "Select reference clade", 
+		minimumInputLength: 3,
+	  ajax: {
+	  	url: "{% url 'explorer:search' search_type='clade' %}",
+    	dataType: 'json'
+  	}
+	});
 	$('#id_isotype').select2({width: "100%", allowClear: true, placeholder: "Select an isotype"});
 })
 </script>
@@ -53,7 +62,11 @@ d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', draw_tilemap)
 			<form id='data-select-form' action='{% url "explorer:summary" %}' method="POST">
 				{% csrf_token %}
 				<div class='my-2'>
-					{{ form.clade }}
+					<select class='form-control multiselect clade-select' name="clade" id="id_clade">
+						{% if form.clade.value == None %}
+						<option></option>
+						{% endif %}
+					</select>
 				</div>
 				<div class='my-2'>
 					{{ form.isotype }}

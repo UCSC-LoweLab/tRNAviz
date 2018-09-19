@@ -26,6 +26,6 @@ urlpatterns = [
   path('compare/', views.compare, name = 'compare'),
   re_path('api/bitchart/(.*)', views.bitchart, name = 'bitchart'),
 
-  path('taxonomy/search/', services.autocomplete, name = 'taxonomy_search'),
+  path('search/<str:search_type>', services.search, name = 'search'),
 
 ]

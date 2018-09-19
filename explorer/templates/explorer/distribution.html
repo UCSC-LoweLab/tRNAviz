@@ -17,7 +17,7 @@ $(document).ready(function() {
 			placeholder: "Select clade(s)", 
 			minimumInputLength: 3,
 		  ajax: {
-		  	url: "{% url 'explorer:taxonomy_search' %}",
+		  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
 	    	dataType: 'json'
 	  	}
 		});
