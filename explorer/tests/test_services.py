@@ -10,17 +10,18 @@ class AutocompleteTests(TestCase):
     self.client = Client()
     self.factory = RequestFactory()
 
-  def test_invalid_query(self):
-    request = self.factory.get('/taxonomy/search', {'term': 'sdc'})
+  def test_nonexistent_clade_query(self):
+    request = self.factory.get('/taxonomy/search', {'term': 'sdcasdf'})
     json_response = services.autocomplete(request)
-    clade_choices = json.loads(json_response.content.decode('utf8'))
-    self.assertEqual(clade_choices, ['No clades found'])
+    data = json.loads(json_response.content.decode('utf8'))
+    self.assertEqual(data['results'], [])
 
   def test_valid_lowercase_query(self):
     request = self.factory.get('/taxonomy/search', {'term': 'japonicus'})
     json_response = services.autocomplete(request)
-    clade_choices = json.loads(json_response.content.decode('utf8'))
-    self.assertIn(["4897", "Schizosaccharomyces japonicus (species)"], clade_choices)
+    data = json.loads(json_response.content.decode('utf8'))
+    self.assertFalse(data['more'])
+    self.assertIn({"id": "4897", "text": "Schizosaccharomyces japonicus (species)"}, data['results'])
 
 @tag('api', 'summary')
 class SummaryServicesTests(TestCase):
@@ -191,6 +192,7 @@ class SpeciesServicesTests(TestCase):
     foci = set(['{}-{}'.format(focus[0], focus[1]) for focus in self.foci])
     self.assertEqual(foci, set(self.freqs.index.levels[0]))
 
+  @tag('not-done')
   def test_services_species(self):
     request = self.factory.get('/api/species')
     json_response = services.species_distribution(request, self.api_txids, self.api_foci)
@@ -200,3 +202,4 @@ class SpeciesServicesTests(TestCase):
       for freqs_dict in plot_data[focus]:
         with self.subTest(focus = focus, assembly = freqs_dict['assembly']):
           self.assertEqual(len(freqs_dict), 18)
+
