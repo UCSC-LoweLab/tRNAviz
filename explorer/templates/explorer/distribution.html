@@ -72,6 +72,9 @@ d3.json('{% url "explorer:distribution" clade_txids=clade_groups|clade_groups_to
 						{{ field }}
 					{% else %}
 					<select class='form-control multiselect clade-select' multiple name="{{ field.name }}" id="id_{{ field.name }}" data-select2-id="id_{{ field.name }}">
+						{% for choice in field.value %}
+						<option value="{{ choice }}" selected >{{ choice|clade_lookup }}</option>
+						{% endfor %}
 					</select>
 					{% endif %}
 					</div>

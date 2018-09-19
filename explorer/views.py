@@ -100,6 +100,7 @@ def variation_distribution(request):
   clade_group_names = [['Saccharomyces (genus)', 'Schizosaccharomyces (genus)'], ['Basidiomycota (phylum)']]
   isotypes = ['All']
   positions = ['8', '9', '14', '35', '36', '37', '46', '73', '12:23', '18:55', '11:24']
+  form_clade_values = []
 
   form = forms.DistributionForm()
   if request.method == "POST":
@@ -116,6 +117,7 @@ def variation_distribution(request):
     'isotypes': isotypes,
     'positions': positions,
     'clade_group_names': clade_group_names
+
   })
 
 def variation_species(request):

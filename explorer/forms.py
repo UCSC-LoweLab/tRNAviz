@@ -16,12 +16,12 @@ class SummaryForm(forms.Form):
     choices = choices.ISOTYPES,
     required = True)
 
-class CladeGroupField(forms.MultipleChoiceField):
-  def __init__(self, *args, **kwargs):
-    super(CladeGroupField, self).__init__(*args, **kwargs)
-    self.widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'})
-    self.choices = choices.CLADES
-    self.required = False
+# class CladeGroupField(forms.MultipleChoiceField):
+#   def __init__(self, *args, **kwargs):
+#     super(CladeGroupField, self).__init__(*args, **kwargs)
+#     self.widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'})
+#     self.choices = choices.CLADES
+#     self.required = False
 
 class CladeGroupForm(forms.Form):
   '''Abstract for any forms that use clade groups'''
@@ -49,11 +49,11 @@ class CladeGroupForm(forms.Form):
     return self.cleaned_data
 
 class DistributionForm(CladeGroupForm):
-  clade_group_1 = CladeGroupField()
-  clade_group_2 = CladeGroupField()
-  clade_group_3 = CladeGroupField()
-  clade_group_4 = CladeGroupField()
-  clade_group_5 = CladeGroupField()
+  clade_group_1 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
+  clade_group_2 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
+  clade_group_3 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
+  clade_group_4 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
+  clade_group_5 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
   isotypes = forms.MultipleChoiceField(
     widget = forms.SelectMultiple({'class': 'form-control multiselect isotype-select'}),
     initial = 'All',
@@ -125,11 +125,11 @@ class FocusField(forms.MultiValueField):
     return None
 
 class SpeciesDistributionForm(CladeGroupForm):
-  clade_group_1 = CladeGroupField()
-  clade_group_2 = CladeGroupField()
-  clade_group_3 = CladeGroupField()
-  clade_group_4 = CladeGroupField()
-  clade_group_5 = CladeGroupField()
+  clade_group_1 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
+  clade_group_2 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
+  clade_group_3 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
+  clade_group_4 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
+  clade_group_5 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
   focus_1 = FocusField()
   focus_2 = FocusField()
   focus_3 = FocusField()
