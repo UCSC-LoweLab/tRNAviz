@@ -84,8 +84,9 @@ def summary(request):
     if form.is_valid():
       clade_taxid = ''
       clade = ''
-      for clade_taxid, clade in choices.CLADES:
-        if clade_taxid == form['clade'].value(): break
+      for clade_txid, clade in choices.CLADES:
+        if clade_txid == form['clade'].value():
+          break
       isotype = form['isotype'].value()
 
   return render(request, 'explorer/summary.html', {

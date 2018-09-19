@@ -63,8 +63,8 @@ d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', draw_tilemap)
 				{% csrf_token %}
 				<div class='my-2'>
 					<select class='form-control multiselect clade-select' name="clade" id="id_clade">
-						{% if form.clade.value == None %}
-						<option></option>
+						{% if form.clade.value != None %}
+						<option value="{{ form.clade.value }}">{{ form.clade.value|clade_lookup }}</option>
 						{% endif %}
 					</select>
 				</div>
