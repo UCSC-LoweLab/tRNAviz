@@ -4,6 +4,23 @@ from explorer import models
 from explorer import services
 from explorer import views
 
+@tag('current')
+class AutocompleteTests(TestCase):
+  def setUp(self):
+    self.client = Client()
+    self.factory = RequestFactory()
+
+  def test_invalid_query(self):
+    request = self.factory.get('/taxonomy/search', {'term': 'sdc'})
+    json_response = services.autocomplete(request)
+    clade_choices = json.loads(json_response.content.decode('utf8'))
+    self.assertEqual(clade_choices, ['No clades found'])
+
+  def test_valid_lowercase_query(self):
+    request = self.factory.get('/taxonomy/search', {'term': 'japonicus'})
+    json_response = services.autocomplete(request)
+    clade_choices = json.loads(json_response.content.decode('utf8'))
+    self.assertIn(["4897", "Schizosaccharomyces japonicus (species)"], clade_choices)
 
 @tag('api', 'summary')
 class SummaryServicesTests(TestCase):

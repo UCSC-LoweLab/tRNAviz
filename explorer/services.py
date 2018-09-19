@@ -47,6 +47,13 @@ def get_coords(request):
   serializer = serializers.CoordSerializer(data, many = True)
   return JsonResponse(serializer.data, safe = False)
 
+def autocomplete(request):
+  query = request.GET.get('term')
+  taxonomy_qs = models.Taxonomy.objects.filter(name__icontains = query)  
+  data = {'results': [{'id': tax.taxid, 'text': str(tax)} for tax in taxonomy_qs] , 'more': False}
+  return JsonResponse(data, safe = False)
+
+
 def gather_cloverleaf_freqs(clade_txid, isotype):
   freqs_qs = models.Freq.objects.filter(taxid = clade_txid, isotype = isotype)
   # preprocess freqs so Django doesn't submit separate queries per filter

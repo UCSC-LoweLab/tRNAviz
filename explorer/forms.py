@@ -9,7 +9,7 @@ class SummaryForm(forms.Form):
     widget = forms.Select({'class': 'form-control multiselect isotype-select'}),
     choices = choices.CLADES,
     required = True,
-    initial = '')
+    initial = '4930')
   isotype = forms.ChoiceField(
     widget = forms.Select({'class': 'form-control multiselect isotype-select'}), 
     initial = 'All',

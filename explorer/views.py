@@ -74,14 +74,16 @@ HUMAN_LABELS.update(PAIRED_FEATURES)
 
 ISOTYPES = ['Ala', 'Arg', 'Asn', 'Asp', 'Cys', 'Gln', 'Glu', 'Gly', 'His', 'Ile', 'iMet', 'Leu', 'Lys', 'Met', 'Phe', 'Pro', 'Ser', 'Thr', 'Trp', 'Tyr', 'Val']
 
-def summary(request):  
+def summary(request):
   clade = 'Saccharomyces (genus)'
-  clade_txid = '28889'
+  clade_txid = '4930'
   isotype = 'All'
   form = forms.SummaryForm()
   if request.method == 'POST':
     form = forms.SummaryForm(request.POST)
     if form.is_valid():
+      clade_taxid = ''
+      clade = ''
       for clade_taxid, clade in choices.CLADES:
         if clade_taxid == form['clade'].value(): break
       isotype = form['isotype'].value()
