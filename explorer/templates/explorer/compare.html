@@ -156,7 +156,7 @@ $(document).on('click', '.remove-form-row', function(e){
 <script type="text/javascript">
 $(document).ready(function () {
 	if ('{{ valid_form }}' == 'True') {
-		d3.json('{% url "explorer:bitchart" formset_json %}', draw_bitchart);
+		d3.json('{% url "explorer:bitchart" formset_json=formset_json %}', draw_bitchart);
 		
 	}
 })

@@ -42,23 +42,23 @@ BITCHART_POSITIONS = ['8', '9', '14', '15', '16', '17', '17a', '18', '19', '20',
   '1:72', '2:71', '3:70', '4:69', '5:68', '6:67', '7:66', '10:25', '11:24', '12:23', '13:22', 
   '27:43', '28:42', '29:41', '30:40', '31:39', '49:65', '50:64', '51:63', '52:62', '53:61']
 
-def bitchart(request, formset_json_filename):
+def bitchart(request, formset_json):
   # get formset
-  formset = json.loads(open(settings.MEDIA_ROOT + formset_json_filename).read())
-  os.remove(settings.MEDIA_ROOT + formset_json_filename)
+  formset_data = json.loads(open(settings.MEDIA_ROOT + formset_json).read())
+  os.remove(settings.MEDIA_ROOT + formset_json)
   
   seqs = read_all_trnas()
-  trna_fasta_files = write_trnas_to_files(formset, seqs)
+  trna_fasta_files = write_trnas_to_files(formset_data, seqs)
   ref_model_fh = build_reference_model(trna_fasta_files)
   ref_bits = calculate_normalizing_scores(ref_model_fh)
-  bits = align_trnas_collect_bit_scores(trna_fasta_files[1:], formset, ref_model_fh)
+  bits = align_trnas_collect_bit_scores(trna_fasta_files[1:], formset_data, ref_model_fh)
 
   # Normalize bits against reference bits
   bits['score'] = round(bits.apply(lambda x: x['score'] - ref_bits[ref_bits.position == x['position']]['score'].values[0], axis = 1), 2)
 
   # Append consensus and modal feature bits
-  ref_taxid = formset[0]['clade']
-  ref_isotype = formset[0]['isotype']
+  ref_taxid = formset_data[0]['clade']
+  ref_isotype = formset_data[0]['isotype']
   ref_cons = get_cons_bits(ref_taxid, ref_isotype)
   ref_freqs = get_modal_bits(ref_taxid, ref_isotype)
   bits = pd.concat([bits, ref_cons, ref_freqs], sort = True).reset_index(drop = True)
@@ -82,6 +82,41 @@ def read_all_trnas():
     seqs.append(seq)
   seq_file_handle.close()
   return seqs
+
+def write_trnas_to_files(formset_data, seqs):
+  # write tRNA sets to files
+  trna_fasta_files = []
+  for i, form in enumerate(formset_data):
+    # Skip dummy form row
+    if i == 1: continue 
+    
+    # Prepare tRNAs for writing to file
+    trna_fasta_fh = NamedTemporaryFile('w', buffering = 1)
+    trna_seqs = []
+
+    # For selects, query db
+    if 'use_fasta' not in form or not form['use_fasta']:
+      clade_qs = models.Taxonomy.objects.filter(taxid = form['clade']).values()[0]
+      rank, name = clade_qs['rank'] if clade_qs['rank'] != 'class' else 'taxclass', clade_qs['name']
+      trna_qs = models.tRNA.objects.filter(Q(**{rank: name})).values('seqname')
+      if form['isotype'] != 'All':
+        trna_qs = trna_qs.filter(isotype = form['isotype'])
+      seqnames = [d['seqname'] for d in trna_qs]
+      for seq in seqs:
+        if seq.description in seqnames: trna_seqs.append(seq)
+
+      # make sure that there are enough seqs to build a CM with
+      if i == 0 and len(trna_qs) < 5:
+        raise ValidationError('Not enough sequences in database for reference category. Query a broader set.')
+
+      SeqIO.write(trna_seqs, trna_fasta_fh, 'fasta')
+    # otherwise write input directly into file
+    else:
+      trna_fasta_fh.write(form['fasta'])
+    
+    trna_fasta_fh.flush()
+    trna_fasta_files.append(trna_fasta_fh)
+  return trna_fasta_files
 
 
 def build_reference_model(trna_fasta_files):
@@ -122,12 +157,12 @@ def calculate_normalizing_scores(ref_model_fh):
   return ref_bits
 
 
-def align_trnas_collect_bit_scores(trna_fasta_files, formset, ref_model_fh):
+def align_trnas_collect_bit_scores(trna_fasta_files, formset_data, ref_model_fh):
   # Align tRNAs to reference model and collect bit scores
   bits = pd.DataFrame()
   num_model = '{}/euk-num.cm'.format(settings.ENGINE_DIR)
   for i, trna_fasta_fh in enumerate(trna_fasta_files):
-    group_name = formset[i+2]['name']
+    group_name = formset_data[i+2]['name']
 
     num_model_align_fh = NamedTemporaryFile('r+')
     processed_fasta_fh = NamedTemporaryFile('r+', buffering = 1)
@@ -179,45 +214,6 @@ def get_modal_bits(ref_taxid, ref_isotype):
   ref_freqs['score'] = 0
   ref_freqs['group'] = 'Most common feature'
   return ref_freqs
-
-
-def write_trnas_to_files(formset, seqs):
-  # write tRNA sets to files
-  trna_fasta_files = []
-  for i, form in enumerate(formset):
-    print('Form {} with dict {}'.format(i, form))
-
-    # Skip dummy form row
-    if i == 1: continue 
-    
-    # Prepare tRNAs for writing to file
-    trna_fasta_fh = NamedTemporaryFile('w', buffering = 1)
-    trna_seqs = []
-
-    # For selects, query db
-    if 'use_fasta' not in form or not form['use_fasta']:
-      clade_qs = models.Taxonomy.objects.filter(taxid = form['clade']).values()[0]
-      rank, name = clade_qs['rank'] if clade_qs['rank'] != 'class' else 'taxclass', clade_qs['name']
-      trna_qs = models.tRNA.objects.filter(Q(**{rank: name})).values('seqname')
-      if form['isotype'] != 'All':
-        trna_qs = trna_qs.filter(isotype = form['isotype'])
-      seqnames = [d['seqname'] for d in trna_qs]
-      for seq in seqs:
-        if seq.description in seqnames: trna_seqs.append(seq)
-
-      # make sure that there are enough seqs to build a CM with
-      if i == 0 and len(trna_qs) < 5:
-        raise ValidationError('Not enough sequences in database for reference category. Query a broader set.')
-
-      SeqIO.write(trna_seqs, trna_fasta_fh, 'fasta')
-    # otherwise write input directly into file
-    else:
-      trna_fasta_fh.write(form['fasta'])
-    
-    trna_fasta_fh.flush()
-    trna_fasta_files.append(trna_fasta_fh)
-  return trna_fasta_files
-
 
 def parse_parsetree(parsetree_fh):
   positions = {4: '73', 5: '1:72', 6: '2:71', 7: '3:70', 8: '4:69', 9: '5:68', 10: '6:67', 11: '7:66', 12: '8', 13: '9', 18: '10:25', 19: '11:24', 20: '12:23', 21: '13:22', 22: '14', 23: '15', 24: '16', 25: '17', 26: '17a', 27: '18', 28: '19', 29: '20', 30: '20a', 31: '20b', 32: '21', 35: '26', 36: '27:43', 37: '28:42', 38: '29:41', 39: '30:40', 40: '31:39', 41: '32', 42: '33', 43: '34', 44: '35', 45: '36', 46: '37', 47: '38', 50: '44', 51: '45', 54: 'V11:V21', 55: 'V12:V22', 56: 'V13:V23', 57: 'V14:V24', 58: 'V15:V25', 59: 'V16:V26', 60: 'V17:V27', 61: 'V1', 62: 'V2', 63: 'V3', 64: 'V4', 65: 'V5', 68: '46', 69: '47', 70: '48', 71: '49:65', 72: '50:64', 73: '51:63', 74: '52:62', 75: '53:61', 76: '54', 77: '55', 78: '56', 79: '57', 80: '58', 81: '59', 82: '60'}

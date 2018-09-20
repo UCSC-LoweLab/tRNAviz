@@ -14,7 +14,9 @@ def redirect_home(request):
 urlpatterns = [
   path('', redirect_home),
   path('summary/', views.summary, name = 'summary'),
+  path('search/<str:search_type>', services.search, name = 'search'),
   path('api/coords', services.get_coords, name = 'coords'),
+
   path('api/cloverleaf/<str:clade_txid>/<str:isotype>/', services.cloverleaf, name = 'cloverleaf'),
   path('api/tilemap/<str:clade_txid>/', services.tilemap, name = 'tilemap'),
 
@@ -25,8 +27,5 @@ urlpatterns = [
   path('api/species/<str:clade_txids>/<str:foci>/', services.species_distribution, name = 'species_distribution'),
 
   path('compare/', views.compare, name = 'compare'),
-  re_path('api/bitchart/(.*)', compare.bitchart, name = 'bitchart'),
-
-  path('search/<str:search_type>', services.search, name = 'search'),
-
+  re_path('api/bitchart/(?P<formset_json>.+)', compare.bitchart, name = 'bitchart'),
 ]
