@@ -231,7 +231,7 @@ var draw_tilemap = function(tilemap_data) {
       tilemap_height = 500,
       tile_width = 14;
 
-  var isotypes = Array.from(new Set(tilemap_data.map(function(d) d['isotype']))).sort();
+  var isotypes = Array.from(new Set(tilemap_data.map(d => d['isotype']))).sort();
   var positions = ['1:72', '2:71', '3:70', '4:69', '5:68', '6:67', '7:66', '8', '9', '10:25', '11:24', '12:23', '13:22', '14', '15', '16', '17', '17a', '18', '19', '20', '20a', '20b', '21', '26', '27:43', '28:42', '29:41', '30:40', '31:39', '32', '33', '34', '35', '36', '37', '38', '44', '45', 'V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27', 'V1', 'V2', 'V3', 'V4', 'V5', '46', '47', '48', '49:65', '50:64', '51:63', '52:62', '53:61', '54', '55', '56', '57', '58', '59', '60', '73'];
 
   var tilemap = d3.select('#tilemap-area')
