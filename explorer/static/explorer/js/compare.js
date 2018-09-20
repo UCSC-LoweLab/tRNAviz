@@ -125,6 +125,7 @@ var draw_bitchart = function(plot_data) {
   	.attr('transform', 'translate(' + y_axis_offset + ', 0)')
     .attr('text-anchor', 'middle')
     .attr('alignment-baseline', 'middle')
+    .attr('dominant-baseline', 'middle')
     .attr('font-size', '0.8em')
   	.attr('x', d => position_scale(d['position']) + tile_width / 2)
   	.attr('y', d => group_scale(d['group']) + tile_width / 2)

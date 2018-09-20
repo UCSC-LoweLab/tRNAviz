@@ -15,7 +15,7 @@ class SearchTests(TestCase):
     json_response = services.search(request, 'taxonomy')
     data = json.loads(json_response.content.decode('utf8'))
     self.assertEqual(data['results'], [])
-
+  
   def test_valid_lowercase_query(self):
     request = self.factory.get('/search/', {'term': 'japonicus'})
     json_response = services.search(request, 'taxonomy')
