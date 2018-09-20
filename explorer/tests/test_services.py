@@ -1,4 +1,5 @@
 from django.test import TestCase, Client, tag, RequestFactory
+from django.urls import reverse
 import json
 from explorer import models
 from explorer import services
@@ -11,20 +12,20 @@ class SearchTests(TestCase):
     self.factory = RequestFactory()
 
   def test_nonexistent_clade_query(self):
-    request = self.factory.get('/search/', {'term': 'sdcasdf'})
+    request = self.factory.get(reverse('explorer:search', kwargs = {'term': 'sdcasdf'}))
     json_response = services.search(request, 'taxonomy')
     data = json.loads(json_response.content.decode('utf8'))
     self.assertEqual(data['results'], [])
   
   def test_valid_lowercase_query(self):
-    request = self.factory.get('/search/', {'term': 'japonicus'})
+    request = self.factory.get(reverse('explorer:search', kwargs = {'term': 'japonicus'}))
     json_response = services.search(request, 'taxonomy')
     data = json.loads(json_response.content.decode('utf8'))
     self.assertFalse(data['more'])
     self.assertIn({"id": "4897", "text": "Schizosaccharomyces japonicus (species)"}, data['results'])
 
   def test_assemblies_filtered_query(self):
-    request = self.factory.get('/search/', {'term': 'Saccharomyces'})
+    request = self.factory.get(reverse('explorer:search', kwargs = {'term': 'Saccharomyces'}))
     json_response = services.search(request, 'clade')
     data = json.loads(json_response.content.decode('utf8'))
     self.assertFalse(data['more'])
@@ -38,6 +39,7 @@ class SummaryServicesTests(TestCase):
   def setUp(self):
     self.client = Client()
     self.factory = RequestFactory()
+    self.request = self.factory.get('')
     self.clade_txid = '4930'
     self.isotype = 'All'
     self.cloverleaf_cons = models.Consensus.objects.filter(taxid = self.clade_txid, isotype = self.isotype).values()[0]
@@ -47,7 +49,7 @@ class SummaryServicesTests(TestCase):
 
   @tag('compare', 'cloverleaf')
   def test_services_coords(self):
-    response = self.client.get('/api/coords')
+    response = self.client.get(reverse('explorer:coords'))
     coords_list = json.loads(response.content.decode('utf8'))
     self.assertEqual(len(coords_list), 95)
     for key in ['x', 'y', 'position', 'radius']:
@@ -79,8 +81,7 @@ class SummaryServicesTests(TestCase):
   
   @tag('cloverleaf')
   def test_services_cloverleaf(self):
-    request = self.factory.post('/api/cloverleaf')
-    json_response = services.cloverleaf(request, self.clade_txid, self.isotype)
+    json_response = services.cloverleaf(self.request, self.clade_txid, self.isotype)
     plot_data = json.loads(json_response.content.decode('utf8'))
     self.assertEqual(len(plot_data), 95)
 
@@ -106,8 +107,7 @@ class SummaryServicesTests(TestCase):
 
   @tag('tilemap')
   def test_services_tilemap(self):
-    request = self.factory.post('/api/tilemap')
-    json_response = services.tilemap(request, self.clade_txid)
+    json_response = services.tilemap(self.request, self.clade_txid)
     plot_data = json.loads(json_response.content.decode('utf8'))
     self.assertEqual(len(plot_data), 1995) # 21 isotypes * 95 positions
 
@@ -115,6 +115,7 @@ class SummaryServicesTests(TestCase):
 class DistributionServicesTests(TestCase):
   def setUp(self):
     self.factory = RequestFactory()
+    self.request = self.factory.get('')
     self.api_txids = '4930,4895;5204'
     self.api_positions = 'paired,1:72,variable,2:71,8'
     self.api_isotypes = 'His,Met,Phe'
@@ -170,8 +171,7 @@ class DistributionServicesTests(TestCase):
             self.assertEqual(len(self.plot_data[isotype][position]), self.num_groups)
 
   def test_services_distribution(self):
-    request = self.factory.get('/api/distribution')
-    json_response = services.distribution(request, self.api_txids, self.api_isotypes, self.api_positions)
+    json_response = services.distribution(self.request, self.api_txids, self.api_isotypes, self.api_positions)
     plot_data = json.loads(json_response.content.decode('utf8'))
     self.assertEqual(type(plot_data), dict)
     self.assertTrue(len(plot_data) > 0)
@@ -180,6 +180,7 @@ class DistributionServicesTests(TestCase):
 class SpeciesServicesTests(TestCase):
   def setUp(self):
     self.factory = RequestFactory()
+    self.request = self.factory.get('')
     self.api_txids = '4930,4895;5204'
     self.api_foci = 'His,1:72;Met,8'
     self.clade_groups = [['4930', '4895'], ['5204']]
@@ -202,10 +203,8 @@ class SpeciesServicesTests(TestCase):
     foci = set(['{}-{}'.format(focus[0], focus[1]) for focus in self.foci])
     self.assertEqual(foci, set(self.freqs.index.levels[0]))
 
-  @tag('not-done')
   def test_services_species(self):
-    request = self.factory.get('/api/species')
-    json_response = services.species_distribution(request, self.api_txids, self.api_foci)
+    json_response = services.species_distribution(self.request, self.api_txids, self.api_foci)
     plot_data = json.loads(json_response.content.decode('utf8'))
     self.assertEqual(type(plot_data), dict)
     for focus in plot_data:

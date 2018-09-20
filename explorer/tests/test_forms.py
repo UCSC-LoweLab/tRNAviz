@@ -76,7 +76,6 @@ class DistributionFormTests(TestCase):
     with self.assertRaisesMessage(ValidationError, 'no clades specified'):
       form.clean()
 
-  @tag('current')
   def test_distribution_form_valid_select(self):
     form = forms.DistributionForm(data = self.form_data)
     self.assertTrue(form.is_valid())
