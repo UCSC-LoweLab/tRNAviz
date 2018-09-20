@@ -12,20 +12,20 @@ class SearchTests(TestCase):
     self.factory = RequestFactory()
 
   def test_nonexistent_clade_query(self):
-    request = self.factory.get(reverse('explorer:search', kwargs = {'term': 'sdcasdf'}))
+    request = self.factory.get(reverse('explorer:search', kwargs = {'search_type': 'taxonomy'}), {'term': 'sdcasdf'})
     json_response = services.search(request, 'taxonomy')
     data = json.loads(json_response.content.decode('utf8'))
     self.assertEqual(data['results'], [])
   
   def test_valid_lowercase_query(self):
-    request = self.factory.get(reverse('explorer:search', kwargs = {'term': 'japonicus'}))
+    request = self.factory.get(reverse('explorer:search', kwargs = {'search_type': 'taxonomy'}), {'term': 'japonicus'})
     json_response = services.search(request, 'taxonomy')
     data = json.loads(json_response.content.decode('utf8'))
     self.assertFalse(data['more'])
     self.assertIn({"id": "4897", "text": "Schizosaccharomyces japonicus (species)"}, data['results'])
 
   def test_assemblies_filtered_query(self):
-    request = self.factory.get(reverse('explorer:search', kwargs = {'term': 'Saccharomyces'}))
+    request = self.factory.get(reverse('explorer:search', kwargs = {'search_type': 'clade'}), {'term': 'Saccharomyces'})
     json_response = services.search(request, 'clade')
     data = json.loads(json_response.content.decode('utf8'))
     self.assertFalse(data['more'])
