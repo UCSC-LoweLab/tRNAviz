@@ -1,13 +1,9 @@
-var bitchart_data;
 var all_features = ['A', 'C', 'G', 'U', '-', 'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'A:A', 'A:C', 'A:G', 'C:A', 'C:C', 'C:U', 'G:A', 'G:G', 'U:C', 'U:U', '-:A', '-:C', '-:G', '-:U']
 var sorted_positions = ['1:72', '2:71', '3:70', '4:69', '5:68', '6:67', '7:66', '8', '9', '10:25', '11:24', '12:23', '13:22', '14', '15', '16', '17', '17a', '18', '19', '20', '20a', '20b', '21', '26', '27:43', '28:42', '29:41', '30:40', '31:39', '32', '33', '34', '35', '36', '37', '38', '44', '45', '46', '47', '48', '49:65', '50:64', '51:63', '52:62', '53:61', '54', '55', '56', '57', '58', '59', '60', '73']
-var groups;
-var adata;
-var group_scale, position_scale, score_scale;
+
 var draw_bitchart = function(plot_data) {
-	bitchart_data = JSON.parse(plot_data);
-	bits = Object.values(bitchart_data['bits']);
-	groups = bitchart_data['groups']
+	var bits = Object.values(plot_data['bits']);
+	var groups = plot_data['groups']
 
   d3.select('#plot-area .loading-overlay').style('display', 'none');
 
@@ -42,7 +38,7 @@ var draw_bitchart = function(plot_data) {
 
   var position_axis = d3.axisBottom(position_scale);
 
-  group_scale = d3.scaleBand()
+  var group_scale = d3.scaleBand()
     .domain(groups)
     .range([0, groups.length * 35])
     .padding(0.1);

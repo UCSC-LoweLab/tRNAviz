@@ -3,6 +3,7 @@ from django.shortcuts import redirect, reverse
 from django.conf import settings
 from . import views
 from . import services
+from . import compare
 
 app_name = 'explorer'
 
@@ -24,7 +25,7 @@ urlpatterns = [
   path('api/species/<str:clade_txids>/<str:foci>/', services.species_distribution, name = 'species_distribution'),
 
   path('compare/', views.compare, name = 'compare'),
-  re_path('api/bitchart/(.*)', views.bitchart, name = 'bitchart'),
+  re_path('api/bitchart/(.*)', compare.bitchart, name = 'bitchart'),
 
   path('search/<str:search_type>', services.search, name = 'search'),
 
