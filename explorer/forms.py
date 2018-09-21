@@ -212,10 +212,12 @@ class CompareForm(forms.Form):
     else:
       self.cleaned_data['fasta'] = fasta
       # Do a final validation to make sure clade / isotype aren't empty values
-      if self.cleaned_data['clade'] == '':
-        self.add_error('clade', 'Please make a selection for both clade and isotype fields')
-      elif self.cleaned_data['isotype'] == '':
-        self.add_error('isotype', 'Please make a selection for both clade and isotype fields')
+      if 'clade' in self.cleaned_data:
+        if self.cleaned_data['clade'] == '':
+          self.add_error('clade', 'Please make a selection for both clade and isotype fields')
+      if 'isotype' in self.cleaned_data:
+        if self.cleaned_data['isotype'] == '':
+          self.add_error('isotype', 'Please make a selection for both clade and isotype fields')
 
 
   # Easier than overloading a CharField
