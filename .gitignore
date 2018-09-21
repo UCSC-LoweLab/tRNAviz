@@ -1,0 +1,7 @@
+.gitignore
+*.tsv
+._*
+*.pyc
+.*
+*.fa
+*__pycache__*
