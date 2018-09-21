@@ -165,11 +165,24 @@ $(document).ready(function () {
 {% endblock %}
 
 {% block filter %}
+
+
+{% if not valid_form %}
+<div class='alert alert-danger'>
+The following errors were found:
+{% for dict in formset.errors %}
+  {% for error in dict.values %}
+  	{% if error %}
+		<li>{{ error|escape }}</li>
+		{% endif %}
+  {% endfor %}
+{% endfor %}
+</div>
+{% endif %}
+
 <div class='p-3'>
 	<form id='data-select-form' action='' method="POST">
 		{% csrf_token %}
-
-
 		{{ formset.management_form }}
 		{% for form in formset.forms %}
 		{% if forloop.counter == 1 %}

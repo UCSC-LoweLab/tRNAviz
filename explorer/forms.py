@@ -1,8 +1,12 @@
 from django import forms
 from django.forms import formset_factory
-from . import choices
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
+from django.utils.html import escape
+
+import re
+
+from . import choices
 
 class SummaryForm(forms.Form):
   clade = forms.ChoiceField(
@@ -15,13 +19,6 @@ class SummaryForm(forms.Form):
     initial = 'All',
     choices = choices.ISOTYPES,
     required = True)
-
-# class CladeGroupField(forms.MultipleChoiceField):
-#   def __init__(self, *args, **kwargs):
-#     super(CladeGroupField, self).__init__(*args, **kwargs)
-#     self.widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'})
-#     self.choices = choices.CLADES
-#     self.required = False
 
 class CladeGroupForm(forms.Form):
   '''Abstract for any forms that use clade groups'''
@@ -180,6 +177,76 @@ class CompareForm(forms.Form):
       'isotype': str(self['isotype'].value()),
       'use_fasta': bool(self['use_fasta'].value())
     }
+
+
+  def _clean_fields(self):
+    # validate fields, but only validation fasta sequence if necessary
+    # by default, clade and isotype will always be validated. This should not be a problem unless you hack the POST request. And why would you do that?
+    for name, field in self.fields.items():
+      if name == 'fasta':
+        # save value for later
+        fasta = field.widget.value_from_datadict(self.data, self.files, self.add_prefix(name))
+        continue
+      value = field.widget.value_from_datadict(self.data, self.files, self.add_prefix(name))
+      try:
+        value = field.clean(value)
+        self.cleaned_data[name] = value
+        if hasattr(self, 'clean_%s' % name):
+          value = getattr(self, 'clean_%s' % name)()
+          self.cleaned_data[name] = value
+      except ValidationError as e:
+        self.add_error(name, e)
+
+    if self.cleaned_data['use_fasta']:
+      try:
+        # perform regular validation first
+        self.cleaned_data['fasta'] = self.fields['fasta'].clean(fasta)
+        self.check_fasta(self.cleaned_data['fasta'])
+      except ValidationError as e:
+        self.add_error('fasta', e)
+    else:
+      self.cleaned_data['fasta'] = fasta
+
+  # Easier than overloading a CharField
+  def check_fasta(self, input_str):
+    lines = iter(input_str.split('\n'))
+    while True:
+      # Skip any text before the first record (e.g. blank lines, comments) 
+      try:
+        line = next(lines)
+      except StopIteration:
+        print('caught u')
+        raise ValidationError('Malformed input FASTA')
+      if line == "":
+        raise ValidationError('Input FASTA is empty')
+      elif line[0] == '>':
+        break
+      else:
+        raise ValidationError('Malformed input FASTA')
+    while True:
+      description = line[1:].rstrip()
+      seq = ''
+      try:
+        line = next(lines)
+      except StopIteration:
+        raise ValidationError('Malformed input FASTA')
+      while True:
+        if not line or line[0] == ">":
+          break
+        seq += line.rstrip()
+        try:
+          line = next(lines)
+        except StopIteration:
+          line = False
+      seq = seq.replace(" ", "").replace('\r', "")  
+      if len(seq) == 0:
+        raise ValidationError('Detected empty sequence for: {}'.format(description))
+      bad_chars = re.findall('[^agctuAGCTU]', seq)
+      if len(bad_chars) != 0:
+        bad_char_html = ', '.join(['<code>{}</code'.format(escape(letter)) for letter in sorted(list(set(bad_chars)))])
+        raise ValidationError('Input sequence may not contain the following characters: {}'.format(bad_char_html))
+      if not line:
+        return True
 
 class EmptyPermittedFormSet(forms.BaseFormSet):
   def __init__(self, *args, **kwargs):

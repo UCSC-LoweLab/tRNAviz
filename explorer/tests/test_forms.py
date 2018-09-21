@@ -137,7 +137,7 @@ class SpeciesFormTests(TestCase):
     foci = form.get_foci()
     self.assertEqual(foci, self.foci)
 
-@tag('compare')
+@tag('compare', 'current')
 class CompareFormTests(TestCase):
   def test_compare_form_valid_select(self):
     form_data = {'name': 'test-name', 'fasta': '', 'clade': '4930', 'isotype': 'All', 'use_fasta': False}
@@ -156,25 +156,34 @@ class CompareFormTests(TestCase):
     self.assertFalse(form.is_valid())
     self.assertEquals(form.errors['isotype'][0], 'Select a valid choice. isotype is not one of the available choices.')
 
-  @tag('not-done')
   def test_compare_form_valid_fasta(self):
     form_data = {'name': 'test-name', 'fasta': '>myseq\nACTG', 'clade': '4930', 'isotype': 'All', 'use_fasta': True}
     form = forms.CompareForm(data = form_data)
     self.assertTrue(form.is_valid())
 
-  @tag('not-done')
   def test_compare_form_empty_fasta(self):
     form_data = {'name': 'test-name', 'fasta': '', 'clade': '4930', 'isotype': 'All', 'use_fasta': True}
     form = forms.CompareForm(data = form_data)
     self.assertFalse(form.is_valid())
 
-  @tag('not-done')
   def test_compare_form_malformed_fasta(self):
     form_data = {'name': 'test-name', 'fasta': 'AGACAGCGATGC', 'clade': '4930', 'isotype': 'All', 'use_fasta': True}
     form = forms.CompareForm(data = form_data)
     self.assertFalse(form.is_valid())
 
-  @tag('not-done')
+    form_data['fasta'] = 'ACTGACATCGTAGCTAGTACG'
+    form = forms.CompareForm(data = form_data)
+    self.assertFalse(form.is_valid())
+    
+  def test_compare_form_bad_chars_fasta(self):
+    form_data = {'name': 'test-name', 'fasta': '12345', 'clade': '4930', 'isotype': 'All', 'use_fasta': True}
+    form = forms.CompareForm(data = form_data)
+    self.assertFalse(form.is_valid())
+
+    form_data['fasta'] = '>myseq\nACTGACATCGTAGCTAGTACG\n%%%%^^^***AF<><>AJFJGOSFES\nACTATATA\n>seq2\nACACACACACACAC'
+    form = forms.CompareForm(data = form_data)
+    self.assertFalse(form.is_valid())
+
   def test_compare_form_toggle_disable_fasta_validation(self):
     form_data = {
       'name': 'test-name', 
@@ -187,19 +196,18 @@ class CompareFormTests(TestCase):
     self.assertTrue(form.is_valid())
     self.assertFalse(form.has_error('fasta'))
 
-  @tag('not-done')
-  def test_compare_form_toggle_disable_select_validation(self):
-    form_data = {
-      'name': 'test-name', 
-      'fasta': '>valid fasta\nACTAGCTGACTA',
-      'clade': 'invalid',
-      'isotype': 'invalid',
-      'use_fasta': True
-    }
-    form = forms.CompareForm(data = form_data)
-    self.assertTrue(form.is_valid())
-    self.assertFalse(form.has_error('clade'))
-    self.assertFalse(form.has_error('isotype'))
+  # def test_compare_form_toggle_disable_select_validation(self):
+  #   form_data = {
+  #     'name': 'test-name', 
+  #     'fasta': '>valid fasta\nACTAGCTGACTA',
+  #     'clade': 'invalid',
+  #     'isotype': 'invalid',
+  #     'use_fasta': True
+  #   }
+  #   form = forms.CompareForm(data = form_data)
+  #   self.assertTrue(form.is_valid())
+  #   self.assertFalse(form.has_error('clade'))
+  #   self.assertFalse(form.has_error('isotype'))
     
 
 
