@@ -107,12 +107,17 @@ class SpeciesFormTests(TestCase):
       'focus_1_0': 'n/a',
       'focus_1_1': 'n/a'
     }
-    self.empty_focus_form_data = {
+    self.invalid_focus_form_data = {
       'clade_group_1': self.clade_groups[0], 
       'clade_group_2': self.clade_groups[1],
       'focus_1_0': 'Met',
       'focus_1_1': '',
-
+    }
+    self.empty_focus_form_data = {
+      'clade_group_1': self.clade_groups[0], 
+      'clade_group_2': self.clade_groups[1],
+      'focus_1_0': '',
+      'focus_1_1': '',
     }
   def test_species_form_valid_select(self):
     form = forms.SpeciesDistributionForm(data = self.form_data)
@@ -128,14 +133,18 @@ class SpeciesFormTests(TestCase):
 
   def test_focus_form_clean_raises_error(self):
     form = forms.SpeciesDistributionForm(self.empty_focus_form_data)
+    with self.assertRaisesMessage(ValidationError, 'no foci specified'):
+      form.clean()
     self.assertFalse(form.is_valid())
-    self.assertIn('Did not select an isotype/position pair', form.errors['focus_1'])
+
+    # self.assertIn('did not select an isotype/position pair', form.errors['focus_1'])
 
   def test_get_foci(self):
     form = forms.SpeciesDistributionForm(self.form_data)
     self.assertTrue(form.is_valid())
     foci = form.get_foci()
     self.assertEqual(foci, self.foci)
+
 
 @tag('compare', 'current')
 class CompareFormTests(TestCase):

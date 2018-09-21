@@ -43,7 +43,6 @@ class CladeGroupForm(forms.Form):
   def clean(self):
     if len(self.get_clade_groups()) == 0:
       raise ValidationError('no clades specified')
-    return self.cleaned_data
 
 class DistributionForm(CladeGroupForm):
   clade_group_1 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
@@ -115,9 +114,9 @@ class FocusField(forms.MultiValueField):
   def compress(self, data_list):
     if data_list:
       if data_list[0] in self.empty_values:
-          raise ValidationError('Did not select an isotype/position pair', code = 'invalid_isotype')
+          raise ValidationError('did not select an isotype/position pair', code = 'invalid_isotype')
       if data_list[1] in self.empty_values:
-          raise ValidationError('Did not select an isotype/position pair', code = 'invalid_position')
+          raise ValidationError('did not select an isotype/position pair', code = 'invalid_position')
       return tuple(data_list)
     return None
 
@@ -140,6 +139,12 @@ class SpeciesDistributionForm(CladeGroupForm):
       if isotype is not None and position is not None and isotype != '' and position != '':
         foci.append((isotype, position))
     return foci
+
+  def clean(self):
+    super().clean()
+    # Make sure at least one focus is listed
+    if len(self.get_foci()) == 0:
+      raise forms.ValidationError('no foci specified')
 
 
 class CompareForm(forms.Form):
