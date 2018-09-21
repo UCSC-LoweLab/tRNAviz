@@ -206,6 +206,12 @@ class CompareForm(forms.Form):
         self.add_error('fasta', e)
     else:
       self.cleaned_data['fasta'] = fasta
+      # Do a final validation to make sure clade / isotype aren't empty values
+      if self.cleaned_data['clade'] == '':
+        self.add_error('clade', 'Please make a selection for both clade and isotype fields')
+      elif self.cleaned_data['isotype'] == '':
+        self.add_error('isotype', 'Please make a selection for both clade and isotype fields')
+
 
   # Easier than overloading a CharField
   def check_fasta(self, input_str):
@@ -215,7 +221,6 @@ class CompareForm(forms.Form):
       try:
         line = next(lines)
       except StopIteration:
-        print('caught u')
         raise ValidationError('Malformed input FASTA')
       if line == "":
         raise ValidationError('Input FASTA is empty')
@@ -243,7 +248,7 @@ class CompareForm(forms.Form):
         raise ValidationError('Detected empty sequence for: {}'.format(description))
       bad_chars = re.findall('[^agctuAGCTU]', seq)
       if len(bad_chars) != 0:
-        bad_char_html = ', '.join(['<code>{}</code'.format(escape(letter)) for letter in sorted(list(set(bad_chars)))])
+        bad_char_html = ', '.join(['<code>{}</code>'.format(escape(letter)) for letter in sorted(list(set(bad_chars)))])
         raise ValidationError('Input sequence may not contain the following characters: {}'.format(bad_char_html))
       if not line:
         return True

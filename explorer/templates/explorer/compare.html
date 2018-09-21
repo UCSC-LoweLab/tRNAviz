@@ -171,9 +171,11 @@ $(document).ready(function () {
 <div class='alert alert-danger'>
 The following errors were found:
 {% for dict in formset.errors %}
-  {% for error in dict.values %}
-  	{% if error %}
-		<li>{{ error|escape }}</li>
+  {% for errorlist in dict.values %}
+  	{% if errorlist %}
+  	{% for error in errorlist %}
+		<li>{{ error|safe }}</li>
+		{% endfor %}
 		{% endif %}
   {% endfor %}
 {% endfor %}

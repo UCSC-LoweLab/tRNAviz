@@ -97,7 +97,7 @@ def compare(request):
     copy(formset_json_fh.name, settings.MEDIA_ROOT + formset_json_fh.name)
     formset_json_fh.close()
     valid_form = True
-
+    
   return render(request, 'explorer/compare.html', {
     'formset': formset,
     'valid_form': valid_form,

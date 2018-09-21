@@ -55,3 +55,8 @@ def clade_lookup(taxid):
   for clade_taxid, clade in choices.CLADES:
    if clade_taxid == taxid: return clade
   return ''
+
+@register.filter('unquote')
+def unquote(mystr):
+  print(mystr)
+  return mystr.strip('"').strip("'")
