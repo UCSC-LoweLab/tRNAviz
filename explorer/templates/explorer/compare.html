@@ -274,7 +274,7 @@ The following errors were found:
 
 {% block plots %}
 <div class="p-3">
-	{% if valid_form %}
+	{% if valid_form and formset_json != 'none' %}
 	<div class="p-3" id="plot-area">
 		<div class="loading-overlay">
 	</div>

@@ -80,11 +80,10 @@ def variation_species(request):
   })
 
 def compare(request):
-  valid_form = False
   if request.method != 'POST':
     return render(request, 'explorer/compare.html', {
       'formset': forms.CompareFormSet(),
-      'valid_form': valid_form,
+      'valid_form': True, # Error rendering is tied to valid_form. Don't rendor errors if GET request.
       'formset_json': 'none'
     })
 
@@ -95,8 +94,10 @@ def compare(request):
     formset_json_fh.write(json.dumps([form.as_dict() for form in formset]))
     formset_json_fh.flush()
     copy(formset_json_fh.name, settings.MEDIA_ROOT + formset_json_fh.name)
-    formset_json_fh.close()
     valid_form = True
+  else:
+    valid_form = False
+  formset_json_fh.close()
     
   return render(request, 'explorer/compare.html', {
     'formset': formset,
