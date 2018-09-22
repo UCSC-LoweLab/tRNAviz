@@ -24,9 +24,9 @@ class CompareTests(TestCase):
   def setUpClass(cls):
     super(CompareTests, cls).setUpClass()
     cls.formset = forms.CompareFormSet({
-      'form-0-name': '', 'form-0-clade': '4751', 'form-0-isotype': 'Asp',
-      'form-1-name': '', 'form-1-clade': '2759', 'form-1-isotype': 'All',
-      'form-2-name': 'Test', 'form-2-clade': '4893', 'form-2-isotype': 'All',
+      'form-0-name': '', 'form-0-clade': '4751', 'form-0-isotype': 'Asp', 
+      'form-1-name': '', 'form-1-clade': '2759', 'form-1-isotype': 'All', 'form-1-domain': 'uni',
+      'form-2-name': 'Test', 'form-2-clade': '4893', 'form-2-isotype': 'All', 'form-2-domain': 'euk',
       'form-TOTAL_FORMS': '3', 'form-MIN_NUM_FORMS': '0', 'form-MAX_NUM_FORMS': '1000', 'form-INITIAL_FORMS': '0'
       })
     

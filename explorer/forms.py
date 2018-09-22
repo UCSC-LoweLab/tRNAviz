@@ -7,6 +7,7 @@ from django.utils.html import escape
 import re
 
 from . import choices
+from . import compare
 
 class SummaryForm(forms.Form):
   clade = forms.ChoiceField(
@@ -189,7 +190,6 @@ class CompareForm(forms.Form):
       'domain': str(self['domain'].value())
     }
 
-
   def _clean_fields(self):
     # validate fields, but only validation fasta sequence if necessary
     # by default, clade and isotype will always be validated. This should not be a problem unless you hack the POST request. And why would you do that?
@@ -263,10 +263,17 @@ class CompareForm(forms.Form):
       if not line:
         return True
 
-class EmptyPermittedFormSet(forms.BaseFormSet):
+class BaseCompareFormSet(forms.BaseFormSet):
   def __init__(self, *args, **kwargs):
-    super(EmptyPermittedFormSet, self).__init__(*args, **kwargs)
+    super().__init__(*args, **kwargs)
     for form in self.forms:
       form.empty_permitted = False
 
-CompareFormSet = formset_factory(CompareForm, formset = EmptyPermittedFormSet, can_delete = True, extra = 3)
+  def clean(self):
+    super().clean()
+    ref_form = self.forms[0]
+    trna_qs = compare.query_trnas(ref_form.cleaned_data)
+    if len(trna_qs) < 5:
+      raise ValidationError('Not enough sequences in database for reference category. Query a broader set.')
+
+CompareFormSet = formset_factory(CompareForm, formset = BaseCompareFormSet, can_delete = True, extra = 3)

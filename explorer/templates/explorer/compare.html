@@ -172,14 +172,21 @@ $(document).ready(function () {
 
 {% block filter %}
 
-
-{% if formset.errors|haserrors %}
+{% if formset|haserrors %}
 <div class='alert alert-danger'>
-The following errors were found:<br>
-{% for dict in formset.errors %}
+	The following errors were found:<br>
+	{% for error in formset.formset_wide_errors %}
+		<li>{{ error|escape }}</li>
+	{% endfor %}
+	{% for dict in formset.errors %}
   {% for errorlist in dict.values %}
-  	{% if errorlist %}
+  	<!-- suppress errors for reference + dummy forms -->
+  	{% if errorlist and forloop.parentloop.counter0 != 1 %}
+  	{% if forloop.parentloop.counter0 == 0 %}
+  	Reference:
+  	{% else %}
   	Selection {{ forloop.parentloop.counter|minus2 }}:
+  	{% endif %}
   	<ul>
   		{% for error in errorlist %}
 			<li>{{ error|safe }}</li>
@@ -187,7 +194,7 @@ The following errors were found:<br>
 		</ul>
 		{% endif %}
   {% endfor %}
-{% endfor %}
+	{% endfor %}
 </div>
 {% endif %}
 

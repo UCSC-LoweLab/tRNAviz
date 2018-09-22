@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.conf import settings
 from django.db.models import Q
+from django.core.exceptions import ValidationError
 
 import os
 import re
@@ -85,7 +86,7 @@ def read_all_trnas():
 def write_trnas_to_files(formset_data, seqs):
   # write tRNA sets to files
   trna_fasta_files = []
-  for i, form in enumerate(formset_data):
+  for i, form_data in enumerate(formset_data):
     # Skip dummy form row
     if i == 1: continue 
     
@@ -94,28 +95,27 @@ def write_trnas_to_files(formset_data, seqs):
     trna_seqs = []
 
     # For selects, query db
-    if 'use_fasta' not in form or not form['use_fasta']:
-      clade_qs = models.Taxonomy.objects.filter(taxid = form['clade']).values()[0]
-      rank, name = clade_qs['rank'] if clade_qs['rank'] != 'class' else 'taxclass', clade_qs['name']
-      trna_qs = models.tRNA.objects.filter(Q(**{rank: name})).values('seqname')
-      if form['isotype'] != 'All':
-        trna_qs = trna_qs.filter(isotype = form['isotype'])
+    if 'use_fasta' not in form_data or not form_data['use_fasta']:
+      trna_qs = query_trnas(form_data)
       seqnames = [d['seqname'] for d in trna_qs]
       for seq in seqs:
         if seq.description in seqnames: trna_seqs.append(seq)
-
-      # make sure that there are enough seqs to build a CM with
-      if i == 0 and len(trna_qs) < 5:
-        raise ValidationError('Not enough sequences in database for reference category. Query a broader set.')
-
       SeqIO.write(trna_seqs, trna_fasta_fh, 'fasta')
     # otherwise write input directly into file
     else:
-      trna_fasta_fh.write(form['fasta'])
+      trna_fasta_fh.write(form_data['fasta'])
     
     trna_fasta_fh.flush()
     trna_fasta_files.append(trna_fasta_fh)
   return trna_fasta_files
+
+def query_trnas(form_data):
+  clade_qs = models.Taxonomy.objects.filter(taxid = form_data['clade']).values()[0]
+  rank, name = clade_qs['rank'] if clade_qs['rank'] != 'class' else 'taxclass', clade_qs['name']
+  trna_qs = models.tRNA.objects.filter(Q(**{rank: name})).values('seqname')
+  if form_data['isotype'] != 'All':
+    trna_qs = trna_qs.filter(isotype = form_data['isotype'])
+  return trna_qs
 
 def build_reference_model(trna_fasta_files):
   # Build reference CM model

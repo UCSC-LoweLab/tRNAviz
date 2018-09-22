@@ -146,7 +146,7 @@ class SpeciesFormTests(TestCase):
     self.assertEqual(foci, self.foci)
 
 
-@tag('compare', 'current')
+@tag('compare')
 class CompareFormTests(TestCase):
   def test_compare_form_valid_select(self):
     form_data = {'name': 'test-name', 'fasta': '', 'clade': '4930', 'isotype': 'All', 'use_fasta': False}
@@ -163,7 +163,7 @@ class CompareFormTests(TestCase):
     form_data = {'name': 'test-name', 'fasta': '', 'clade': '4930', 'isotype': 'isotype', 'use_fasta': False}
     form = forms.CompareForm(data = form_data)
     self.assertFalse(form.is_valid())
-    self.assertEquals(form.errors['isotype'][0], 'Select a valid choice. isotype is not one of the available choices.')
+    self.assertEqual(form.errors['isotype'][0], 'Select a valid choice. isotype is not one of the available choices.')
 
   def test_compare_form_valid_fasta(self):
     form_data = {'name': 'test-name', 'fasta': '>myseq\nACTG', 'clade': '4930', 'isotype': 'All', 'use_fasta': True}
@@ -193,6 +193,19 @@ class CompareFormTests(TestCase):
     form = forms.CompareForm(data = form_data)
     self.assertFalse(form.is_valid())
 
+  def test_compare_formset_ref_model_insufficient_trnas(self):
+     # Amanita (genus) only has 4 Asp tRNAs
+    formset = forms.CompareFormSet({
+      'form-0-name': '', 'form-0-clade': '41955', 'form-0-isotype': 'Asp',
+      'form-1-name': '', 'form-1-clade': '2759', 'form-1-isotype': 'All', 'form-1-domain': 'uni',
+      'form-2-name': 'Test', 'form-2-clade': '4893', 'form-2-isotype': 'All', 'form-2-domain': 'euk',
+      'form-TOTAL_FORMS': '3', 'form-MIN_NUM_FORMS': '0', 'form-MAX_NUM_FORMS': '1000', 'form-INITIAL_FORMS': '0'
+    })
+    for form in formset:
+      form.is_valid()
+    with self.assertRaisesMessage(ValidationError, 'Not enough sequences in database for reference category. Query a broader set.'):
+      formset.clean()
+  
   def test_compare_form_toggle_disable_fasta_validation(self):
     form_data = {
       'name': 'test-name', 
@@ -204,24 +217,5 @@ class CompareFormTests(TestCase):
     form = forms.CompareForm(data = form_data)
     self.assertTrue(form.is_valid())
     self.assertFalse(form.has_error('fasta'))
-
-  # def test_compare_form_domain_model_select(self):
-  #   form_data = {
-
-  #   }
-  # def test_compare_form_toggle_disable_select_validation(self):
-  #   form_data = {
-  #     'name': 'test-name', 
-  #     'fasta': '>valid fasta\nACTAGCTGACTA',
-  #     'clade': 'invalid',
-  #     'isotype': 'invalid',
-  #     'use_fasta': True
-  #   }
-  #   form = forms.CompareForm(data = form_data)
-  #   self.assertTrue(form.is_valid())
-  #   self.assertFalse(form.has_error('clade'))
-  #   self.assertFalse(form.has_error('isotype'))
-    
-
 
 

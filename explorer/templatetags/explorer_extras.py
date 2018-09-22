@@ -57,13 +57,11 @@ def clade_lookup(taxid):
   return ''
 
 @register.filter('haserrors')
-def haserrors(errordicts):
-  for errordict in errordicts:
+def haserrors(formset):
+  for i, errordict in enumerate(formset.errors):
+    if i < 2: continue
     if len(errordict) > 0:
       return True
+  if len(formset.formset_wide_errors) > 0:
+    return True
   return False
-
-@register.filter('lalala')
-def lalala(asdf):
-  import pdb
-  pdb.set_trace()

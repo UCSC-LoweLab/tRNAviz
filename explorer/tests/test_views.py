@@ -110,7 +110,7 @@ class SpeciesViewTests(TestCase):
     self.assertContains(response, 'Group 3: Encephalitozoon (genus)')
     self.assertContains(response, 'Asn, 46<br />Met, 46')
 
-@tag('compare', 'current')
+@tag('compare')
 class CompareViewTests(TestCase):
   def setUp(self):
     self.factory = RequestFactory()
@@ -131,19 +131,10 @@ class CompareViewTests(TestCase):
     }
     self.invalid_post_data = {'form': 'invalid'}
     self.invalid_form_data = {
-      'form-0-name': '',
-      'form-0-clade': '4893',
-      'form-0-isotype': 'All',
-      'form-1-clade': '',
-      'form-1-name': 'Test',
-      'form-1-isotype': 'All',
-      'form-2-name': '',
-      'form-2-clade': '',
-      'form-2-isotype': '',
-      'form-TOTAL_FORMS': '3',
-      'form-MIN_NUM_FORMS': '0',
-      'form-MAX_NUM_FORMS': '1000',
-      'form-INITIAL_FORMS': '0'
+      'form-0-name': '', 'form-0-clade': '41955', 'form-0-isotype': 'Asp',
+      'form-1-name': '', 'form-1-clade': '2759', 'form-1-isotype': 'All', 'form-1-domain': 'uni',
+      'form-2-name': 'Test', 'form-2-clade': '4893', 'form-2-isotype': 'All', 'form-2-domain': 'euk',
+      'form-TOTAL_FORMS': '3', 'form-MIN_NUM_FORMS': '0', 'form-MAX_NUM_FORMS': '1000', 'form-INITIAL_FORMS': '0'
     }
 
   def test_compare_view_get(self):
@@ -167,7 +158,9 @@ class CompareViewTests(TestCase):
     with self.assertRaises(ValidationError):
       response = views.compare(request)
   
+  @tag('current')
   def test_compare_view_form_errors_rendered(self):
     request = self.factory.post(reverse('explorer:compare'), self.invalid_form_data)
     response = views.compare(request)
     self.assertContains(response, 'The following errors were found:')
+    self.assertContains(response, 'Not enough sequences in database for reference')
