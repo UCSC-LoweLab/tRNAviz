@@ -13,6 +13,7 @@ import pandas as pd
 from django_pandas.io import read_frame
 
 from . import models
+from . import choices
 
 SINGLE_FEATURES = {'A': 'A', 'C': 'C', 'G': 'G', 'U': 'U', 'absent': '-'}
 PAIRED_FEATURES = {

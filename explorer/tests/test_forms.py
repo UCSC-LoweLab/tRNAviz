@@ -205,6 +205,10 @@ class CompareFormTests(TestCase):
     self.assertTrue(form.is_valid())
     self.assertFalse(form.has_error('fasta'))
 
+  # def test_compare_form_domain_model_select(self):
+  #   form_data = {
+
+  #   }
   # def test_compare_form_toggle_disable_select_validation(self):
   #   form_data = {
   #     'name': 'test-name', 

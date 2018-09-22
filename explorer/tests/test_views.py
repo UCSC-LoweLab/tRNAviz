@@ -1,6 +1,7 @@
 from django.test import TestCase, Client, tag
 from django.test import RequestFactory
 from django.urls import reverse
+from django.core.exceptions import ValidationError
 
 from explorer import views
 
@@ -109,10 +110,41 @@ class SpeciesViewTests(TestCase):
     self.assertContains(response, 'Group 3: Encephalitozoon (genus)')
     self.assertContains(response, 'Asn, 46<br />Met, 46')
 
-@tag('compare')
+@tag('compare', 'current')
 class CompareViewTests(TestCase):
   def setUp(self):
     self.factory = RequestFactory()
+    self.valid_post_data = {
+      'form-0-name': '',
+      'form-0-clade': '4893',
+      'form-0-isotype': 'All',
+      'form-1-name': '',
+      'form-1-clade': '',
+      'form-1-isotype': '',
+      'form-2-clade': '2759',
+      'form-2-name': 'Test',
+      'form-2-isotype': 'All',
+      'form-TOTAL_FORMS': '3',
+      'form-MIN_NUM_FORMS': '0',
+      'form-MAX_NUM_FORMS': '1000',
+      'form-INITIAL_FORMS': '0'
+    }
+    self.invalid_post_data = {'form': 'invalid'}
+    self.invalid_form_data = {
+      'form-0-name': '',
+      'form-0-clade': '4893',
+      'form-0-isotype': 'All',
+      'form-1-clade': '',
+      'form-1-name': 'Test',
+      'form-1-isotype': 'All',
+      'form-2-name': '',
+      'form-2-clade': '',
+      'form-2-isotype': '',
+      'form-TOTAL_FORMS': '3',
+      'form-MIN_NUM_FORMS': '0',
+      'form-MAX_NUM_FORMS': '1000',
+      'form-INITIAL_FORMS': '0'
+    }
 
   def test_compare_view_get(self):
     request = self.factory.get(reverse('explorer:compare'))
@@ -120,20 +152,22 @@ class CompareViewTests(TestCase):
     self.assertEqual(response.status_code, 200)
     self.assertContains(response, '<h4>Selections</h4>')
 
-  @tag('not-done')
+  def test_compare_view_get_no_errors(self):
+    request = self.factory.get(reverse('explorer:compare'))
+    response = views.compare(request)
+    self.assertNotContains(response, 'The following errors were found:')
+
   def test_compare_view_valid_post(self):
-    request = self.factory.post(reverse('explorer:compare'), {
-      'form-0-name': '',
-      'form-0-clade': '4893',
-      'form-0-isotype': 'All',
-      'form-1-clade': '2759',
-      'form-1-name': 'Test',
-      'form-1-isotype': 'All',
-      'form-TOTAL_FORMS': '3',
-      'form-MIN_NUM_FORMS': '0',
-      'form-MAX_NUM_FORMS': '1000',
-      'form-INITIAL_FORMS': '0'
-    })
+    request = self.factory.post(reverse('explorer:compare'), self.valid_post_data)
     response = views.compare(request)
     self.assertEqual(response.status_code, 200)
+
+  def test_compare_view_invalid_post_raises_error(self):
+    request = self.factory.post(reverse('explorer:compare'), self.invalid_post_data)
+    with self.assertRaises(ValidationError):
+      response = views.compare(request)
   
+  def test_compare_view_form_errors_rendered(self):
+    request = self.factory.post(reverse('explorer:compare'), self.invalid_form_data)
+    response = views.compare(request)
+    self.assertContains(response, 'The following errors were found:')

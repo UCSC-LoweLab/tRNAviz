@@ -108,3 +108,7 @@ textarea.fasta-input {
 span.btn-default {
   background: #ffffff;
 }
+
+label.spoof-button {
+  pointer-events: none;
+}

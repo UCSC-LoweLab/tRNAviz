@@ -56,7 +56,14 @@ def clade_lookup(taxid):
    if clade_taxid == taxid: return clade
   return ''
 
-@register.filter('unquote')
-def unquote(mystr):
-  print(mystr)
-  return mystr.strip('"').strip("'")
+@register.filter('haserrors')
+def haserrors(errordicts):
+  for errordict in errordicts:
+    if len(errordict) > 0:
+      return True
+  return False
+
+@register.filter('lalala')
+def lalala(asdf):
+  import pdb
+  pdb.set_trace()

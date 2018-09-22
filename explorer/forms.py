@@ -173,6 +173,11 @@ class CompareForm(forms.Form):
       'data-off': 'Switch to FASTA input'
       }), 
     required = False)
+  domain = forms.ChoiceField(
+    widget = forms.RadioSelect(),
+    choices = choices.NUM_MODELS, 
+    initial = 'uni', 
+    required = False)
 
   def as_dict(self):
     return {
@@ -180,7 +185,8 @@ class CompareForm(forms.Form):
       'fasta': str(self['fasta'].value()),
       'clade': str(self['clade'].value()),
       'isotype': str(self['isotype'].value()),
-      'use_fasta': bool(self['use_fasta'].value())
+      'use_fasta': bool(self['use_fasta'].value()),
+      'domain': str(self['domain'].value())
     }
 
 
@@ -212,13 +218,10 @@ class CompareForm(forms.Form):
     else:
       self.cleaned_data['fasta'] = fasta
       # Do a final validation to make sure clade / isotype aren't empty values
-      if 'clade' in self.cleaned_data:
-        if self.cleaned_data['clade'] == '':
-          self.add_error('clade', 'Please make a selection for both clade and isotype fields')
-      if 'isotype' in self.cleaned_data:
-        if self.cleaned_data['isotype'] == '':
-          self.add_error('isotype', 'Please make a selection for both clade and isotype fields')
-
+      if 'clade' in self.cleaned_data and self.cleaned_data['clade'] == '':
+        self.add_error('clade', 'Please make a selection for both clade and isotype fields')
+      if 'isotype' in self.cleaned_data and self.cleaned_data['isotype'] == '':
+        self.add_error('isotype', 'Please make a selection for both clade and isotype fields')
 
   # Easier than overloading a CharField
   def check_fasta(self, input_str):

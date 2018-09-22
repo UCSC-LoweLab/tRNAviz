@@ -58,13 +58,16 @@ $(document).on('click', '.toggle', function(e) {
 	// Replace fasta / select
 	var db_selects = $(this).closest('.form-row').find('.db-select');
 	var fasta_input = $(this).closest('.form-row').find('.fasta-input');
+	var domain_select = $(this).closest('.form-row').find('.domain-select');
 	if (form_switch.hasAttribute('checked')) {
 		db_selects.css('display', 'none');
 		fasta_input.css('display', 'block');
+		domain_select.css('display', 'inline-block');
 	}
 	else {
 		db_selects.css('display', 'block');
 		fasta_input.css('display', 'none');
+		domain_select.css('display', 'none');
 	}
 });
 
@@ -155,10 +158,13 @@ $(document).on('click', '.remove-form-row', function(e){
 <script src="{% static 'explorer/js/compare.js' %}"></script>
 <script type="text/javascript">
 $(document).ready(function () {
+	var a = '{{ valid_form }}';
 	if ('{{ valid_form }}' == 'True') {
+		console.log(a)
 		d3.json('{% url "explorer:bitchart" formset_json=formset_json %}', draw_bitchart);
 		
 	}
+	console.log('done')
 })
 
 </script>
@@ -167,15 +173,18 @@ $(document).ready(function () {
 {% block filter %}
 
 
-{% if not valid_form %}
+{% if formset.errors|haserrors %}
 <div class='alert alert-danger'>
-The following errors were found:
+The following errors were found:<br>
 {% for dict in formset.errors %}
   {% for errorlist in dict.values %}
   	{% if errorlist %}
-  	{% for error in errorlist %}
-		<li>{{ error|safe }}</li>
-		{% endfor %}
+  	Selection {{ forloop.parentloop.counter|minus2 }}:
+  	<ul>
+  		{% for error in errorlist %}
+			<li>{{ error|safe }}</li>
+			{% endfor %}
+		</ul>
 		{% endif %}
   {% endfor %}
 {% endfor %}
@@ -216,7 +225,7 @@ The following errors were found:
 					</div>
 				{% endif %}
 					<div class='my-2 db-select' style="display: {{ form.use_fasta.value|yesno:'none,block' }};">
-						<select class='form-control multiselect clade-select' name="form-{{ forloop.counter0 }}-clade" id="clade-select-{{ forloop.counter0 }}">
+						<select class='form-control multiselect clade-select' name="{{ form.clade.html_name }}" id="clade-select-{{ forloop.counter0 }}">
 							<option></option>
 							{% if form.clade.value == None and forloop.counter < 3 %}
 							<option value="2759" selected>Eukaryota (domain)</option>
@@ -233,6 +242,22 @@ The following errors were found:
 						{{ form.fasta }}
 					</div>
 					{{ form.use_fasta }}
+					<div class="domain-select" style="display: {{ form.use_fasta.value|yesno:'inline-block,none' }};">
+						<div class="btn-group btn-group-toggle" data-toggle="buttons">
+							<label class="btn btn-sm btn-secondary spoof-button">Select alignment model</label>
+						</div>
+
+						<div class="btn-group btn-group-toggle" data-toggle="buttons">
+							{% for radio in form.domain %}
+							{% if radio.data.value == form.domain.value %}
+							<label class="btn btn-sm btn-outline-secondary active" for="{{ radio.id_for_label }}">
+							{% else %}
+							<label class="btn btn-sm btn-outline-secondary" for="{{ radio.id_for_label }}">
+							{% endif %}{{ radio.tag }}{{ radio.choice_label }}
+							</label>
+							{% endfor %}
+						</div>
+					</div>
 					{% endif %}
 					{% if forloop.counter > 1 and forloop.counter != 3 %}
 					<button class="btn btn-sm btn-danger remove-form-row">Delete row</button>

@@ -83,7 +83,7 @@ def compare(request):
   if request.method != 'POST':
     return render(request, 'explorer/compare.html', {
       'formset': forms.CompareFormSet(),
-      'valid_form': True, # Error rendering is tied to valid_form. Don't rendor errors if GET request.
+      'valid_form': False,
       'formset_json': 'none'
     })
 
@@ -98,7 +98,10 @@ def compare(request):
   else:
     valid_form = False
   formset_json_fh.close()
-    
+
+  print(request.POST)
+  print('formset errors:')
+  print(formset.errors)  
   return render(request, 'explorer/compare.html', {
     'formset': formset,
     'valid_form': valid_form,
