@@ -62,6 +62,6 @@ def haserrors(formset):
     if i < 2: continue
     if len(errordict) > 0:
       return True
-  if len(formset.formset_wide_errors) > 0:
+  if len(formset.non_form_errors()) > 0:
     return True
   return False

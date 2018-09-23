@@ -97,9 +97,9 @@ def compare(request):
     valid_form = True
   else:
     valid_form = False
-    formset.formset_wide_errors = formset.non_form_errors()
-  formset_json_fh.close()
 
+  formset_json_fh.close()
+  formset.formset_wide_errors = formset._non_form_errors
   return render(request, 'explorer/compare.html', {
     'formset': formset,
     'valid_form': valid_form,
