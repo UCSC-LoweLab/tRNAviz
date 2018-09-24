@@ -50,41 +50,44 @@ NUMBERING_MODELS = {'uni': '{}/all-num.cm'.format(settings.ENGINE_DIR),
   'arch': '{}/arch-num.cm'.format(settings.ENGINE_DIR)}
 
 def bitchart(request, formset_json):
-  # get formset
-  formset_data = json.loads(open(settings.MEDIA_ROOT + formset_json).read())
-  os.remove(settings.MEDIA_ROOT + formset_json)
+  try:
+    # get formset
+    formset_data = json.loads(open(settings.MEDIA_ROOT + formset_json).read())
+    os.remove(settings.MEDIA_ROOT + formset_json)
+    
+    seqs = read_all_trnas()
+    trna_fasta_files = write_trnas_to_files(formset_data, seqs)
+    ref_model_fh = build_reference_model(formset_data, trna_fasta_files)
+    ref_bits = calculate_normalizing_scores(ref_model_fh)
+
+    # Align tRNAs to reference model and collect bit scores
+    bits = pd.DataFrame()
+    for i, trna_fasta_fh in enumerate(trna_fasta_files[1:]):
+      if formset_data[i + 2]['use_fasta']:
+        num_model = NUMBERING_MODELS[formset_data[i + 2]['domain']]
+      else:
+        clade_qs = models.Taxonomy.objects.filter(taxid = formset_data[i + 2]['clade']).values()[0]
+        num_model = NUMBERING_MODELS[clade_qs['domain']]
+      current_bits = align_trnas_collect_bit_scores(trna_fasta_fh.name, num_model, ref_model_fh.name)
+      current_bits['group'] = formset_data[i + 2]['name']
+      bits = bits.append(current_bits)
+
+    # Normalize bits against reference bits
+    bits['score'] = round(bits.apply(lambda x: x['score'] - ref_bits[ref_bits.position == x['position']]['score'].values[0], axis = 1), 2)
+
+    # Append consensus and modal feature bits
+    ref_taxid = formset_data[0]['clade']
+    ref_isotype = formset_data[0]['isotype']
+    ref_cons = get_cons_bits(ref_taxid, ref_isotype)
+    ref_freqs = get_modal_freqs(ref_taxid, ref_isotype)
+    bits = pd.concat([bits, ref_cons, ref_freqs], sort = True).reset_index(drop = True)
+    
+    # Format data for visualization
+    plot_data = format_bits_for_viz(bits)
+    return JsonResponse(plot_data, safe = False)
   
-  seqs = read_all_trnas()
-  trna_fasta_files = write_trnas_to_files(formset_data, seqs)
-  ref_model_fh = build_reference_model(formset_data, trna_fasta_files)
-  ref_bits = calculate_normalizing_scores(ref_model_fh)
-
-  # Align tRNAs to reference model and collect bit scores
-  bits = pd.DataFrame()
-  for i, trna_fasta_fh in enumerate(trna_fasta_files[1:]):
-    if formset_data[i + 2]['use_fasta']:
-      num_model = NUMBERING_MODELS[formset_data[i + 2]['domain']]
-    else:
-      clade_qs = models.Taxonomy.objects.filter(taxid = formset_data[i + 2]['clade']).values()[0]
-      num_model = NUMBERING_MODELS[clade_qs['domain']]
-    current_bits = align_trnas_collect_bit_scores(trna_fasta_fh.name, num_model, ref_model_fh.name)
-    current_bits['group'] = formset_data[i + 2]['name']
-    bits = bits.append(current_bits)
-
-  # Normalize bits against reference bits
-  bits['score'] = round(bits.apply(lambda x: x['score'] - ref_bits[ref_bits.position == x['position']]['score'].values[0], axis = 1), 2)
-
-  # Append consensus and modal feature bits
-  ref_taxid = formset_data[0]['clade']
-  ref_isotype = formset_data[0]['isotype']
-  ref_cons = get_cons_bits(ref_taxid, ref_isotype)
-  ref_freqs = get_modal_freqs(ref_taxid, ref_isotype)
-  bits = pd.concat([bits, ref_cons, ref_freqs], sort = True).reset_index(drop = True)
-  
-  # Format data for visualization
-  plot_data = format_bits_for_viz(bits)
-
-  return JsonResponse(plot_data, safe = False)
+  except Exception as e:
+    return JsonResponse({'error': 'Unknown error'})
 
 def read_all_trnas():
   seqs = []

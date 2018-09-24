@@ -158,13 +158,15 @@ $(document).on('click', '.remove-form-row', function(e){
 <script src="{% static 'explorer/js/compare.js' %}"></script>
 <script type="text/javascript">
 $(document).ready(function () {
-	var a = '{{ valid_form }}';
 	if ('{{ valid_form }}' == 'True') {
-		console.log(a)
-		d3.json('{% url "explorer:bitchart" formset_json=formset_json %}', draw_bitchart);
-		
+
+		d3.json('{% url "explorer:bitchart" formset_json=formset_json %}', 
+			function(plot_data) {
+			  d3.select('#plot-area .loading-overlay').style('display', 'none');
+			  if ("error" in plot_data) d3.select('#plot-area').text('Server error - try a different query')
+			  else draw_bitchart(plot_data);
+			});
 	}
-	console.log('done')
 })
 
 </script>
