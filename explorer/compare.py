@@ -44,6 +44,11 @@ BITCHART_POSITIONS = ['8', '9', '14', '15', '16', '17', '17a', '18', '19', '20',
   '1:72', '2:71', '3:70', '4:69', '5:68', '6:67', '7:66', '10:25', '11:24', '12:23', '13:22', 
   '27:43', '28:42', '29:41', '30:40', '31:39', '49:65', '50:64', '51:63', '52:62', '53:61']
 
+NUMBERING_MODELS = {'uni': '{}/all-num.cm'.format(settings.ENGINE_DIR),
+  'euk': '{}/euk-num.cm'.format(settings.ENGINE_DIR),
+  'bact': '{}/bact-num.cm'.format(settings.ENGINE_DIR),
+  'arch': '{}/arch-num.cm'.format(settings.ENGINE_DIR)}
+
 def bitchart(request, formset_json):
   # get formset
   formset_data = json.loads(open(settings.MEDIA_ROOT + formset_json).read())
@@ -51,13 +56,19 @@ def bitchart(request, formset_json):
   
   seqs = read_all_trnas()
   trna_fasta_files = write_trnas_to_files(formset_data, seqs)
-  ref_model_fh = build_reference_model(trna_fasta_files)
+  ref_model_fh = build_reference_model(formset_data, trna_fasta_files)
   ref_bits = calculate_normalizing_scores(ref_model_fh)
 
   # Align tRNAs to reference model and collect bit scores
   bits = pd.DataFrame()
   for i, trna_fasta_fh in enumerate(trna_fasta_files[1:]):
-    current_bits = align_trnas_collect_bit_scores(trna_fasta_fh.name, formset_data[i + 2]['name'], ref_model_fh.name)
+    if formset_data[i + 2]['use_fasta']:
+      num_model = NUMBERING_MODELS[formset_data[i + 2]['domain']]
+    else:
+      clade_qs = models.Taxonomy.objects.filter(taxid = formset_data[i + 2]['clade']).values()[0]
+      num_model = NUMBERING_MODELS[clade_qs['domain']]
+    current_bits = align_trnas_collect_bit_scores(trna_fasta_fh.name, num_model, ref_model_fh.name)
+    current_bits['group'] = formset_data[i + 2]['name']
     bits = bits.append(current_bits)
 
   # Normalize bits against reference bits
@@ -117,11 +128,12 @@ def query_trnas(form_data):
     trna_qs = trna_qs.filter(isotype = form_data['isotype'])
   return trna_qs
 
-def build_reference_model(trna_fasta_files):
+def build_reference_model(formset_data, trna_fasta_files):
   # Build reference CM model
   ref_fasta = trna_fasta_files[0].name
   ref_align_fh = NamedTemporaryFile()
-  num_model = '{}/euk-num.cm'.format(settings.ENGINE_DIR)
+  clade_qs = models.Taxonomy.objects.filter(taxid = formset_data[0]['clade']).values()[0]
+  num_model = NUMBERING_MODELS[clade_qs['domain']]
   cmd_cmalign = 'cmalign -g --notrunc --matchonly -o {} {} {} > /dev/null'.format(ref_align_fh.name, num_model, ref_fasta)
   res = subprocess.run(cmd_cmalign, shell = True)
   ref_model_fh = NamedTemporaryFile()
@@ -155,8 +167,7 @@ def calculate_normalizing_scores(ref_model_fh):
   return ref_bits
 
 
-def align_trnas_collect_bit_scores(trna_fasta, group_name, ref_model):
-  num_model = '{}/euk-num.cm'.format(settings.ENGINE_DIR)
+def align_trnas_collect_bit_scores(trna_fasta, num_model, ref_model):
   num_model_align_fh = NamedTemporaryFile('r+')
   processed_fasta_fh = NamedTemporaryFile('r+', buffering = 1)
   parsetree_fh = NamedTemporaryFile('r+', buffering = 1)
@@ -183,7 +194,6 @@ def align_trnas_collect_bit_scores(trna_fasta, group_name, ref_model):
   bits = bits.set_index(['seqname', 'feature', 'position']).groupby('position').mean()
   bits = bits.join(modal_features.set_index('position')).reset_index()
   bits = bits[['feature', 'position', 'score']]
-  bits['group'] = group_name
   bits['total'] = num_trnas
   return bits
 
@@ -205,7 +215,6 @@ def get_modal_freqs(ref_taxid, ref_isotype):
   ref_freqs['score'] = 0
   ref_freqs['group'] = 'Most common feature'
   return ref_freqs
-
 
 def format_bits_for_viz(bits):
   # Translate human readable codes to IUPAC codes and tooltip labels

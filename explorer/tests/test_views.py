@@ -158,7 +158,6 @@ class CompareViewTests(TestCase):
     with self.assertRaises(ValidationError):
       response = views.compare(request)
   
-  @tag('current')
   def test_compare_view_form_errors_rendered(self):
     request = self.factory.post(reverse('explorer:compare'), self.invalid_form_data)
     response = views.compare(request)

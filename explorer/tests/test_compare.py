@@ -10,9 +10,10 @@ from Bio import SeqIO
 import os
 
 from explorer import compare
+from explorer import models
 from explorer import forms
 
-@tag('compare')
+@tag('compare', 'current')
 class CompareTests(TestCase):
   def setUp(self):
     self.ref_taxid = '4751'
@@ -40,12 +41,18 @@ class CompareTests(TestCase):
     cls.request = cls.factory.get(reverse('explorer:bitchart', kwargs = {'formset_json': cls.formset_json}))
     cls.seqs = compare.read_all_trnas()
     cls.trna_fasta_files = compare.write_trnas_to_files(cls.formset_data, cls.seqs)
-    cls.ref_model_fh = compare.build_reference_model(cls.trna_fasta_files)
+    cls.ref_model_fh = compare.build_reference_model(cls.formset_data, cls.trna_fasta_files)
     cls.ref_bits = compare.calculate_normalizing_scores(cls.ref_model_fh)
 
     cls.bits = pd.DataFrame()
     for i, trna_fasta_fh in enumerate(cls.trna_fasta_files[1:]):
-      current_bits = compare.align_trnas_collect_bit_scores(trna_fasta_fh.name, cls.formset_data[i + 2]['name'], cls.ref_model_fh.name)
+      if cls.formset_data[i + 2]['use_fasta']:
+        num_model = compare.NUMBERING_MODELS[cls.formset_data[i + 2]['domain']]
+      else:
+        clade_qs = models.Taxonomy.objects.filter(taxid = cls.formset_data[i + 2]['clade']).values()[0]
+        cls.num_model = compare.NUMBERING_MODELS[clade_qs['domain']]
+      current_bits = compare.align_trnas_collect_bit_scores(trna_fasta_fh.name, cls.num_model, cls.ref_model_fh.name)
+      current_bits['group'] = cls.formset_data[i + 2]['name']
       cls.bits = cls.bits.append(current_bits)
     cls.bits['score'] = round(cls.bits.apply(lambda x: x['score'] - cls.ref_bits[cls.ref_bits.position == x['position']]['score'].values[0], axis = 1), 2)
 
@@ -78,11 +85,10 @@ class CompareTests(TestCase):
     self.assertIn('CMCONSENSUS', self.ref_bits.seqname.unique()[0])
 
   def test_compare_align_trnas_collect_bit_scores(self):
-    bits = compare.align_trnas_collect_bit_scores(self.trna_fasta_files[0].name, self.formset_data[2]['name'], self.ref_model_fh.name)
-    self.assertEqual(bits.shape, (67, 5))
+    bits = compare.align_trnas_collect_bit_scores(self.trna_fasta_files[0].name, self.num_model, self.ref_model_fh.name)
+    self.assertEqual(bits.shape, (67, 4))
     self.assertIn('total', bits.columns)
-    self.assertIn('group', bits.columns)
-    self.assertEqual(bits.group.unique()[0], 'Test')
+    self.assertEqual(self.bits.group.unique()[0], 'Test')
 
   def test_compare_get_cons_bits(self):
     ref_cons = compare.get_cons_bits(self.ref_taxid, self.ref_isotype)
