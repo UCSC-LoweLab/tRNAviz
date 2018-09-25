@@ -10,8 +10,9 @@
 
 	</head>
 	<body>
+
 		<!-- Navbar -->
-		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
   		<div>
     		<ul class="navbar-nav">
       		<li class="nav-item">
@@ -47,9 +48,12 @@
 		<!-- Input / forms -->
 		{% block filter %}{% endblock %}
 
-		<!-- Visualizations -->
-		{% block plots %}{% endblock %}
 
+
+		<!-- Visualizations -->
+		<div class='free-scroll'>
+			{% block plots %}{% endblock %}
+		</div>
 	<script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js' integrity='sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl' crossorigin='anonymous'></script>
 	</body>
 </html>

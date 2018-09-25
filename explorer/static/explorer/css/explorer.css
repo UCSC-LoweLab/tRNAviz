@@ -18,6 +18,7 @@ div.tooltip table {
 div.tooltip th {
   text-align: left;
 }
+
 .cloverleaf-circle {
   stroke: #777777;
   stroke-width: 2;
@@ -62,7 +63,6 @@ div.tilemap-svg {
 
 }
 
-
 svg text.axis-text {
   font-size: 1.2em;
   fill: #000000;
@@ -95,7 +95,6 @@ button.remove-form-row {
   height: 50%;
 }
 
-
 div.form-row {
   margin: 0;
   display: block;
@@ -111,4 +110,13 @@ span.btn-default {
 
 label.spoof-button {
   pointer-events: none;
+}
+
+div.sticky-top {
+  background: #ffffff;
+  width: 100%;
+}
+
+div.free-scroll {
+  overflow: auto;
 }

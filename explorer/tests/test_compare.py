@@ -13,7 +13,7 @@ from explorer import compare
 from explorer import models
 from explorer import forms
 
-@tag('compare', 'current')
+@tag('compare')
 class CompareTests(TestCase):
   def setUp(self):
     self.ref_taxid = '4751'
