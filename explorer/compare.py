@@ -87,7 +87,8 @@ def bitchart(request, formset_json):
     return JsonResponse(plot_data, safe = False)
   
   except Exception as e:
-    return JsonResponse({'error': 'Unknown error'})
+    print(e)
+    return JsonResponse({'server_error': 'Unknown error'})
 
 def read_all_trnas():
   seqs = []

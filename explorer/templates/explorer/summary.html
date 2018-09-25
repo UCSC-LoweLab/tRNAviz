@@ -33,8 +33,16 @@ $(document).ready(function() {
 <script src="{% static 'explorer/js/consensus.js' %}"></script>
 <script type = "text/javascript">
 var coords_path = "{% url 'explorer:coords' %}"
-d3.json('{% url "explorer:cloverleaf" clade_txid=clade_txid isotype=isotype %}', draw_cloverleaf)
-d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', draw_tilemap)
+d3.json('{% url "explorer:cloverleaf" clade_txid=clade_txid isotype=isotype %}', function(plot_data) {
+  d3.select('#cloverleaf-area .loading-overlay').style('display', 'none');
+  if ("server_error" in plot_data) d3.select('#cloverleaf-area').text(plot_data['server_error']);
+	else draw_cloverleaf(plot_data);
+});
+d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', function(plot_data) {
+  d3.select('#tilemap-area .loading-overlay').style('display', 'none');
+  if ("server_error" in plot_data) d3.select('#tilemap-area').text(plot_data['server_error']);
+	else draw_tilemap(plot_data);
+});
 </script>
 {% endblock %}
 
@@ -83,7 +91,7 @@ d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', draw_tilemap)
 
 {% block plots %}
 <div class="p-3">
-	<table class="table">
+	<table class="table sticky-top">
 		<thead>
 			<tr>
 				<th scope="col">Clade</th>

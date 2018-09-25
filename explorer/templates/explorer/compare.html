@@ -162,8 +162,8 @@ $(document).ready(function () {
 
 		d3.json('{% url "explorer:bitchart" formset_json=formset_json %}', 
 			function(plot_data) {
-			  d3.select('#plot-area .loading-overlay').style('display', 'none');
-			  if ("error" in plot_data) d3.select('#plot-area').text('Server error - try a different query')
+			  d3.select('#compare-area .loading-overlay').style('display', 'none');
+			  if ("server_error" in plot_data) d3.select('#compare-area').text(plot_data['server_error'])
 			  else draw_bitchart(plot_data);
 			});
 	}
@@ -305,11 +305,37 @@ $(document).ready(function () {
 </div>
 {% endblock %}
 
+{% block table %}
+{% if valid_form %}
+<table class="table">
+	<tbody>
+		{% for form in formset.forms %}
+		{% if forloop.counter == 1 %}
+		<tr>
+			<th scope="row">Reference</th>
+			<td>{{ form.clade.value }}, {{ form.isotype.value }}</td>
+		</tr>
+		{% elif forloop.counter > 2 %}
+		<tr>
+			<th scope="row">Selection {{ forloop.counter|minus2 }}: {{ form.name.value }}</th>
+			{% if form.use_fasta.value %}
+			<td>User FASTA input</td>
+			{% else %}
+			<td>{{ form.clade.value|clade_lookup }}, {{ form.isotype.value }}</td>
+			{% endif %}
+		</tr>
+		{% endif %}
+		{% endfor %}
+	</tbody>
+</table>
+{% endif %}
+{% endblock %}
+
 
 {% block plots %}
 <div class="p-3">
 	{% if valid_form and formset_json != 'none' %}
-	<div class="p-3" id="plot-area">
+	<div class="p-3" id="compare-area">
 		<div class="loading-overlay">
 	</div>
 	{% endif %}

@@ -1,5 +1,5 @@
 // d3 data load with promise
-var adata;
+var adata = 'a';
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('d3-request')) :
   typeof define === 'function' && define.amd ? define(['d3-request'], factory) :
@@ -41,6 +41,7 @@ var feature_scale = d3.scaleOrdinal()
   .range(['#ffffff', '#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#dddddd', '#ff8300','#66c2a5','#b3de69','#fb72b2','#c1764a','#b26cbd','#e5c494','#ccebd5','#ffa79d','#a6cdea','white','#ffffff','#cccccc','#ffffcc','#222222']);
 
 var draw_cloverleaf = function(cloverleaf_data) {
+  adata = cloverleaf_data;
   var cloverleaf_margin = 50,
       cloverleaf_width = 500,
       cloverleaf_height = 525,

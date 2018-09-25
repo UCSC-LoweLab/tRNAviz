@@ -102,11 +102,18 @@ def annotate_cloverleaf_positions(cons, freqs):
   return plot_data
 
 def cloverleaf(request, clade_txid, isotype):
-  cons_qs = models.Consensus.objects.filter(taxid = clade_txid, isotype = isotype)
-  cons = cons_qs.values()[0]
-  freqs = gather_cloverleaf_freqs(clade_txid, isotype)
-  plot_data = annotate_cloverleaf_positions(cons, freqs)
-  return JsonResponse(plot_data)
+  try:
+    cons_qs = models.Consensus.objects.filter(taxid = clade_txid, isotype = isotype)
+    cons = cons_qs.values()[0]
+    freqs = gather_cloverleaf_freqs(clade_txid, isotype)
+    plot_data = annotate_cloverleaf_positions(cons, freqs)
+    return JsonResponse(plot_data)
+
+  except IndexError:
+    return JsonResponse({'server_error': 'Server error - most likely, tRNAs for your selection do not exist in the tRNAviz database. Try a different selection.'})
+  except Exception as e:
+    return JsonResponse({'server_error': 'Unknown server error'})
+
 
 def gather_tilemap_freqs(clade_txid):
   freqs_qs = models.Freq.objects.filter(taxid = clade_txid).exclude(isotype = 'All')
@@ -243,16 +250,23 @@ def convert_freqs_to_dict(freqs):
   return plot_data
 
 def distribution(request, clade_txids, isotypes, positions):
-  clade_groups, clade_info = reconstruct_clade_group_info(clade_txids)
-  isotypes = [x for x, y in choices.ISOTYPES] if 'All' in isotypes else isotypes.split(',')
-  # Format positions into column names
-  positions = uniquify_positions(positions)
-  query_positions = ['p{}'.format(position.replace(':', '_')) for position in positions] + ['isotype']
+  try:
+    clade_groups, clade_info = reconstruct_clade_group_info(clade_txids)
+    isotypes = [x for x, y in choices.ISOTYPES] if 'All' in isotypes else isotypes.split(',')
+    # Format positions into column names
+    positions = uniquify_positions(positions)
+    query_positions = ['p{}'.format(position.replace(':', '_')) for position in positions] + ['isotype']
+    
+    trnas = query_trnas_for_distribution(clade_groups, clade_info, isotypes, query_positions)
+    freqs = convert_trnas_to_freqs_df(trnas)
+    plot_data = convert_freqs_to_dict(freqs)
+    return JsonResponse(plot_data)
   
-  trnas = query_trnas_for_distribution(clade_groups, clade_info, isotypes, query_positions)
-  freqs = convert_trnas_to_freqs_df(trnas)
-  plot_data = convert_freqs_to_dict(freqs)
-  return JsonResponse(plot_data)
+  except AttributeError:
+    return JsonResponse({'server_error': 'Server error - most likely, tRNAs for your selection do not exist in the tRNAviz database. Try a different selection.'})
+  except Exception as e:
+    return JsonResponse({'server_error': 'Unknown server error'})
+
 
 def species_convert_trnas_to_freqs_df(trnas, isotypes, positions):
   freqs = trnas.groupby(['isotype', 'group', 'assembly']).apply(lambda position_counts: position_counts.drop(['isotype', 'group', 'assembly'], axis = 1).apply(lambda x: x.value_counts()).fillna(0))
@@ -266,18 +280,24 @@ def species_convert_trnas_to_freqs_df(trnas, isotypes, positions):
   return freqs
 
 def species_distribution(request, clade_txids, foci):
-  clade_groups, clade_info = reconstruct_clade_group_info(clade_txids)
-  foci = [tuple(focus.split(',')) for focus in foci.split(';')]
-  isotypes, positions = zip(*foci)
-  positions = [position for isotype, position in foci]
-  query_positions = ['p{}'.format(position.replace(':', '_')) for position in positions] + ['isotype', 'assembly']
-  trnas = query_trnas_for_distribution(clade_groups, clade_info, isotypes, query_positions)
-  freqs = species_convert_trnas_to_freqs_df(trnas, isotypes, positions)
+  try:
+    clade_groups, clade_info = reconstruct_clade_group_info(clade_txids)
+    foci = [tuple(focus.split(',')) for focus in foci.split(';')]
+    isotypes, positions = zip(*foci)
+    positions = [position for isotype, position in foci]
+    query_positions = ['p{}'.format(position.replace(':', '_')) for position in positions] + ['isotype', 'assembly']
+    trnas = query_trnas_for_distribution(clade_groups, clade_info, isotypes, query_positions)
+    freqs = species_convert_trnas_to_freqs_df(trnas, isotypes, positions)
 
-  # convert to d3-friendly format
-  plot_data = defaultdict(dict)
-  for focus in freqs.index.levels[0]:
-    plot_data[focus] = list(pd.DataFrame(freqs.loc[focus]).to_dict(orient = 'index').values())
+    # convert to d3-friendly format
+    plot_data = defaultdict(dict)
+    for focus in freqs.index.levels[0]:
+      plot_data[focus] = list(pd.DataFrame(freqs.loc[focus]).to_dict(orient = 'index').values())
 
-  return JsonResponse(plot_data, safe = True)
+    return JsonResponse(plot_data, safe = True)
+
+  except AttributeError:
+    return JsonResponse({'server_error': 'Server error - most likely, tRNAs for your selection do not exist in the tRNAviz database. Try a different selection.'})
+  except Exception as e:
+    return JsonResponse({'server_error': 'Unknown server error'})
 

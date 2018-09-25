@@ -32,8 +32,11 @@ $(document).ready(function() {
 <script src='https://d3js.org/d3.v4.min.js'></script>
 <script src="{% static 'explorer/js/distributions.js' %}"></script>
 <script type = "text/javascript">
-
-d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_groups_to_url_string foci=foci|foci_to_url_string %}', draw_species_distribution);
+d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_groups_to_url_string foci=foci|foci_to_url_string %}',	function(plot_data) {
+  d3.select('#distribution-area .loading-overlay').style('display', 'none');
+  if ("server_error" in plot_data) d3.select('#distribution-area').text(plot_data['server_error'])
+	else draw_species_distribution(plot_data)
+});
 </script>
 {% endblock %}
 

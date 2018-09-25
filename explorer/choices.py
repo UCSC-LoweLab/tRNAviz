@@ -14,18 +14,19 @@ ISOTYPES = (
   ('Gly', 'Gly'),
   ('His', 'His'),
   ('Ile', 'Ile'),
-  ('iMet', 'iMet'),
+  ('Ile2', 'Ile2'),
   ('Leu', 'Leu'),
   ('Lys', 'Lys'),
   ('Met', 'Met'),
   ('Phe', 'Phe'),
   ('Pro', 'Pro'),
   ('Ser', 'Ser'),
-  ('SeC', 'SeC'),
   ('Thr', 'Thr'),
   ('Trp', 'Trp'),
   ('Tyr', 'Tyr'),
   ('Val', 'Val'),
+  ('fMet', 'fMet'),
+  ('iMet', 'iMet')
 )
 
 SINGLE_POSITIONS = (

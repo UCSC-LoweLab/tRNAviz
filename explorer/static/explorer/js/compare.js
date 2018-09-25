@@ -4,7 +4,7 @@ var sorted_positions = ['1:72', '2:71', '3:70', '4:69', '5:68', '6:67', '7:66', 
 var draw_bitchart = function(plot_data) {
 	var bits = Object.values(plot_data['bits']);
 	var groups = plot_data['groups'];
-  
+
 	var plot_width = sorted_positions.length * 40,
 			plot_height = groups.length * 40,
 			plot_margin = 100,
@@ -12,7 +12,7 @@ var draw_bitchart = function(plot_data) {
 	
 	var y_axis_offset = 7 * groups.reduce(function (a, b) { return a.length > b.length ? a : b; }).length;
 
-	var svg = d3.select('#plot-area')
+	var svg = d3.select('#compare-area')
 		.append('svg')
 		.attr('id', 'plot-svg')
 		.attr('width', plot_width + plot_margin)

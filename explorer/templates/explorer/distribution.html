@@ -34,7 +34,11 @@ $(document).ready(function() {
 <script src="{% static 'explorer/js/distributions.js' %}"></script>
 <script type = "text/javascript">
 
-d3.json('{% url "explorer:distribution" clade_txids=clade_groups|clade_groups_to_url_string isotypes=isotypes|list_to_url_string positions=positions|list_to_url_string %}', draw_distribution);
+d3.json('{% url "explorer:distribution" clade_txids=clade_groups|clade_groups_to_url_string isotypes=isotypes|list_to_url_string positions=positions|list_to_url_string %}', function(plot_data) {
+  d3.select('#distribution-area .loading-overlay').style('display', 'none');
+  if ("server_error" in plot_data) d3.select('#distribution-area').text(plot_data['server_error'])
+	else draw_distribution(plot_data)
+});
 </script>
 {% endblock %}
 
