@@ -32,7 +32,7 @@ var feature_code = {
 	'A': 'A', 'C': 'C', 'G': 'G', 'U': 'U', '-': '-', 'N': 'N',
 	'Purine': 'R', 'Pyrimidine': 'Y', 'G / C': 'S', 'A / U': 'W', 'A / C': 'M', 'G / U': 'K',
 	'C / G / U': 'B', 'A / C / U': 'H', 'A / G / U': 'D', 'A / C / G': 'V',
-	'Paired': ':'
+	'Paired': ':', 'Mismatched': '÷'
 }
 
 var feature_scale = d3.scaleOrdinal()
@@ -119,7 +119,7 @@ var set_cloverleaf_circle_attributes = function(coords) {
         .transition()
         .duration(100)
         .attr('class', 'cloverleaf-highlight');
-      update_cloverleaf_base_distro(d);
+      update_base_distro(d, 'cloverleaf', '');
     })
     .on('mousemove', function() {  
       tooltip.style('left', d3.event.pageX + 'px')
@@ -155,64 +155,117 @@ var set_cloverleaf_text_attributes = function(coords) {
     .style('pointer-events', 'none');
 };
 
-var update_cloverleaf_base_distro;
-
-var draw_cloverleaf_base_distro = function(freq_data) {
-  var base_distro_area_width = 600,
-      base_distro_area_height = 400,    
-      base_distro_width = 550,
+var update_base_distro;
+var adata;
+var draw_base_distro = function(freq_data, plot_type) {
+  var base_distro_area_width = 750,
+      base_distro_area_height = 375,    
+      base_distro_width = 700,
       base_distro_height = 325;
 
-  var base_distro = d3.select('#cloverleaf-base-distro-area')
+  var base_distro = d3.select('#' + plot_type + '-base-distro-area')
     .append('svg')
     .attr('width', base_distro_area_width)
     .attr('height', base_distro_area_height)
-    .attr('class', 'cloverleaf-base-distro-svg')
+    .attr('class', plot_type + '-base-distro-svg')
     .append('g')
-    .attr('id', 'cloverleaf-base-distro')
+    .attr('id', plot_type + '-base-distro')
     .attr('width', base_distro_area_width)
     .attr('height', base_distro_area_height);
 
+  // initialize x and y axes (for initial UI)
+  if (plot_type == 'cloverleaf') {
+    var max_freq = d3.max(Object.values(freq_data).map(d => d3.sum(Object.values(d['freqs']))));
+    var base_freq_scale = d3.scaleLinear()
+      .domain([0, max_freq])
+      .range([base_distro_height, 0]);
+    var base_freq_axis = d3.axisLeft(base_freq_scale);
+    base_distro.append('g')
+      .attr('class', 'base_yaxis')
+      .attr('transform', 'translate(35, 10)')
+      .call(base_freq_axis);
+  } else {
+    var isotype_max_freq = d3.max(Object.values(freq_data).map(d => d3.sum(Object.values(d['freqs']))));
+    var isotype_base_freq_scale = d3.scaleLinear()
+      .domain([0, isotype_max_freq])
+      .range([base_distro_height, 0]);
+    var isotype_base_freq_axis = d3.axisLeft(isotype_base_freq_scale);
+    base_distro.append('g')
+      .attr('class', 'base_yaxis')
+      .attr('transform', 'translate(35, 10)')
+      .call(isotype_base_freq_axis);
+  }
 
-  var max_freq = d3.max(Object.values(freq_data).map(d => d3.sum(Object.values(d['freqs']))));
   
-  var base_freq_scale = d3.scaleLinear()
-    .domain([0, max_freq])
-    .range([base_distro_height, 0]);
-  
-  var base_freq_axis = d3.axisLeft(base_freq_scale);
+  var base_feature_scale = d3.scaleBand()
+    .domain(['A', 'C', 'G', 'U', 'absent'])
+    .range([0, base_distro_width / 2])
+    .paddingInner(0.2);
+
+  var base_feature_axis = d3.axisBottom(base_feature_scale);
+
+  d3.axisBottom(base_feature_scale);
 
   base_distro.append('g')
-    .attr('class', 'base_yaxis')
-    .attr('transform', 'translate(35, 10)')
-    .call(base_freq_axis);
+    .attr('class', 'base_xaxis')
+    .attr('transform', 'translate(42, ' + (base_distro_height + 15) + ')')
+    .call(base_feature_axis);
 
-  update_cloverleaf_base_distro = function(coord) {
-    var base_distro_width = 550,
+  update_base_distro = (coord, plot_type, isotype) => {
+    var base_distro_width = 700,
         base_distro_height = 325;
       
-    var base_distro = d3.select('#cloverleaf-base-distro');
+    var base_distro = d3.select('#' + plot_type + '-base-distro');
 
-    base_distro.selectAll('g.base_xaxis, g.rects').remove();
+    base_distro.selectAll('g.base_xaxis, g.base_yaxis, g.rects').remove();
 
+    // update features for x axis
     var current_features = Array.from(Object.keys(coord['freqs'])).sort();
 
     var base_feature_scale = d3.scaleBand()
       .domain(current_features)
-      .range([0, base_distro_width])
+      .range([0, current_features.length > 10 ? base_distro_width : base_distro_width / 2])
       .paddingInner(0.2);
 
     var base_feature_axis = d3.axisBottom(base_feature_scale);
-
-    var base_fill_scale = d3.scaleOrdinal()
-      .domain(['A', 'C', 'G', 'U', '-', 'A:A', 'A:C', 'A:G', 'A:U', 'C:A', 'C:C', 'C:G', 'C:U', 'G:A', 'G:C', 'G:G', 'G:U', 'U:A', 'U:C', 'U:G', 'U:U'])
-      .range(['#ffd92f', '#4daf4a', '#e41a1c', '#377eb8'].concat(d3.schemeCategory20));
 
     base_distro.append('g')
       .attr('class', 'base_xaxis')
       .attr('transform', 'translate(42, ' + (base_distro_height + 15) + ')')
       .call(base_feature_axis);
 
+    // update freqs for y axis
+    if (plot_type == 'tilemap') {
+      var isotype_max_freq = d3.max(Object.values(freq_data)
+        .filter(d => d['isotype'] == isotype)
+        .map(d => d3.sum(Object.values(d['freqs'])))
+        );
+      var isotype_base_freq_scale = d3.scaleLinear()
+        .domain([0, isotype_max_freq])
+        .range([base_distro_height, 0]);
+      var base_freq_axis = d3.axisLeft(isotype_base_freq_scale);
+    } else {
+      var max_freq = d3.sum(d3.nest()
+        .key(d => d['isotype'])
+        .rollup(d => d3.max(Object.values(d).map(value => d3.max(Object.values(value['freqs'])))))
+        .entries(freq_data)
+        .map(d => d['value']))
+      var base_freq_scale = d3.scaleLinear()
+        .domain([0, max_freq])
+        .range([base_distro_height, 0]);
+      var base_freq_axis = d3.axisLeft(base_freq_scale);
+    }
+
+    base_distro.append('g')
+      .attr('class', 'base_yaxis')
+      .attr('transform', 'translate(35, 10)')
+      .call(base_freq_axis);
+
+
+    // update features for fill scale
+    var base_fill_scale = d3.scaleOrdinal()
+      .domain(['A', 'C', 'G', 'U', '-', 'A:A', 'A:C', 'A:G', 'A:U', 'C:A', 'C:C', 'C:G', 'C:U', 'G:A', 'G:C', 'G:G', 'G:U', 'U:A', 'U:C', 'U:G', 'U:U'])
+      .range(['#ffd92f', '#4daf4a', '#e41a1c', '#377eb8'].concat(d3.schemeCategory20));
 
     base_distro.selectAll('.base_xaxis .tick text, .base_yaxis .tick text')  // select all the text elements for the xaxis
       .attr('text-anchor', 'center')
@@ -226,9 +279,9 @@ var draw_cloverleaf_base_distro = function(freq_data) {
       .enter()
       .append('rect')
       .attr('x', function(d) { return base_feature_scale(d['key']) }) //+ base_distro_width / Object.keys(coord['freqs']).length / 10; })
-      .attr('y', function(d) { return base_freq_scale(d['value']); })
+      .attr('y', function(d) { return plot_type == 'cloverleaf' ? base_freq_scale(d['value']) : isotype_base_freq_scale(d['value']); })
       .attr('id', function(d) {return d['key'] + ' : ' + d['value'];})
-      .attr('height', function(d) { return base_distro_height - base_freq_scale(d['value']); })
+      .attr('height', function(d) { return base_distro_height - (plot_type == 'cloverleaf' ? base_freq_scale(d['value']) : isotype_base_freq_scale(d['value'])); })
       .attr('width', function() { return base_feature_scale.bandwidth(); })
       .attr('stroke', '#666666')
       .attr('stroke-width', '1')
@@ -344,7 +397,7 @@ var draw_tilemap = function(tilemap_data) {
         .attr('class', 'axis-focus');
       d3.select('#tick-' + d['position'].replace(':', '-'))
         .attr('class', 'axis-focus');
-      update_tilemap_base_distro(d, d['isotype']);
+      update_base_distro(d, 'tilemap', d['isotype']);
     }).on('mouseout', function(d) {
       d3.select(this)
         .attr('stroke', '#666666')
@@ -355,89 +408,3 @@ var draw_tilemap = function(tilemap_data) {
         .attr('class', 'axis-text');
     });
 };
-
-var update_tilemap_base_distro;
-var adata;
-var draw_tilemap_base_distro = function(freq_data) {
-  adata = freq_data;
-  var base_distro_area_width = 600,
-      base_distro_area_height = 400,    
-      base_distro_width = 550,
-      base_distro_height = 325;
-
-  var base_distro = d3.select('#tilemap-base-distro-area')
-    .append('svg')
-    .attr('width', base_distro_area_width)
-    .attr('height', base_distro_area_height)
-    .attr('class', 'tilemap-base-distro-svg')
-    .append('g')
-    .attr('id', 'tilemap-base-distro')
-    .attr('width', base_distro_area_width)
-    .attr('height', base_distro_area_height);
-
-  update_tilemap_base_distro = function(coord, isotype) {
-    var base_distro_width = 550,
-        base_distro_height = 325;
-      
-    var base_distro = d3.select('#tilemap-base-distro');
-
-    base_distro.selectAll('g.base_xaxis, g.base_yaxis, g.rects').remove();
-
-    var current_features = Array.from(Object.keys(coord['freqs'])).sort();
-
-    var base_feature_scale = d3.scaleBand()
-      .domain(current_features)
-      .range([0, base_distro_width])
-      .paddingInner(0.2);
-
-    var base_feature_axis = d3.axisBottom(base_feature_scale);
-
-    var base_fill_scale = d3.scaleOrdinal()
-      .domain(['A', 'C', 'G', 'U', '-', 'A:A', 'A:C', 'A:G', 'A:U', 'C:A', 'C:C', 'C:G', 'C:U', 'G:A', 'G:C', 'G:G', 'G:U', 'U:A', 'U:C', 'U:G', 'U:U'])
-      .range(['#ffd92f', '#4daf4a', '#e41a1c', '#377eb8'].concat(d3.schemeCategory20));
-
-    base_distro.append('g')
-      .attr('class', 'base_xaxis')
-      .attr('transform', 'translate(42, ' + (base_distro_height + 15) + ')')
-      .call(base_feature_axis);
-
-    var max_freq = d3.max(Object.values(freq_data)
-      .filter(d => d['isotype'] == isotype)
-      .map(d => d3.sum(Object.values(d['freqs'])))
-      );
-  
-    var base_freq_scale = d3.scaleLinear()
-      .domain([0, max_freq])
-      .range([base_distro_height, 0]);
-    
-    var base_freq_axis = d3.axisLeft(base_freq_scale);
-
-    base_distro.append('g')
-      .attr('class', 'base_yaxis')
-      .attr('transform', 'translate(35, 10)')
-      .call(base_freq_axis);
-
-    base_distro.selectAll('.base_xaxis .tick text, .base_yaxis .tick text')  // select all the text elements for the xaxis
-      .attr('text-anchor', 'center')
-      .attr('class', 'axis-text');
-
-    var rects = base_distro.append('g')
-      .attr('class', 'rects')
-      .attr('transform', 'translate(42, 10)')
-      .selectAll('rect')
-      .data(d3.entries(coord['freqs']))
-      .enter()
-      .append('rect')
-      .attr('x', function(d) { return base_feature_scale(d['key']) }) //+ base_distro_width / Object.keys(coord['freqs']).length / 10; })
-      .attr('y', function(d) { return base_freq_scale(d['value']); })
-      .attr('id', function(d) {return d['key'] + ' : ' + d['value'];})
-      .attr('height', function(d) { return base_distro_height - base_freq_scale(d['value']); })
-      .attr('width', function() { return base_feature_scale.bandwidth(); })
-      .attr('stroke', '#666666')
-      .attr('stroke-width', '1')
-      .style('fill', function(d) { return base_fill_scale(d['key']); })
-      .style('fill-opacity', 0.7);
-  }
-};
-
-

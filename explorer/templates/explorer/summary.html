@@ -39,7 +39,7 @@ d3.json('{% url "explorer:cloverleaf" clade_txid=clade_txid isotype=isotype %}',
 	else {
   	d3.select('#cloverleaf-base-distro-area .loading-overlay').style('display', 'none');
 		draw_cloverleaf(plot_data);
-		draw_cloverleaf_base_distro(plot_data);
+		draw_base_distro(plot_data, 'cloverleaf');
 	}
 });
 d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', function(plot_data) {
@@ -48,7 +48,7 @@ d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', function(plot_data
 	else {
   	d3.select('#tilemap-base-distro-area .loading-overlay').style('display', 'none');
 		draw_tilemap(plot_data);
-		draw_tilemap_base_distro(plot_data);
+		draw_base_distro(plot_data, 'tilemap');
 	}
 });
 </script>
