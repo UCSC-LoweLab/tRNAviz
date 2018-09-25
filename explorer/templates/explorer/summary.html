@@ -36,12 +36,20 @@ var coords_path = "{% url 'explorer:coords' %}"
 d3.json('{% url "explorer:cloverleaf" clade_txid=clade_txid isotype=isotype %}', function(plot_data) {
   d3.select('#cloverleaf-area .loading-overlay').style('display', 'none');
   if ("server_error" in plot_data) d3.select('#cloverleaf-area').text(plot_data['server_error']);
-	else draw_cloverleaf(plot_data);
+	else {
+  	d3.select('#cloverleaf-base-distro-area .loading-overlay').style('display', 'none');
+		draw_cloverleaf(plot_data);
+		draw_cloverleaf_base_distro(plot_data);
+	}
 });
 d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', function(plot_data) {
   d3.select('#tilemap-area .loading-overlay').style('display', 'none');
   if ("server_error" in plot_data) d3.select('#tilemap-area').text(plot_data['server_error']);
-	else draw_tilemap(plot_data);
+	else {
+  	d3.select('#tilemap-base-distro-area .loading-overlay').style('display', 'none');
+		draw_tilemap(plot_data);
+		draw_tilemap_base_distro(plot_data);
+	}
 });
 </script>
 {% endblock %}
@@ -88,9 +96,8 @@ d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', function(plot_data
 </div>
 {% endblock %}
 
-
-{% block plots %}
-<div class="p-3">
+{% block table %}
+<div class="data-select-table">
 	<table class="table sticky-top">
 		<thead>
 			<tr>
@@ -105,15 +112,73 @@ d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', function(plot_data
 			</tr>
 		</tbody>
 	</table>
+</div>
+{% endblock %}
 
-	<div class="p-3" id="cloverleaf-area">
-		<div class="loading-overlay">
+
+{% block plots %}
+
+<div class="plotbox-row">
+	<div class="plotbox-outer">
+		<div class="plotbox-title">
+			<h5>Consensus features</h5>
+		</div>
+		<div class="plotbox-inner" id="cloverleaf-area">
+			<div class="loading-overlay"></div>
 		</div>
 	</div>
 
-	<div class="p-3" id="tilemap-area">
-		<div class="loading-overlay">
+	<div class="plotbox-outer">
+		<div class="plotbox-title">
+			<h5>Nucleotide distribution by position</h5>
+		</div>
+		<div class="plotbox-inner" id="cloverleaf-base-distro-area">
+			<div class="loading-overlay"></div>
 		</div>
 	</div>
 </div>
+
+
+<div class="plotbox-row">
+	<div class="plotbox-outer">
+		<div class="plotbox-title">
+			<h5>Taxonomy summary</h5>
+		</div>
+		<div class="plotbox-inner" id="taxonomy-summary-area">
+			<div class="loading-overlay"></div>
+		</div>
+	</div>
+
+	<div class="plotbox-outer">
+		<div class="plotbox-title">
+			<h5>Domain-specific consensus features</h5>
+		</div>
+		<div class="plotbox-inner" id="domain-features-area">
+			<div class="loading-overlay"></div>
+		</div>
+	</div>
+</div>
+
+
+<div class="plotbox-row">
+	<div class="plotbox-outer">
+		<div class="plotbox-title">
+			<h5>Consensus isotype-specific features</h5>
+		</div>
+		<div class="plotbox-inner" id="tilemap-area">
+			<div class="loading-overlay"></div>
+		</div>
+	</div>
+
+	<div class="plotbox-outer">
+		<div class="plotbox-title">
+			<h5>Nucleotide distribution by position / isotype</h5>
+		</div>
+		<div class="plotbox-inner" id="tilemap-base-distro-area">
+			<div class="loading-overlay"></div>
+		</div>
+	</div>
+</div>
+
+
 {% endblock %}

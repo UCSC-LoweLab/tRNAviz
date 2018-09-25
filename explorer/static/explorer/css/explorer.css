@@ -120,3 +120,45 @@ div.sticky-top {
 div.free-scroll {
   overflow: auto;
 }
+
+div.filter-box {
+  padding-left: 3em;
+  padding-right: 3em;
+}
+
+div.plotbox-row {
+  white-space: nowrap;
+  overflow: auto;
+}
+
+div.plotbox-outer, .table-outer {
+  border: 1px solid;
+  border-color: #d8d8d8;
+  background: #eeeeee;
+  display: inline-block;
+  vertical-align: top;
+  margin: 1em;
+}
+
+div.plotbox-inner, .table-inner {
+  border: 0;
+  background: #ffffff;
+  margin: 1em;
+  padding: 1em;
+  overflow: auto;
+}
+
+div.table-outer {
+  display: block;
+  margin: 0em;
+}
+
+div.data-select-table {
+  border-bottom: 1px solid;
+  border-color: #d8d8d8;
+}
+
+div.plotbox-title {
+  margin: 1em;
+}
+

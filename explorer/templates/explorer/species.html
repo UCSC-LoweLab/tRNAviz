@@ -93,6 +93,9 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 				{% endfor %}
 
 				<div class='my-2'>
+					{{ trna_form }}
+				</div>
+				<div class='my-2'>
 					<button class='btn btn-primary' type='submit'>Submit</button>
 				</div>
 			</form>
