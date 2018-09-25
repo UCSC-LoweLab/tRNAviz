@@ -8,6 +8,12 @@ import re
 
 from . import choices
 from . import compare
+from . import models
+
+class tRNAForm(forms.ModelForm):
+  class Meta:
+    model = models.tRNA
+    fields = ['isotype', 'anticodon', 'score', 'best_model', 'isoscore', 'primary']
 
 class SummaryForm(forms.Form):
   clade = forms.ChoiceField(
