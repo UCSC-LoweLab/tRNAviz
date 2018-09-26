@@ -54,7 +54,7 @@ var draw_cloverleaf = function(cloverleaf_data) {
   var cloverleaf_area_width = 525,
       cloverleaf_area_height = 550;
 
-  d3.select('#cloverleaf-area')
+  var cloverleaf = d3.select('#cloverleaf-area')
     .append('svg')
     .attr('width', cloverleaf_area_width)
     .attr('height', cloverleaf_area_height)
@@ -64,6 +64,18 @@ var draw_cloverleaf = function(cloverleaf_data) {
     .attr('id', 'cloverleaf')
     .attr('width', cloverleaf_area_width)
     .attr('height', cloverleaf_area_height)
+
+  // append dummy rect to listen for click events, for unlocking selections
+  cloverleaf.append('rect')
+    .attr('width', cloverleaf_area_width)
+    .attr('height', cloverleaf_area_height)
+    .attr('fill', 'white')
+    .on('click', function() {
+    if (d3.select('#cloverleaf').attr('locked')) {
+      dehighlight();
+      d3.select('#cloverleaf').attr('locked', null);
+    }
+  });
 
   d3.select('body')
     .append('div')
@@ -87,85 +99,98 @@ var draw_cloverleaf = function(cloverleaf_data) {
       .enter()
       .append('text');
   }).then(function() {
-  	update_cloverleaf(cloverleaf_data)
+  	update_cloverleaf(cloverleaf_data);
   });
 
-};
-
-var update_cloverleaf = function(cloverleaf_data) {
-	new Promise(function(resolve, reject) {
-	  var coords = d3.select('#cloverleaf').selectAll('circle').data();
-	  for (var index in coords) {
-	  	coords[index]['consensus'] = cloverleaf_data[coords[index]['position']]['consensus'];
-	  	coords[index]['freqs'] = cloverleaf_data[coords[index]['position']]['freqs'];
-	  }
-	  resolve(coords);
-  }).then(function(updated_coords) {
-  	set_cloverleaf_circle_attributes(updated_coords);
-    set_cloverleaf_text_attributes(updated_coords);
-  })
-};
-
-var set_cloverleaf_circle_attributes = function(coords) {
-  var tooltip = d3.select('.tooltip-cloverleaf');
-  var tooltip_position = tooltip.append('div')
-  var tooltip_consensus = tooltip.append('div')
-
-  d3.select('#cloverleaf').selectAll('circle')
-    .data(coords)
-    .attr('id', d => 'circle' + d['position'])
-    .attr('cx', d => d['x'])
-    .attr('cy', d => d['y'])
-    .attr('r', d => d['radius'])
-    .attr('fill', d => feature_scale(d['consensus']))
-    .on('mouseover', function(d) {
-      tooltip_position.html('Position ' + d['position'])
-      tooltip_consensus.html(d['consensus'])
-      tooltip.transition()
-        .duration(100)
-        .style('opacity', .9)
-        .style('left', d3.event.pageX + 'px')
-        .style('top', d3.event.pageY + 'px');
-      d3.select(this)
-        .transition()
-        .duration(100)
-        .attr('class', 'cloverleaf-highlight');
-      update_base_distro(d, 'cloverleaf', '');
+  var update_cloverleaf = function(cloverleaf_data) {
+  	new Promise(function(resolve, reject) {
+  	  var coords = d3.select('#cloverleaf').selectAll('circle').data();
+  	  for (var index in coords) {
+  	  	coords[index]['consensus'] = cloverleaf_data[coords[index]['position']]['consensus'];
+  	  	coords[index]['freqs'] = cloverleaf_data[coords[index]['position']]['freqs'];
+  	  }
+  	  resolve(coords);
+    }).then(function(updated_coords) {
+    	set_cloverleaf_circle_attributes(updated_coords);
+      set_cloverleaf_text_attributes(updated_coords);
     })
-    .on('mousemove', function() {  
-      tooltip.style('left', d3.event.pageX + 'px')
-        .style('top', d3.event.pageY + 'px');
-    })
-    .on('mouseout', function(d) {   
-      tooltip.transition()    
-        .duration(100)    
-        .style('opacity', 0); 
-      d3.select(this)
-        .transition()
-        .duration(100)
-        .attr('class', 'cloverleaf-circle');
-    });
+  };
+
+  var set_cloverleaf_circle_attributes = function(coords) {
+    var tooltip = d3.select('.tooltip-cloverleaf');
+    var tooltip_position = tooltip.append('div').attr('class', 'tooltip-position')
+    var tooltip_consensus = tooltip.append('div').attr('class', 'tooltip-consensus')
+
+    d3.select('#cloverleaf').selectAll('circle')
+      .data(coords)
+      .attr('id', d => 'circle' + d['position'])
+      .attr('cx', d => d['x'])
+      .attr('cy', d => d['y'])
+      .attr('r', d => d['radius'])
+      .attr('fill', d => feature_scale(d['consensus']))
+      .on('mouseover',  d => d3.select('#cloverleaf').attr('locked') ? '' : highlight(d))
+      .on('mousemove', function(d) {
+        if (!d3.select('#cloverleaf').attr('locked')) {
+          tooltip.style('left', d3.event.pageX + 'px').style('top', d3.event.pageY + 'px')
+        }
+      })
+      .on('mouseout', d => d3.select('#cloverleaf').attr('locked') ? '' : dehighlight())
+      .on('click', function(d) {
+        if (!d3.select('#cloverleaf').attr('locked')) {
+          d3.select('#cloverleaf').attr('locked', true);
+          d3.select('.tooltip-cloverleaf').transition()    
+            .duration(100)    
+            .style('opacity', 0); 
+        } else {
+          dehighlight();
+          d3.select('#cloverleaf').attr('locked', null);
+          highlight(d);
+        }
+      });
+  };
+
+  function highlight(d) {
+    d3.select('.tooltip-position').html('Position ' + d['position'])
+    d3.select('.tooltip-consensus').html(d['consensus'])
+    d3.select('.tooltip-cloverleaf').transition()
+      .duration(100)
+      .style('opacity', .9)
+      .style('left', d3.event.pageX + 'px')
+      .style('top', d3.event.pageY + 'px');
+    d3.select('#circle' + d['position'])
+      .transition()
+      .duration(100)
+      .attr('class', 'cloverleaf-highlight');
+    update_base_distro(d, 'cloverleaf', '');
+  }
+  function dehighlight() { 
+    d3.select('.tooltip-cloverleaf').transition()    
+      .duration(100)    
+      .style('opacity', 0); 
+    d3.select('.cloverleaf-highlight')
+      .transition()
+      .duration(100)
+      .attr('class', 'cloverleaf-circle');
+  }
+  var set_cloverleaf_text_attributes = function(coords) {
+
+    d3.select('#cloverleaf').selectAll('text')
+      .data(coords)
+      .attr('id', d => 'consensus' + d['position'])
+      .attr('x', d => d['x'])
+      .attr('y', d => { 
+        if (d['position'].search('V') == -1) return d['y'] + 5;
+        else return d['y'] + 4;
+      })
+      .attr('text-anchor', 'middle')
+      .attr('font-size', d => {
+        if (d['position'].search('V') == -1) return '15px';
+        else return '10px';
+      })
+      .text(d => feature_code[d['consensus']])
+      .style('pointer-events', 'none');
+  };
 };
-
-var set_cloverleaf_text_attributes = function(coords) {
-
-  d3.select('#cloverleaf').selectAll('text')
-    .data(coords)
-    .attr('id', d => 'consensus' + d['position'])
-    .attr('x', d => d['x'])
-    .attr('y', d => { 
-      if (d['position'].search('V') == -1) return d['y'] + 5;
-      else return d['y'] + 4;
-    })
-    .attr('text-anchor', 'middle')
-    .attr('font-size', d => {
-      if (d['position'].search('V') == -1) return '15px';
-      else return '10px';
-    })
-    .text(d => feature_code[d['consensus']])
-    .style('pointer-events', 'none');
-};
-
 var update_base_distro;
 var draw_base_distro = function(freq_data, plot_type) {
   var base_distro_area_width = 750,
@@ -321,6 +346,18 @@ var draw_tilemap = function(tilemap_data) {
     .attr('id', 'tilemap')
     .attr('width', tilemap_area_width)
     .attr('height', tilemap_area_height);
+  
+  // append dummy rect to listen for click events, for unlocking selections
+  tilemap.append('rect')
+    .attr('width', tilemap_area_width)
+    .attr('height', tilemap_area_height)
+    .attr('fill', 'white')
+    .on('click', function() {
+    if (d3.select('#tilemap').attr('locked')) {
+      dehighlight();
+      d3.select('#tilemap').attr('locked', null);
+    }
+  });
 
   // build scales and axes
   var position_scale = d3.scaleLinear()
@@ -372,7 +409,7 @@ var draw_tilemap = function(tilemap_data) {
     .data(tilemap_data)
     .enter()
     .append('rect')
-    .attr('id', d => d['isotype'] + ' ' + d['position'])
+    .attr('id', d => 'tile-' + d['isotype'] + '-' + d['position'].replace(':', '-'))
     .attr('x', d => { 
         var x = position_scale(positions.findIndex(position => position == d['position']));
         if (d['type'] == 'right') { return x + tile_width / 2; } 
@@ -399,24 +436,35 @@ var draw_tilemap = function(tilemap_data) {
     }).style('fill-opacity', d => {
       if (d['type'] == 'block') return 0;
       else return 0.7;
-    }).on('mouseover', function(d) {
-      d3.select(this)
-        .attr('stroke', '#ff0000')
-        .attr('stroke-width', '2.5');
-      d3.select('#tick-' + d['isotype'].replace(':', '-'))
-        .attr('class', 'axis-focus');
-      d3.select('#tick-' + d['position'].replace(':', '-'))
-        .attr('class', 'axis-focus');
-      update_base_distro(d, 'tilemap', d['isotype']);
-    }).on('mouseout', function(d) {
-      d3.select(this)
-        .attr('stroke', '#666666')
-        .attr('stroke-width', '1.5');
-      d3.select('#tick-' + d['isotype'].replace(':', '-'))
-        .attr('class', 'axis-text');
-      d3.select('#tick-' + d['position'].replace(':', '-'))
-        .attr('class', 'axis-text');
+    }).on('mouseover', d => d3.select('#tilemap').attr('locked') ? '' : highlight(d))
+    .on('mouseout', d => d3.select('#tilemap').attr('locked') ? '' : dehighlight(d))
+    .on('click', function(d) {
+      if (!d3.select('#tilemap').attr('locked')) {
+        d3.select('#tilemap').attr('locked', true);
+      } else {
+        dehighlight();
+        d3.select('#tilemap').attr('locked', null);
+        highlight(d);
+      }
     });
+  function highlight(d) {
+    d3.selectAll('#tile-' + d['isotype'] + '-' + d['position'].replace(':', '-'))
+      .attr('class', 'tile-focus')
+      .attr('stroke', '#ff0000')
+      .attr('stroke-width', '2.5');
+    d3.select('#tick-' + d['isotype'].replace(':', '-'))
+      .attr('class', 'axis-focus');
+    d3.select('#tick-' + d['position'].replace(':', '-'))
+      .attr('class', 'axis-focus');
+    update_base_distro(d, 'tilemap', d['isotype']);
+  }
+  function dehighlight() {
+    d3.selectAll('.tile-focus')
+      .attr('stroke', '#666666')
+      .attr('stroke-width', '1.5');
+    d3.selectAll('.axis-focus')
+      .attr('class', 'axis-text');
+  }
 };
 
 var tax_json_to_table = function(table_data) {
@@ -431,7 +479,6 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-var adata;
 var cons_json_to_table = function(table_data) {
   domain = table_data.filter(d => d['position'] == 'clade')[0]['domain']
   clade = table_data.filter(d => d['position'] == 'clade')[0]['clade']
