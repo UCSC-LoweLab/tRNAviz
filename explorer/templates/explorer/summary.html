@@ -2,14 +2,13 @@
 {% load static from staticfiles %}
 {% load explorer_extras %}
 
-{% block static %}<link rel="stylesheet" href="{% static 'explorer/css/explorer.css' %}">{% endblock %}
+{% block static %}
+<link rel="stylesheet" href="{% static 'explorer/css/explorer.css' %}">
+<script src="{% static 'explorer/js/export.js' %}"></script>
+{% endblock %}
 {% block title %}tRNAviz | Summary{% endblock %}
 
 {% block filterjs %}
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
-
 <script>	
 $(document).ready(function() {
 	$('#id_clade').select2({
@@ -148,18 +147,27 @@ $(document).ready(function() {
 
 {% block plots %}
 
+
 <div class="plotbox-row">
 	<div class="plotbox-outer">
-		<div class="plotbox-title">
+		<div class="plotbox-header">
 			<h5>Consensus features</h5>
+			<div class="download-box dropdown">
+  			<a class="dropdown-toggle" href="#" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
+  			<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+    			<a class="dropdown-item" href="#">PNG</a>
+    			<a class="dropdown-item" href="#" id='cloverleaf-download-pdf'>PDF</a>
+  			</div>
+  		</div>
 		</div>
 		<div class="plotbox-inner" id="cloverleaf-area">
 			<div class="loading-overlay"></div>
 		</div>
 	</div>
 
+
 	<div class="plotbox-outer">
-		<div class="plotbox-title">
+		<div class="plotbox-header">
 			<h5>Nucleotide distribution by position</h5>
 		</div>
 		<div class="plotbox-inner" id="cloverleaf-base-distro-area">
@@ -171,7 +179,7 @@ $(document).ready(function() {
 
 <div class="plotbox-row">
 	<div class="plotbox-outer">
-		<div class="plotbox-title">
+		<div class="plotbox-header">
 			<h5>Taxonomy summary</h5>
 		</div>
 		<div class="table-inner" id="taxonomy-summary-area">
@@ -180,7 +188,7 @@ $(document).ready(function() {
 	</div>
 
 	<div class="plotbox-outer">
-		<div class="plotbox-title">
+		<div class="plotbox-header">
 			<h5>Domain-specific consensus features</h5>
 		</div>
 		<div class="table-inner" id="domain-features-area">
@@ -189,7 +197,7 @@ $(document).ready(function() {
 	</div>
 
 	<div class="plotbox-outer">
-		<div class="plotbox-title">
+		<div class="plotbox-header">
 			<h5>Anticodon counts</h5>
 		</div>
 		<div class="table-inner" id="anticodon-counts-area">
@@ -198,7 +206,7 @@ $(document).ready(function() {
 	</div>
 
 	<div class="plotbox-outer">
-		<div class="plotbox-title">
+		<div class="plotbox-header">
 			<h5>Isotype discrepancies</h5>
 		</div>
 		<div class="table-inner" id="isotype-discrepancies-area">
@@ -210,7 +218,7 @@ $(document).ready(function() {
 
 <div class="plotbox-row">
 	<div class="plotbox-outer">
-		<div class="plotbox-title">
+		<div class="plotbox-header">
 			<h5>Consensus isotype-specific features</h5>
 		</div>
 		<div class="plotbox-inner" id="tilemap-area">
@@ -219,7 +227,7 @@ $(document).ready(function() {
 	</div>
 
 	<div class="plotbox-outer">
-		<div class="plotbox-title">
+		<div class="plotbox-header">
 			<h5>Nucleotide distribution by position / isotype</h5>
 		</div>
 		<div class="plotbox-inner" id="tilemap-base-distro-area">

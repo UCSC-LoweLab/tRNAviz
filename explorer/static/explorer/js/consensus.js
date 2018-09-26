@@ -50,6 +50,9 @@ var feature_scale = d3.scaleOrdinal()
   .domain(['', 'A', 'C', 'G', 'U', '-', 'Purine', 'Pyrimidine', 'Weak', 'Strong','Amino','Keto','B','D','H','V','N','Absent','Mismatched','Paired','High mismatch rate'])
   .range(['#ffffff', '#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#dddddd', '#ff8300','#66c2a5','#b3de69','#fb72b2','#c1764a','#b26cbd','#e5c494','#ccebd5','#ffa79d','#a6cdea','white','#ffffff','#cccccc','#ffffcc','#222222']);
 
+// declare download functions here, but implement within scope of individual functions
+var download_cloverleaf;
+
 var draw_cloverleaf = function(cloverleaf_data) {
   var cloverleaf_area_width = 525,
       cloverleaf_area_height = 550;
@@ -59,9 +62,9 @@ var draw_cloverleaf = function(cloverleaf_data) {
     .attr('width', cloverleaf_area_width)
     .attr('height', cloverleaf_area_height)
     .attr('class', 'cloverleaf-svg')
+    .attr('id', 'cloverleaf')
     .append('g')
     .attr('transform', 'translate(5, 0)') // Otherwise, position 18 outline is cut off
-    .attr('id', 'cloverleaf')
     .attr('width', cloverleaf_area_width)
     .attr('height', cloverleaf_area_height)
 
@@ -190,7 +193,13 @@ var draw_cloverleaf = function(cloverleaf_data) {
       .text(d => feature_code[d['consensus']])
       .style('pointer-events', 'none');
   };
+
+  download_cloverleaf = function() {
+    pdf = new jsPDF('l', 'pt', [525, 550]);
+
+  }
 };
+
 var update_base_distro;
 var draw_base_distro = function(freq_data, plot_type) {
   var base_distro_area_width = 750,
@@ -203,8 +212,8 @@ var draw_base_distro = function(freq_data, plot_type) {
     .attr('width', base_distro_area_width)
     .attr('height', base_distro_area_height)
     .attr('class', plot_type + '-base-distro-svg')
-    .append('g')
     .attr('id', plot_type + '-base-distro')
+    .append('g')
     .attr('width', base_distro_area_width)
     .attr('height', base_distro_area_height);
 
@@ -342,8 +351,8 @@ var draw_tilemap = function(tilemap_data) {
     .attr('width', tilemap_area_width)
     .attr('height', tilemap_area_height)
     .attr('class', 'tilemap-svg')
-    .append('g')
     .attr('id', 'tilemap')
+    .append('g')
     .attr('width', tilemap_area_width)
     .attr('height', tilemap_area_height);
   
@@ -482,7 +491,6 @@ function capitalizeFirstLetter(string) {
 var cons_json_to_table = function(table_data) {
   domain = table_data.filter(d => d['position'] == 'clade')[0]['domain']
   clade = table_data.filter(d => d['position'] == 'clade')[0]['clade']
-  adata = table_data;
   header = '<th scope="col">Position</th><th scope="col">' + domain + '</th><th scope="col">' + clade + '</th>'
   body = ''
   table_data.filter(d => d['position'] != 'clade').map(function(d) {

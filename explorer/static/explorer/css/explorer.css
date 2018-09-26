@@ -158,8 +158,16 @@ div.data-select-table {
   border-color: #d8d8d8;
 }
 
-div.plotbox-title, .filter-title, .table-title {
+div.plotbox-header {
   margin: 1em;
+}
+
+.plotbox-header > h5 {
+  display: inline;
+}
+
+div.download-box {
+  float: right;
 }
 
 td.cons-match {
@@ -172,4 +180,9 @@ td.cons-mismatch {
 
 td.cons-specific {
   color: blue;
+}
+
+.dropdown:hover .dropdown-menu {
+  min-width: 3em;
+  display: block;
 }
