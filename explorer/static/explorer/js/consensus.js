@@ -192,7 +192,7 @@ var draw_base_distro = function(freq_data, plot_type) {
     var base_freq_axis = d3.axisLeft(base_freq_scale);
     base_distro.append('g')
       .attr('class', 'base_yaxis')
-      .attr('transform', 'translate(43, 10)')
+      .attr('transform', 'translate(46, 10)')
       .call(base_freq_axis);
   } else {
     var isotype_max_freq = d3.max(Object.values(freq_data).map(d => d3.sum(Object.values(d['freqs']))));
@@ -202,7 +202,7 @@ var draw_base_distro = function(freq_data, plot_type) {
     var isotype_base_freq_axis = d3.axisLeft(isotype_base_freq_scale);
     base_distro.append('g')
       .attr('class', 'base_yaxis')
-      .attr('transform', 'translate(43, 10)')
+      .attr('transform', 'translate(46, 10)')
       .call(isotype_base_freq_axis);
   }
 
@@ -218,7 +218,7 @@ var draw_base_distro = function(freq_data, plot_type) {
 
   base_distro.append('g')
     .attr('class', 'base_xaxis')
-    .attr('transform', 'translate(50, ' + (base_distro_height + 15) + ')')
+    .attr('transform', 'translate(53, ' + (base_distro_height + 15) + ')')
     .call(base_feature_axis);
 
   update_base_distro = (coord, plot_type, isotype) => {
@@ -241,7 +241,7 @@ var draw_base_distro = function(freq_data, plot_type) {
 
     base_distro.append('g')
       .attr('class', 'base_xaxis')
-      .attr('transform', 'translate(50, ' + (base_distro_height + 15) + ')')
+      .attr('transform', 'translate(53, ' + (base_distro_height + 15) + ')')
       .call(base_feature_axis);
 
     // update freqs for y axis
@@ -268,7 +268,7 @@ var draw_base_distro = function(freq_data, plot_type) {
 
     base_distro.append('g')
       .attr('class', 'base_yaxis')
-      .attr('transform', 'translate(43, 10)')
+      .attr('transform', 'translate(46, 10)')
       .call(base_freq_axis);
 
 
@@ -283,7 +283,7 @@ var draw_base_distro = function(freq_data, plot_type) {
 
     var rects = base_distro.append('g')
       .attr('class', 'rects')
-      .attr('transform', 'translate(50, 10)')
+      .attr('transform', 'translate(53, 10)')
       .selectAll('rect')
       .data(d3.entries(coord['freqs']))
       .enter()
@@ -306,7 +306,7 @@ var draw_base_distro = function(freq_data, plot_type) {
 var draw_tilemap = function(tilemap_data) {
   d3.select('#tilemap-area .loading-overlay').style('display', 'none')
   var tilemap_area_width = 1220,
-      tilemap_area_height = 450,
+      tilemap_area_height = 470,
       tile_width = 15;
 
   var isotypes = Array.from(new Set(tilemap_data.map(d => d['isotype']))).sort();
@@ -333,7 +333,7 @@ var draw_tilemap = function(tilemap_data) {
 
   var isotype_scale = d3.scaleLinear()
     .domain([0, isotypes.length - 1])
-    .range([10, 360]);
+    .range([10, 380]);
 
   var isotype_axis = d3.axisLeft(isotype_scale)
     .ticks(isotypes.length)
@@ -346,7 +346,7 @@ var draw_tilemap = function(tilemap_data) {
 
   tilemap.append('g')
     .attr('class', 'xaxis')
-    .attr('transform', 'translate(7, 380)')
+    .attr('transform', 'translate(7, 400)')
     .call(position_axis);
 
   tilemap.append('g')

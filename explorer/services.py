@@ -158,55 +158,69 @@ def domain_features(request, clade_txid, isotype):
     cons_qs = models.Consensus.objects.filter(taxid__in = [clade_txid, domain_txid], isotype = isotype).values(*cols)
     df = read_frame(cons_qs)
     df = df.set_index('taxid')
-    df.loc[domain_txid] = [LABELS[feature] for feature in df.loc[domain_txid]]
-    df.loc[clade_txid] = [LABELS[feature] for feature in df.loc[clade_txid]]
     df.columns = [col[1:].replace('_', ':') for col in df.columns]
     if df.index[0] != domain_txid: df.iloc[::-1]
-    df['clade'] = [domain_name, clade_name]
-    table_data = [{'position': col, 'domain': df[col][0], 'clade': df[col][1]} for col in df.columns]
+    df.loc[domain_txid] = [LABELS[feature] for feature in df.loc[domain_txid]]
+    # If user selected a domain, continue as if it were a different clade
+    if domain_txid == clade_txid:
+      df['clade'] = domain_name
+      table_data = [{'position': col, 'domain': df[col][0], 'clade': df[col][0]} for col in df.columns]  
+    else:
+      df.loc[clade_txid] = [LABELS[feature] for feature in df.loc[clade_txid]]  
+      df['clade'] = [domain_name, clade_name]
+      table_data = [{'position': col, 'domain': df[col][0], 'clade': df[col][1]} for col in df.columns]
+    
     return JsonResponse(table_data, safe = False)
 
   except Exception as e:
     return JsonResponse({'server_error': 'Unknown server error'})  
 
 def anticodon_counts(request, clade_txid, isotype):
-  tax_qs = models.Taxonomy.objects.filter(taxid = clade_txid).values('name', 'rank', 'domain')[0]
-  name = tax_qs['name']
-  rank = tax_qs['rank']
-  if rank == 'class': rank = 'taxclass'
-  trna_qs = models.tRNA.objects.filter(Q(**{str(rank): name}))
-  if isotype != 'All':
-    trna_qs = trna_qs.filter(isotype = isotype)
-  trna_qs = trna_qs.values('anticodon', 'isotype').annotate(clade = Count('anticodon'))
-  clade_counts = read_frame(trna_qs)
-  clade_counts = clade_counts.set_index(['isotype', 'anticodon'])
+  try:
+    tax_qs = models.Taxonomy.objects.filter(taxid = clade_txid).values('name', 'rank', 'domain')[0]
+    name = tax_qs['name']
+    rank = tax_qs['rank']
+    if rank == 'class': rank = 'taxclass'
+    trna_qs = models.tRNA.objects.filter(Q(**{str(rank): name}))
+    if isotype != 'All':
+      trna_qs = trna_qs.filter(isotype = isotype)
+    trna_qs = trna_qs.values('anticodon', 'isotype').annotate(clade = Count('anticodon'))
+    clade_counts = read_frame(trna_qs)
+    clade_counts = clade_counts.set_index(['isotype', 'anticodon'])
 
-  domain_name = {'euk': 'Eukaryota', 'bact': 'Bacteria', 'arch': 'Archaea'}[tax_qs['domain']]
-  trna_qs = models.tRNA.objects.filter(domain = domain_name)
-  if isotype != 'All':
-    trna_qs = trna_qs.filter(isotype = isotype)
-  trna_qs = trna_qs.values('anticodon', 'isotype').annotate(domain = Count('anticodon'))
-  domain_counts = read_frame(trna_qs)
-  domain_counts = domain_counts.set_index(['isotype', 'anticodon'])
+    domain_name = {'euk': 'Eukaryota', 'bact': 'Bacteria', 'arch': 'Archaea'}[tax_qs['domain']]
+    trna_qs = models.tRNA.objects.filter(domain = domain_name)
+    if isotype != 'All':
+      trna_qs = trna_qs.filter(isotype = isotype)
+    trna_qs = trna_qs.values('anticodon', 'isotype').annotate(domain = Count('anticodon'))
+    domain_counts = read_frame(trna_qs)
+    domain_counts = domain_counts.set_index(['isotype', 'anticodon'])
 
-  counts = clade_counts.join(domain_counts).sort_index().reset_index()
-  counts.columns = ['Isotype', 'Anticodon', name, domain_name]
-  counts = counts.set_index(['Isotype', 'Anticodon'])
-  return HttpResponse(counts.to_html(classes = 'table', border = 0, bold_rows = False, na_rep = '0', sparsify = True))
+    counts = clade_counts.join(domain_counts).sort_index().reset_index()
+    counts.columns = ['Isotype', 'Anticodon', name, domain_name]
+    counts = counts.set_index(['Isotype', 'Anticodon'])
+    return HttpResponse(counts.to_html(classes = 'table', border = 0, bold_rows = False, na_rep = '0', sparsify = True))
+  
+  except:
+    return HttpResponse('Unknown server error')
 
 def isotype_discrepancies(request, clade_txid, isotype):
-  tax_qs = models.Taxonomy.objects.filter(taxid = clade_txid).values('name', 'rank', 'domain')[0]
-  name = tax_qs['name']
-  rank = tax_qs['rank']
-  if rank == 'class': rank = 'taxclass'
-  trna_qs = models.tRNA.objects.filter(Q(**{str(rank): name}))
-  if isotype != 'All':
-    trna_qs = trna_qs.filter(isotype = isotype)
-  trna_qs = trna_qs.exclude(isotype = F('best_model')).values('species', 'seqname', 'score', 'anticodon', 'isotype', 'isoscore_ac', 'best_model', 'isoscore')
-  trna_qs = trna_qs.order_by(F('score') * (F('isoscore_ac') - F('isoscore')))
-  ipds = read_frame(trna_qs)
-  ipds.columns = ['Species', 'tRNAscan-SE ID', 'Domain-specific score', 'Anticodon', 'Anticodon isotype', 'Anticodon isotype model score', 'Best isotype model', 'Best isotype model score']
-  return HttpResponse(ipds.to_html(classes = 'table', border = 0, bold_rows = False, na_rep = '', index = False))
+  try:
+    tax_qs = models.Taxonomy.objects.filter(taxid = clade_txid).values('name', 'rank', 'domain')[0]
+    name = tax_qs['name']
+    rank = tax_qs['rank']
+    if rank == 'class': rank = 'taxclass'
+    trna_qs = models.tRNA.objects.filter(Q(**{str(rank): name}))
+    if isotype != 'All':
+      trna_qs = trna_qs.filter(isotype = isotype)
+    trna_qs = trna_qs.exclude(isotype = F('best_model')).values('species', 'seqname', 'score', 'anticodon', 'isotype', 'isoscore_ac', 'best_model', 'isoscore')
+    trna_qs = trna_qs.order_by(F('score') * (F('isoscore_ac') - F('isoscore')))
+    ipds = read_frame(trna_qs)
+    ipds.columns = ['Species', 'tRNAscan-SE ID', 'Domain-specific score', 'Anticodon', 'Anticodon isotype', 'Anticodon isotype model score', 'Best isotype model', 'Best isotype model score']
+    return HttpResponse(ipds.to_html(classes = 'table', border = 0, bold_rows = False, na_rep = '', index = False))
+  
+  except:
+    return HttpResponse('Unknown server error')
 
 def gather_tilemap_freqs(clade_txid):
   freqs_qs = models.Freq.objects.filter(taxid = clade_txid).exclude(isotype = 'All')
