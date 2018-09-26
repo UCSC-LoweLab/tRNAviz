@@ -1,10 +1,10 @@
 from . import models
 from . import serializers
 from . import choices
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 import json
 from collections import defaultdict
-from django.db.models import Q
+from django.db.models import Q, Count, F
 import warnings
 warnings.filterwarnings('ignore')
 import pandas as pd
@@ -26,10 +26,11 @@ PAIRED_FEATURES = {
 
 LABELS = {
   'A': 'A', 'G': 'G', 'C': 'C', 'U': 'U', 'Absent': '-', '': '',  'Purine': 'Purine', 'Pyrimidine': 'Pyrimidine',
-  'Amino': 'A / C', 'Keto': 'G / U', 'Weak': 'A / U', 'Strong': 'G / C', 
+  'Amino': 'A / C', 'Keto': 'G / U', 'Weak': 'A / U', 'Strong': 'C / G', 'Wobble': 'G / U',
   'B': 'C / G / U', 'H': 'A / C / U', 'D': 'A / G / U', 'V': 'A / C / G', 'N': 'N',
+  'AU': 'A:U', 'UA': 'U:A', 'CG': 'C:G', 'GC': 'G:C', 'GU': 'G:U', 'UG': 'U:G',
   'PurinePyrimidine': 'Purine:Pyrimidine', 'PyrimidinePurine': 'Pyrimidine:Purine',
-  'WobblePair': 'G:U / U:G', 'StrongPair': 'G:C / C:G', 'WeakPair': 'A:U / U:A', 'AminoKeto': 'A:U / C:G', 'KetoAmino': 'G:C / U:A', 
+  'WobblePair': 'G:U / U:G', 'StrongPair': 'C:G / G:C', 'WeakPair': 'A:U / U:A', 'AminoKeto': 'A:U / C:G', 'KetoAmino': 'G:C / U:A', 
   'Paired': 'Paired', 'Bulge': '-:N / N:-', 'Mismatched': 'Mismatched', 'NN': 'N:N', None: ''
 }
 LABELS.update(PAIRED_FEATURES)
@@ -114,6 +115,98 @@ def cloverleaf(request, clade_txid, isotype):
   except Exception as e:
     return JsonResponse({'server_error': 'Unknown server error'})
 
+
+def taxonomy_summary(request, clade_txid, isotype):
+  try:
+    tax_qs = models.Taxonomy.objects.filter(taxid = clade_txid).values('name', 'rank')[0]
+    name = tax_qs['name']
+    rank = tax_qs['rank']
+    if rank == 'class': rank = 'taxclass'
+    query_filter = Q(**{str(rank): name})
+    cols = ['assembly', 'species', 'genus', 'family', 'order', 'subclass', 'taxclass', 'subphylum', 'phylum', 'subkingdom', 'kingdom', 'domain']  
+
+    trna_qs = models.tRNA.objects
+    if isotype != 'All':
+      trna_qs = trna_qs.filter(isotype = isotype)
+    taxonomy_extra = trna_qs.filter(*(query_filter,)).values(*cols)[0]
+
+    lower_rank = True
+    counts = []
+    for col in cols:
+      if col == rank:
+        lower_rank = False
+      if lower_rank or taxonomy_extra[col] is None:
+        continue
+      query_filter = Q(**{str(col): taxonomy_extra[col]})
+      count = models.tRNA.objects.filter(*(query_filter,)).count()
+
+      counts.append({'rank': col if col != 'taxclass' else 'class', 'clade': taxonomy_extra[col], 'count': count})
+
+    return JsonResponse(counts, safe = False)
+
+  except Exception as e:
+    return JsonResponse({'server_error': 'Unknown server error'})    
+
+def domain_features(request, clade_txid, isotype):
+  try:
+    tax_qs = models.Taxonomy.objects.filter(taxid = clade_txid).values('domain', 'name')[0]
+    domain = tax_qs['domain']
+    clade_name = tax_qs['name']
+    domain_name = {'euk': 'Eukaryota', 'bact': 'Bacteria', 'arch': 'Archaea'}[domain]
+    domain_txid = models.Taxonomy.objects.filter(name = domain_name).values('taxid')[0]['taxid']
+    cols = ['taxid'] + ['p{}'.format(position.replace(':', '_')) for position in SINGLE_POSITIONS + PAIRED_POSITIONS]
+    cons_qs = models.Consensus.objects.filter(taxid__in = [clade_txid, domain_txid], isotype = isotype).values(*cols)
+    df = read_frame(cons_qs)
+    df = df.set_index('taxid')
+    df.loc[domain_txid] = [LABELS[feature] for feature in df.loc[domain_txid]]
+    df.loc[clade_txid] = [LABELS[feature] for feature in df.loc[clade_txid]]
+    df.columns = [col[1:].replace('_', ':') for col in df.columns]
+    if df.index[0] != domain_txid: df.iloc[::-1]
+    df['clade'] = [domain_name, clade_name]
+    table_data = [{'position': col, 'domain': df[col][0], 'clade': df[col][1]} for col in df.columns]
+    return JsonResponse(table_data, safe = False)
+
+  except Exception as e:
+    return JsonResponse({'server_error': 'Unknown server error'})  
+
+def anticodon_counts(request, clade_txid, isotype):
+  tax_qs = models.Taxonomy.objects.filter(taxid = clade_txid).values('name', 'rank', 'domain')[0]
+  name = tax_qs['name']
+  rank = tax_qs['rank']
+  if rank == 'class': rank = 'taxclass'
+  trna_qs = models.tRNA.objects.filter(Q(**{str(rank): name}))
+  if isotype != 'All':
+    trna_qs = trna_qs.filter(isotype = isotype)
+  trna_qs = trna_qs.values('anticodon', 'isotype').annotate(clade = Count('anticodon'))
+  clade_counts = read_frame(trna_qs)
+  clade_counts = clade_counts.set_index(['isotype', 'anticodon'])
+
+  domain_name = {'euk': 'Eukaryota', 'bact': 'Bacteria', 'arch': 'Archaea'}[tax_qs['domain']]
+  trna_qs = models.tRNA.objects.filter(domain = domain_name)
+  if isotype != 'All':
+    trna_qs = trna_qs.filter(isotype = isotype)
+  trna_qs = trna_qs.values('anticodon', 'isotype').annotate(domain = Count('anticodon'))
+  domain_counts = read_frame(trna_qs)
+  domain_counts = domain_counts.set_index(['isotype', 'anticodon'])
+
+  counts = clade_counts.join(domain_counts).sort_index().reset_index()
+  counts.columns = ['Isotype', 'Anticodon', name, domain_name]
+  counts = counts.set_index(['Isotype', 'Anticodon'])
+  return HttpResponse(counts.to_html(classes = 'table', border = 0, bold_rows = False, na_rep = '0', sparsify = True))
+
+def isotype_discrepancies(request, clade_txid, isotype):
+  tax_qs = models.Taxonomy.objects.filter(taxid = clade_txid).values('name', 'rank', 'domain')[0]
+  name = tax_qs['name']
+  rank = tax_qs['rank']
+  if rank == 'class': rank = 'taxclass'
+  trna_qs = models.tRNA.objects.filter(Q(**{str(rank): name}))
+  if isotype != 'All':
+    trna_qs = trna_qs.filter(isotype = isotype)
+  trna_qs = trna_qs.exclude(isotype = F('best_model')).values('species', 'seqname', 'score', 'anticodon', 'isotype', 'isoscore_ac', 'best_model', 'isoscore')
+  trna_qs = trna_qs.order_by(F('score') * (F('isoscore_ac') - F('isoscore')))
+  ipds = read_frame(trna_qs)
+  ipds.columns = ['Species', 'tRNAscan-SE ID', 'Domain-specific score', 'Anticodon', 'Anticodon isotype', 'Anticodon isotype model score', 'Best isotype model', 'Best isotype model score']
+  return HttpResponse(ipds.to_html(classes = 'table', border = 0, bold_rows = False, na_rep = '', index = False))
 
 def gather_tilemap_freqs(clade_txid):
   freqs_qs = models.Freq.objects.filter(taxid = clade_txid).exclude(isotype = 'All')

@@ -49,7 +49,7 @@ class SummaryServicesTests(TestCase):
 
   @tag('compare', 'cloverleaf')
   def test_services_coords(self):
-    response = self.client.get(reverse('explorer:coords'))
+    json_response = self.client.get(reverse('explorer:coords'))
     coords_list = json.loads(response.content.decode('utf8'))
     self.assertEqual(len(coords_list), 95)
     for key in ['x', 'y', 'position', 'radius']:
@@ -110,6 +110,50 @@ class SummaryServicesTests(TestCase):
     json_response = services.tilemap(self.request, self.clade_txid)
     plot_data = json.loads(json_response.content.decode('utf8'))
     self.assertEqual(len(plot_data), 1995) # 21 isotypes * 95 positions
+
+  @tag('taxonomy-summary')
+  def test_taxonomy_summary(self):
+    json_response = services.taxonomy_summary(self.request, self.clade_txid, self.isotype)
+    counts = json.loads(json_response.content.decode('utf8'))
+    self.assertEqual(len(counts), 9)
+
+    json_response = services.taxonomy_summary(self.request, '7399', self.isotype)
+    counts = json.loads(json_response.content.decode('utf8'))
+    self.assertEqual(len(counts), 7)
+
+  @tag('domain-features')
+  def test_domain_features(self):
+    json_response = services.domain_features(self.request, self.clade_txid, self.isotype)
+    cons = json.loads(json_response.content.decode('utf8'))
+    self.assertIn('position', cons[0])
+    self.assertIn('clade', cons[0])
+    self.assertIn('domain', cons[0])
+
+  @tag('domain-features', 'current')
+  def test_domain_features_same_clade(self):
+    json_response = services.domain_features(self.request, '2', self.isotype)
+    cons = json.loads(json_response.content.decode('utf8'))
+    self.assertIn('position', cons[0])
+    self.assertIn('clade', cons[0])
+    self.assertIn('domain', cons[0])
+
+  @tag('anticodon-counts')
+  def test_anticodon_counts(self):
+    response = services.anticodon_counts(self.request, self.clade_txid, self.isotype)
+    http = response.content.decode('utf8')
+    self.assertIn('Saccharomyces', http)
+    self.assertIn('Eukaryota', http)
+    self.assertIn('Isotype', http)
+    self.assertIn('Anticodon', http)
+
+
+  @tag('isotype-discrepancies')
+  def test_isotype_discrepancies(self):
+    response = services.isotype_discrepancies(self.request, self.clade_txid, self.isotype)
+    http = response.content.decode('utf8')
+    self.assertIn('tRNAscan-SE ID', http)
+
+
 
 @tag('api', 'variation', 'distribution')
 class DistributionServicesTests(TestCase):

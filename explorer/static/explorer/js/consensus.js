@@ -34,6 +34,17 @@ var feature_code = {
 	'C / G / U': 'B', 'A / C / U': 'H', 'A / G / U': 'D', 'A / C / G': 'V',
 	'Paired': ':', 'Mismatched': '÷'
 }
+var provenance = {'A': ['A'], 'C': ['C'], 'G': ['G'], 'U': ['U'], 
+  'Purine': ['A', 'G', 'Purine'], 'Pyrimidine': ['C', 'U', 'Pyrimidine'], 
+  'C / G': ['C', 'G', 'C / G'], 'A / U': ['A', 'U', 'A / U'], 'G / U': ['G', 'U', 'G / U'], 'A / C': ['A', 'C', 'Amino'],
+  'C / G / U': ['C', 'G', 'U', 'C / G', 'G / U', 'Pyrimidine'], 
+  'A / C / U': ['A', 'C', 'U', 'A / C', 'Pyrimidine', 'A / U'], 
+  'A / G / U': ['A', 'G', 'U', 'Purine', 'A / U', 'G / U'], 
+  'A / C / G': ['A', 'C', 'G', 'A / C', 'Purine', 'C / G'], 
+  'Paired': ['C:G', 'G:C', 'A:U', 'U:A', 'G:U', 'U:G', 'G:U / U:G', 'G:C / C:G', 'A:U / U:A', 'A:U / C:G', 'G:C / U:A', 'Purine:Pyrimidine', 'Pyrimidine:Purine', 'N:N', 'Paired'], 
+  'Mismatched': ['Mismatched'], '': [''], 
+  'A:U': ['A:U'], 'U:A': ['U:A'], 'G:C': ['G:C'], 'C:G': ['C:G'], 'G:U': ['G:U'], 'U:G': ['U:G'], 
+  'Purine:Pyrimidine': ['G:C', 'A:U', 'Purine:Pyrimidine'], 'Pyrimidine:Purine': ['C:G', 'U:A', 'Pyrimidine:Purine'], 'G:U / U:G': ['G:U', 'U:G'], 'G:C / C:G': ['G:C', 'C:G'], 'A:U / U:A': ['A:U', 'U:A'], 'A:U / C:G': ['A:U', 'C:G'], 'G:C / U:A': ['G:C', 'U:A']}
 
 var feature_scale = d3.scaleOrdinal()
   .domain(['', 'A', 'C', 'G', 'U', '-', 'Purine', 'Pyrimidine', 'Weak', 'Strong','Amino','Keto','B','D','H','V','N','Absent','Mismatched','Paired','High mismatch rate'])
@@ -156,7 +167,6 @@ var set_cloverleaf_text_attributes = function(coords) {
 };
 
 var update_base_distro;
-var adata;
 var draw_base_distro = function(freq_data, plot_type) {
   var base_distro_area_width = 750,
       base_distro_area_height = 375,    
@@ -182,7 +192,7 @@ var draw_base_distro = function(freq_data, plot_type) {
     var base_freq_axis = d3.axisLeft(base_freq_scale);
     base_distro.append('g')
       .attr('class', 'base_yaxis')
-      .attr('transform', 'translate(35, 10)')
+      .attr('transform', 'translate(43, 10)')
       .call(base_freq_axis);
   } else {
     var isotype_max_freq = d3.max(Object.values(freq_data).map(d => d3.sum(Object.values(d['freqs']))));
@@ -192,7 +202,7 @@ var draw_base_distro = function(freq_data, plot_type) {
     var isotype_base_freq_axis = d3.axisLeft(isotype_base_freq_scale);
     base_distro.append('g')
       .attr('class', 'base_yaxis')
-      .attr('transform', 'translate(35, 10)')
+      .attr('transform', 'translate(43, 10)')
       .call(isotype_base_freq_axis);
   }
 
@@ -208,7 +218,7 @@ var draw_base_distro = function(freq_data, plot_type) {
 
   base_distro.append('g')
     .attr('class', 'base_xaxis')
-    .attr('transform', 'translate(42, ' + (base_distro_height + 15) + ')')
+    .attr('transform', 'translate(50, ' + (base_distro_height + 15) + ')')
     .call(base_feature_axis);
 
   update_base_distro = (coord, plot_type, isotype) => {
@@ -224,14 +234,14 @@ var draw_base_distro = function(freq_data, plot_type) {
 
     var base_feature_scale = d3.scaleBand()
       .domain(current_features)
-      .range([0, current_features.length > 10 ? base_distro_width : base_distro_width / 2])
+      .range([0, current_features.length > 10 ? base_distro_width - 10 : base_distro_width / 2])
       .paddingInner(0.2);
 
     var base_feature_axis = d3.axisBottom(base_feature_scale);
 
     base_distro.append('g')
       .attr('class', 'base_xaxis')
-      .attr('transform', 'translate(42, ' + (base_distro_height + 15) + ')')
+      .attr('transform', 'translate(50, ' + (base_distro_height + 15) + ')')
       .call(base_feature_axis);
 
     // update freqs for y axis
@@ -258,7 +268,7 @@ var draw_base_distro = function(freq_data, plot_type) {
 
     base_distro.append('g')
       .attr('class', 'base_yaxis')
-      .attr('transform', 'translate(35, 10)')
+      .attr('transform', 'translate(43, 10)')
       .call(base_freq_axis);
 
 
@@ -273,7 +283,7 @@ var draw_base_distro = function(freq_data, plot_type) {
 
     var rects = base_distro.append('g')
       .attr('class', 'rects')
-      .attr('transform', 'translate(42, 10)')
+      .attr('transform', 'translate(50, 10)')
       .selectAll('rect')
       .data(d3.entries(coord['freqs']))
       .enter()
@@ -408,3 +418,34 @@ var draw_tilemap = function(tilemap_data) {
         .attr('class', 'axis-text');
     });
 };
+
+var tax_json_to_table = function(table_data) {
+  header = '<th scope="col">Rank</th><th scope="col">Clade</th><th scope="col">No. tRNAs</th>'
+  body = ''
+  table_data.map(d => body += '<tr><td>' + capitalizeFirstLetter(d['rank']) + '</td><td>' + d['clade'] + '</td><td>' + d['count'] + '</td></tr>')
+  table = '<table class="table"><thead><tr>' + header + '</tr></thead><tbody>' + body + '</tbody></table>';
+  return table;
+}
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+var adata;
+var cons_json_to_table = function(table_data) {
+  domain = table_data.filter(d => d['position'] == 'clade')[0]['domain']
+  clade = table_data.filter(d => d['position'] == 'clade')[0]['clade']
+  adata = table_data;
+  header = '<th scope="col">Position</th><th scope="col">' + domain + '</th><th scope="col">' + clade + '</th>'
+  body = ''
+  table_data.filter(d => d['position'] != 'clade').map(function(d) {
+    body += '<tr><td>' + d['position'] + '</td><td>' + d['domain'] + '</td>'
+    if (d['clade'] == d['domain']) body += '<td class="cons-match">' + d['clade'] + '</td></tr>'
+    else if (provenance[d['domain']].includes(d['clade']) || d['domain'] == '') body += '<td>' + d['clade'] + '</td></tr>'
+    else if (d['clade'] == '') body += '<td class="cons-mismatch">N/A</td></tr>'
+    else body += '<td class="cons-mismatch">' + d['clade'] + '</td></tr>'
+  })
+
+  table = table = '<table class="table"><thead><tr>' + header + '</tr></thead><tbody>' + body + '</tbody></table>';
+  return table;
+}

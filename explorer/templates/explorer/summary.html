@@ -35,22 +35,52 @@ $(document).ready(function() {
 var coords_path = "{% url 'explorer:coords' %}"
 d3.json('{% url "explorer:cloverleaf" clade_txid=clade_txid isotype=isotype %}', function(plot_data) {
   d3.select('#cloverleaf-area .loading-overlay').style('display', 'none');
+	d3.select('#cloverleaf-base-distro-area .loading-overlay').style('display', 'none');
   if ("server_error" in plot_data) d3.select('#cloverleaf-area').text(plot_data['server_error']);
 	else {
-  	d3.select('#cloverleaf-base-distro-area .loading-overlay').style('display', 'none');
 		draw_cloverleaf(plot_data);
 		draw_base_distro(plot_data, 'cloverleaf');
 	}
 });
 d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', function(plot_data) {
   d3.select('#tilemap-area .loading-overlay').style('display', 'none');
+	d3.select('#tilemap-base-distro-area .loading-overlay').style('display', 'none');
   if ("server_error" in plot_data) d3.select('#tilemap-area').text(plot_data['server_error']);
 	else {
-  	d3.select('#tilemap-base-distro-area .loading-overlay').style('display', 'none');
 		draw_tilemap(plot_data);
 		draw_base_distro(plot_data, 'tilemap');
 	}
 });
+d3.json('{% url "explorer:taxonomy_summary" clade_txid=clade_txid isotype=isotype %}', function(table_data) {
+  d3.select('#taxonomy-summary-area .loading-overlay').style('display', 'none');
+  if ("server_error" in table_data) d3.select('#taxonomy-summary-area').text(table_data['server_error']);
+	else {
+		$('#taxonomy-summary-area').html(tax_json_to_table(table_data))
+	}
+});
+d3.json('{% url "explorer:domain_features" clade_txid=clade_txid isotype=isotype %}', function(table_data) {
+  d3.select('#domain-features-area .loading-overlay').style('display', 'none');
+  if ("server_error" in table_data) d3.select('#domain-features-area').text(table_data['server_error']);
+	else {
+		$('#domain-features-area').html(cons_json_to_table(table_data))
+	}
+});
+
+$(document).ready(function() {
+	var anticodon_counts_http = new XMLHttpRequest();
+	anticodon_counts_http.open('GET', '{% url "explorer:anticodon_counts" clade_txid=clade_txid isotype=isotype %}', true)
+	anticodon_counts_http.send();
+	anticodon_counts_http.onreadystatechange=(e)=>{
+		$('#anticodon-counts-area').html(anticodon_counts_http.responseText);
+	};
+
+	var isotype_discrepancies_http = new XMLHttpRequest();
+	isotype_discrepancies_http.open('GET', '{% url "explorer:isotype_discrepancies" clade_txid=clade_txid isotype=isotype %}', true)
+	isotype_discrepancies_http.send();
+	isotype_discrepancies_http.onreadystatechange=(e)=>{
+		$('#isotype-discrepancies-area').html(isotype_discrepancies_http.responseText);
+	};
+})
 </script>
 {% endblock %}
 
@@ -144,7 +174,7 @@ d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', function(plot_data
 		<div class="plotbox-title">
 			<h5>Taxonomy summary</h5>
 		</div>
-		<div class="plotbox-inner" id="taxonomy-summary-area">
+		<div class="table-inner" id="taxonomy-summary-area">
 			<div class="loading-overlay"></div>
 		</div>
 	</div>
@@ -153,7 +183,25 @@ d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', function(plot_data
 		<div class="plotbox-title">
 			<h5>Domain-specific consensus features</h5>
 		</div>
-		<div class="plotbox-inner" id="domain-features-area">
+		<div class="table-inner" id="domain-features-area">
+			<div class="loading-overlay"></div>
+		</div>
+	</div>
+
+	<div class="plotbox-outer">
+		<div class="plotbox-title">
+			<h5>Anticodon counts</h5>
+		</div>
+		<div class="table-inner" id="anticodon-counts-area">
+			<div class="loading-overlay"></div>
+		</div>
+	</div>
+
+	<div class="plotbox-outer">
+		<div class="plotbox-title">
+			<h5>Isotype discrepancies</h5>
+		</div>
+		<div class="table-inner" id="isotype-discrepancies-area">
 			<div class="loading-overlay"></div>
 		</div>
 	</div>
@@ -178,6 +226,7 @@ d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', function(plot_data
 			<div class="loading-overlay"></div>
 		</div>
 	</div>
+
 </div>
 
 

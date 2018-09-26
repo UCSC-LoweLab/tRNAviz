@@ -148,9 +148,8 @@ div.plotbox-inner, .table-inner {
   overflow: auto;
 }
 
-div.table-outer {
-  display: block;
-  margin: 0em;
+div.table-inner {
+  max-height: 25em;
 }
 
 div.data-select-table {
@@ -158,7 +157,18 @@ div.data-select-table {
   border-color: #d8d8d8;
 }
 
-div.plotbox-title {
+div.plotbox-title, table-title {
   margin: 1em;
 }
 
+td.cons-match {
+  color: green;
+}
+
+td.cons-mismatch {
+  color: red;
+}
+
+td.cons-specific {
+  color: blue;
+}

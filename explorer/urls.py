@@ -16,6 +16,10 @@ urlpatterns = [
   path('summary/', views.summary, name = 'summary'),
   path('search/<str:search_type>', services.search, name = 'search'),
   path('api/coords', services.get_coords, name = 'coords'),
+  path('summary/taxonomy/<str:clade_txid>/<str:isotype>', services.taxonomy_summary, name = 'taxonomy_summary'),
+  path('summary/domain_features/<str:clade_txid>/<str:isotype>', services.domain_features, name = 'domain_features'),
+  path('summary/anticodon_counts/<str:clade_txid>/<str:isotype>', services.anticodon_counts, name = 'anticodon_counts'),
+  path('summary/isotype_discrepancies/<str:clade_txid>/<str:isotype>', services.isotype_discrepancies, name = 'isotype_discrepancies'),
 
   path('api/cloverleaf/<str:clade_txid>/<str:isotype>/', services.cloverleaf, name = 'cloverleaf'),
   path('api/tilemap/<str:clade_txid>/', services.tilemap, name = 'tilemap'),
