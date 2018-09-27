@@ -16,6 +16,17 @@
 		<script src="{% static 'js/download2.js' %}"></script>
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/canvg/1.4/rgbcolor.min.js"></script>
 
+		<!-- Highlight current tab in navbar -->
+		<script>
+			$(document).ready(function() {
+				selector = $('a[href$="' + window.location.pathname + '"]')
+				// Exception for dropdown menu items
+				if (!selector.attr('class').includes('nav-link')) selector = selector.parent().prev();
+				selector.attr('style', 'color: white');
+			})
+		</script>
+
+
 		{% block static %}{% endblock %}
 		{% block filterjs %}{% endblock %}
 		{% block plotjs %}{% endblock %}

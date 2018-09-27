@@ -50,9 +50,6 @@ var feature_scale = d3.scaleOrdinal()
   .domain(['', 'A', 'C', 'G', 'U', '-', 'Purine', 'Pyrimidine', 'Weak', 'Strong','Amino','Keto','B','D','H','V','N','Absent','Mismatched','Paired','High mismatch rate'])
   .range(['#ffffff', '#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#dddddd', '#ff8300','#66c2a5','#b3de69','#fb72b2','#c1764a','#b26cbd','#e5c494','#ccebd5','#ffa79d','#a6cdea','white','#ffffff','#cccccc','#ffffcc','#222222']);
 
-// declare download functions here, but implement within scope of individual functions
-var download_cloverleaf;
-
 var draw_cloverleaf = function(cloverleaf_data) {
   var cloverleaf_area_width = 525,
       cloverleaf_area_height = 550;
@@ -192,11 +189,6 @@ var draw_cloverleaf = function(cloverleaf_data) {
       .text(d => feature_code[d['consensus']])
       .style('pointer-events', 'none');
   };
-
-  download_cloverleaf = function() {
-    pdf = new jsPDF('l', 'pt', [525, 550]);
-
-  }
 };
 
 var update_base_distro;
