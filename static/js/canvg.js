@@ -314,7 +314,7 @@
 	  svg.Property.prototype.addOpacity = function (opacityProp) {
 	    var newValue = this.value;
 	    if (opacityProp.value != null && opacityProp.value != '' && typeof this.value == 'string') { // can only add opacity to colors, not patterns
-	      var color = new rgbcolor(this.value);
+	      var color = new RGBColor(this.value);
 	      if (color.ok) {
 	        newValue = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', ' + opacityProp.numValue() + ')';
 	      }
