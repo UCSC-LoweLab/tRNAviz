@@ -232,7 +232,6 @@ var draw_base_distro = function(freq_data, plot_type) {
       .attr('transform', 'translate(46, 10)')
       .call(isotype_base_freq_axis);
   }
-
   
   var base_feature_scale = d3.scaleBand()
     .domain(['A', 'C', 'G', 'U', 'absent'])
@@ -248,6 +247,10 @@ var draw_base_distro = function(freq_data, plot_type) {
     .attr('class', 'base-xaxis')
     .attr('transform', 'translate(53, ' + (base_distro_height + 15) + ')')
     .call(base_feature_axis);
+
+  base_distro.selectAll('.base-xaxis .tick text, .base-yaxis .tick text')  // select all the text elements for the xaxis
+    .attr('text-anchor', 'center')
+    .attr('class', 'axis-text');
 
   update_base_distro = (coord, plot_type, isotype) => {
     var base_distro_width = 700,
@@ -301,13 +304,12 @@ var draw_base_distro = function(freq_data, plot_type) {
       .attr('transform', 'translate(46, 10)')
       .call(base_freq_axis);
 
-
     // update features for fill scale
     var base_fill_scale = d3.scaleOrdinal()
       .domain(['A', 'C', 'G', 'U', '-', 'A:A', 'A:C', 'A:G', 'A:U', 'C:A', 'C:C', 'C:G', 'C:U', 'G:A', 'G:C', 'G:G', 'G:U', 'U:A', 'U:C', 'U:G', 'U:U'])
       .range(['#ffd92f', '#4daf4a', '#e41a1c', '#377eb8'].concat(d3.schemeCategory20));
 
-    base_distro.selectAll('.base_xaxis .tick text, .base_yaxis .tick text')  // select all the text elements for the xaxis
+    base_distro.selectAll('.base-xaxis .tick text, .base-yaxis .tick text')  // select all the text elements for the xaxis
       .attr('text-anchor', 'center')
       .attr('class', 'axis-text');
 

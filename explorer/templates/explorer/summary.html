@@ -66,19 +66,13 @@ d3.json('{% url "explorer:domain_features" clade_txid=clade_txid isotype=isotype
 });
 
 $(document).ready(function() {
-	var anticodon_counts_http = new XMLHttpRequest();
-	anticodon_counts_http.open('GET', '{% url "explorer:anticodon_counts" clade_txid=clade_txid isotype=isotype %}', true)
-	anticodon_counts_http.send();
-	anticodon_counts_http.onreadystatechange=(e)=>{
-		$('#anticodon-counts-area').html(anticodon_counts_http.responseText);
-	};
 
-	var isotype_discrepancies_http = new XMLHttpRequest();
-	isotype_discrepancies_http.open('GET', '{% url "explorer:isotype_discrepancies" clade_txid=clade_txid isotype=isotype %}', true)
-	isotype_discrepancies_http.send();
-	isotype_discrepancies_http.onreadystatechange=(e)=>{
-		$('#isotype-discrepancies-area').html(isotype_discrepancies_http.responseText);
-	};
+	$.get('{% url "explorer:anticodon_counts" clade_txid=clade_txid isotype=isotype %}')
+	  .done(function(response) { $('#anticodon-counts-area').html(response); });
+
+	$.get('{% url "explorer:isotype_discrepancies" clade_txid=clade_txid isotype=isotype %}')
+	  .done(function(response) { $('#isotype-discrepancies-area').html(response); });
+
 })
 </script>
 {% endblock %}

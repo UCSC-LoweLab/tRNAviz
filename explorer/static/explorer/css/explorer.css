@@ -63,11 +63,11 @@ div.tilemap-svg {
 
 }
 
-svg text.axis-text {
+text.axis-text {
   font-size: 1.2em;
   fill: #000000;
 }
-svg text.axis-focus {
+text.axis-focus {
   font-size: 1.5em;
   font-weight: bold;
   fill: #ff0000;
