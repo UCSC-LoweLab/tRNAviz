@@ -74,12 +74,12 @@ svg text.axis-focus {
 }
 
 div.loading-overlay {
-  margin: auto;
+  margin: 10em;
   border: 16px solid #f3f3f3; /* Light grey */
   border-top: 16px solid #3498db; /* Blue */
   border-radius: 50%;
-  width: 120px;
-  height: 120px;
+  width: 10em;
+  height: 10em;
   animation: spin 2s linear infinite;
 }
 
@@ -183,7 +183,12 @@ td.cons-specific {
 }
 
 .dropdown:hover .dropdown-menu {
-  min-width: 3em;
-  max-width: 5em;
-  display: block;
+  min-width: 100%;
+  display: inline-block;
+}
+
+.dropdown.show .dropdown-menu {
+  min-width: 100%;
+  display: inline-block;
+
 }
