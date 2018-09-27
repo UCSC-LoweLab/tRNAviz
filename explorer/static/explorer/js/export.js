@@ -29,12 +29,15 @@
 
 
 $(document).ready(function() {
-  $('#cloverleaf-download-pdf').click(function() {
-    download_pdf('cloverleaf');
-  })
-  $('#cloverleaf-download-png').click(function() {
-    download_png('cloverleaf');
-  });
+  $('#cloverleaf-download-pdf').click(function() { download_pdf('cloverleaf'); });
+  $('#cloverleaf-download-png').click(function() { download_png('cloverleaf'); });
+
+  $('#cloverleaf-base-distro-download-pdf').click(function() { download_pdf('cloverleaf-base-distro'); });
+
+  $('#tilemap-download-pdf').click(function() { download_pdf('tilemap'); });
+  $('#tilemap-download-png').click(function() { download_png('tilemap'); });
+
+  $('#tilemap-base-distro-download-pdf').click(function() { download_pdf('tilemap-base-distro'); });
 
 });
 // 
@@ -51,17 +54,16 @@ var download_pdf = function(id) {
   svg2pdf(svg, pdf, {xOffset: 5, yOffset: 5, scale: 0.96});
   pdf.save(id + '.pdf');
 }
-var png, canvas;
+
 var download_png = function(id) {
   selector = $('#' + id);
   svg_selector = selector.clone();
   svg_selector.find('*').each(function() {
     if (this.id != '') {
       styles = $('#' + this.id).getStyleObject()
-      // filter attributes - canvg does not deal well with fill-opacity
-      allowed_styles = ['backgroundColor', 'color', 'cx', 'cy', 'display', 'dominantBaseline', 'fill', 'fillOpacity', 'fillRule', 'float', 'fontFamily', 'fontSize', 'fontStyle', 'fontWeight', 'height', 'lineHeight', 'marginBottom', 'marginLeft', 'marginRight', 'marginTop', 'opacity', 'outlineColor', 'overflowWrap', 'overflowX', 'overflowY', 'r', 'rx', 'ry', 'stroke', 'strokeColor', 'strokeOpacity', 'strokeWidth', 'textAlign', 'top', 'transform', 'verticalAlign', 'width', 'x', 'y', 'zIndex']
+      not_allowed_styles = ['filter', 'mask', 'maskType']
       filtered_styles = Object.keys(styles)
-        .filter(key => allowed_styles.includes(key))
+        .filter(key => !not_allowed_styles.includes(key))
         .reduce((obj, key) => {
           obj[key] = styles[key];
           return obj;
@@ -71,7 +73,6 @@ var download_png = function(id) {
   })
   
   svg_str = new XMLSerializer().serializeToString(svg_selector[0]);
-  // base64 = "data:image/svg+xml;base64," + btoa(encodeURIComponent(svg_str))
   canvas = document.createElement('canvas');
   canvas.width = selector.width() * 2
   canvas.height = selector.height() * 2

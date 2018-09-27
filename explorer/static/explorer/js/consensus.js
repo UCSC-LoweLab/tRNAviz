@@ -224,7 +224,8 @@ var draw_base_distro = function(freq_data, plot_type) {
       .range([base_distro_height, 0]);
     var base_freq_axis = d3.axisLeft(base_freq_scale);
     base_distro.append('g')
-      .attr('class', 'base_yaxis')
+      .attr('id', plot_type + '-base-yaxis')
+      .attr('class', 'base-yaxis')
       .attr('transform', 'translate(46, 10)')
       .call(base_freq_axis);
   } else {
@@ -234,7 +235,8 @@ var draw_base_distro = function(freq_data, plot_type) {
       .range([base_distro_height, 0]);
     var isotype_base_freq_axis = d3.axisLeft(isotype_base_freq_scale);
     base_distro.append('g')
-      .attr('class', 'base_yaxis')
+      .attr('id', plot_type + 'base-yaxis')
+      .attr('class', 'base-yaxis')
       .attr('transform', 'translate(46, 10)')
       .call(isotype_base_freq_axis);
   }
@@ -250,7 +252,8 @@ var draw_base_distro = function(freq_data, plot_type) {
   d3.axisBottom(base_feature_scale);
 
   base_distro.append('g')
-    .attr('class', 'base_xaxis')
+    .attr('id', plot_type + '-base-xaxis')
+    .attr('class', 'base-xaxis')
     .attr('transform', 'translate(53, ' + (base_distro_height + 15) + ')')
     .call(base_feature_axis);
 
@@ -260,7 +263,7 @@ var draw_base_distro = function(freq_data, plot_type) {
       
     var base_distro = d3.select('#' + plot_type + '-base-distro');
 
-    base_distro.selectAll('g.base_xaxis, g.base_yaxis, g.rects').remove();
+    base_distro.selectAll('g.base-xaxis, g.base-yaxis, g.rects').remove();
 
     // update features for x axis
     var current_features = Array.from(Object.keys(coord['freqs'])).sort();
@@ -273,7 +276,8 @@ var draw_base_distro = function(freq_data, plot_type) {
     var base_feature_axis = d3.axisBottom(base_feature_scale);
 
     base_distro.append('g')
-      .attr('class', 'base_xaxis')
+      .attr('id', plot_type + '-base-xaxis')
+      .attr('class', 'base-xaxis')
       .attr('transform', 'translate(53, ' + (base_distro_height + 15) + ')')
       .call(base_feature_axis);
 
@@ -300,7 +304,8 @@ var draw_base_distro = function(freq_data, plot_type) {
     }
 
     base_distro.append('g')
-      .attr('class', 'base_yaxis')
+      .attr('class', 'base-yaxis')
+      .attr('id', plot_type + '-base-yaxis')
       .attr('transform', 'translate(46, 10)')
       .call(base_freq_axis);
 
@@ -323,7 +328,7 @@ var draw_base_distro = function(freq_data, plot_type) {
       .append('rect')
       .attr('x', function(d) { return base_feature_scale(d['key']) }) //+ base_distro_width / Object.keys(coord['freqs']).length / 10; })
       .attr('y', function(d) { return plot_type == 'cloverleaf' ? base_freq_scale(d['value']) : isotype_base_freq_scale(d['value']); })
-      .attr('id', function(d) {return d['key'] + ' : ' + d['value'];})
+      .attr('id', function(d) {return 'cloverleaf-rect-' + d['key'].replace(':', '-') + '-' + d['value'];})
       .attr('height', function(d) { return base_distro_height - (plot_type == 'cloverleaf' ? base_freq_scale(d['value']) : isotype_base_freq_scale(d['value'])); })
       .attr('width', function() { return base_feature_scale.bandwidth(); })
       .attr('stroke', '#666666')

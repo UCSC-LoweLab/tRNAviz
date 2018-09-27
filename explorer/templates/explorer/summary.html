@@ -98,7 +98,7 @@ $(document).ready(function() {
 {% endif %}
 
 <div class='p-3'>
-	<div class='row select-bar data-select-bar'>
+	<div class='row vertical-align select-bar data-select-bar'>
 		<div class='col-md-2 p-3'>
 			<h4>Select tRNAs</h4>
 		</div>
@@ -153,8 +153,8 @@ $(document).ready(function() {
 		<div class="plotbox-header">
 			<h5>Consensus features</h5>
 			<div class="download-box dropdown">
-  			<a class="dropdown-toggle" href="#" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
-  			<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
+  			<div class="dropdown-menu">
     			<a class="dropdown-item" href="#" id='cloverleaf-download-png'>PNG</a>
     			<a class="dropdown-item" href="#" id='cloverleaf-download-pdf'>PDF</a>
   			</div>
@@ -169,6 +169,12 @@ $(document).ready(function() {
 	<div class="plotbox-outer">
 		<div class="plotbox-header">
 			<h5>Nucleotide distribution by position</h5>
+			<div class="download-box dropdown">
+  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
+  			<div class="dropdown-menu">
+    			<a class="dropdown-item" href="#" id='cloverleaf-base-distro-download-pdf'>PDF</a>
+  			</div>
+  		</div>
 		</div>
 		<div class="plotbox-inner" id="cloverleaf-base-distro-area">
 			<div class="loading-overlay"></div>
@@ -220,6 +226,13 @@ $(document).ready(function() {
 	<div class="plotbox-outer">
 		<div class="plotbox-header">
 			<h5>Consensus isotype-specific features</h5>
+			<div class="download-box dropdown">
+  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
+  			<div class="dropdown-menu">
+    			<a class="dropdown-item" href="#" id='tilemap-download-pdf'>PDF</a>
+    			<a class="dropdown-item" href="#" id='tilemap-download-png'>PNG</a>
+  			</div>
+  		</div>
 		</div>
 		<div class="plotbox-inner" id="tilemap-area">
 			<div class="loading-overlay"></div>
@@ -229,6 +242,12 @@ $(document).ready(function() {
 	<div class="plotbox-outer">
 		<div class="plotbox-header">
 			<h5>Nucleotide distribution by position / isotype</h5>
+			<div class="download-box dropdown">
+  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
+  			<div class="dropdown-menu">
+    			<a class="dropdown-item" href="#" id='tilemap-base-distro-download-pdf'>PDF</a>
+  			</div>
+  		</div>
 		</div>
 		<div class="plotbox-inner" id="tilemap-base-distro-area">
 			<div class="loading-overlay"></div>

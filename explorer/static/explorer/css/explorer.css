@@ -184,5 +184,6 @@ td.cons-specific {
 
 .dropdown:hover .dropdown-menu {
   min-width: 3em;
+  max-width: 5em;
   display: block;
 }
