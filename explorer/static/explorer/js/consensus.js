@@ -64,7 +64,6 @@ var draw_cloverleaf = function(cloverleaf_data) {
     .attr('class', 'cloverleaf-svg')
     .attr('id', 'cloverleaf')
     .append('g')
-    .attr('transform', 'translate(5, 0)') // Otherwise, position 18 outline is cut off
     .attr('width', cloverleaf_area_width)
     .attr('height', cloverleaf_area_height)
 
