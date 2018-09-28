@@ -161,6 +161,7 @@ def domain_features(request, clade_txid, isotype):
     df.columns = [col[1:].replace('_', ':') for col in df.columns]
     if df.index[0] != domain_txid: df.iloc[::-1]
     df.loc[domain_txid] = [LABELS[feature] for feature in df.loc[domain_txid]]
+    df = df[sorted(df.columns, key = position_sort_key)]
     # If user selected a domain, continue as if it were a different clade
     if domain_txid == clade_txid:
       df['clade'] = domain_name
@@ -169,7 +170,7 @@ def domain_features(request, clade_txid, isotype):
       df.loc[clade_txid] = [LABELS[feature] for feature in df.loc[clade_txid]]  
       df['clade'] = [domain_name, clade_name]
       table_data = [{'position': col, 'domain': df[col][0], 'clade': df[col][1]} for col in df.columns]
-    
+
     return JsonResponse(table_data, safe = False)
 
   except Exception as e:

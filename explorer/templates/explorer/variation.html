@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% load static from staticfiles %}
 {% load explorer_extras %}
-{% debug %}
 
 {% block static %}
 <link rel="stylesheet" href="{% static 'explorer/css/explorer.css' %}">
+<script src="{% static 'explorer/js/export.js' %}"></script>
 {% endblock %}
 
 {% block title %}tRNAviz | Variation{% endblock %}
@@ -13,7 +13,7 @@
 <div class="p-3">
 	
 	<div class="p-3" id="distribution-area">
-		<div class="loading-overlay">
+		<div class="loading-overlay" style="margin-left: 5em; margin-right: 5em;">
 		</div>
 	</div>
 

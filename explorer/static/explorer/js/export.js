@@ -28,21 +28,6 @@
 })(jQuery);
 
 
-$(document).ready(function() {
-  $('#cloverleaf-download-pdf').click(function() { download_pdf('cloverleaf'); });
-  $('#cloverleaf-download-png').click(function() { download_png('cloverleaf'); });
-
-  $('#cloverleaf-base-distro-download-pdf').click(function() { download_pdf('cloverleaf-base-distro'); });
-
-  $('#tilemap-download-pdf').click(function() { download_pdf('tilemap'); });
-  $('#tilemap-download-png').click(function() { download_png('tilemap'); });
-
-  $('#tilemap-base-distro-download-pdf').click(function() { download_pdf('tilemap-base-distro'); });
-
-});
-// 
-
-
 var download_pdf = function(id) {
   selector = $('#' + id);
   svg_selector = selector.clone();

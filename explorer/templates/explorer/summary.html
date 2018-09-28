@@ -5,7 +5,9 @@
 {% block static %}
 <link rel="stylesheet" href="{% static 'explorer/css/explorer.css' %}">
 <script src="{% static 'explorer/js/export.js' %}"></script>
+<script src="{% static 'explorer/js/consensus.js' %}"></script>
 {% endblock %}
+
 {% block title %}tRNAviz | Summary{% endblock %}
 
 {% block filterjs %}
@@ -28,8 +30,6 @@ $(document).ready(function() {
 
 
 {% block plotjs %}
-<script src='https://d3js.org/d3.v4.min.js'></script>
-<script src="{% static 'explorer/js/consensus.js' %}"></script>
 <script type = "text/javascript">
 var coords_path = "{% url 'explorer:coords' %}"
 d3.json('{% url "explorer:cloverleaf" clade_txid=clade_txid isotype=isotype %}', function(plot_data) {
@@ -66,17 +66,20 @@ d3.json('{% url "explorer:domain_features" clade_txid=clade_txid isotype=isotype
 });
 
 $(document).ready(function() {
-
 	$.get('{% url "explorer:anticodon_counts" clade_txid=clade_txid isotype=isotype %}')
 	  .done(function(response) { $('#anticodon-counts-area').html(response); });
-
 	$.get('{% url "explorer:isotype_discrepancies" clade_txid=clade_txid isotype=isotype %}')
 	  .done(function(response) { $('#isotype-discrepancies-area').html(response); });
 
-})
+  $('#cloverleaf-download-pdf').click(function() { download_pdf('cloverleaf'); });
+  $('#cloverleaf-download-png').click(function() { download_png('cloverleaf'); });
+  $('#cloverleaf-base-distro-download-pdf').click(function() { download_pdf('cloverleaf-base-distro'); });
+  $('#tilemap-download-pdf').click(function() { download_pdf('tilemap'); });
+  $('#tilemap-download-png').click(function() { download_png('tilemap'); });
+  $('#tilemap-base-distro-download-pdf').click(function() { download_pdf('tilemap-base-distro'); });
+});
 </script>
 {% endblock %}
-
 
 
 {% block filter %}
