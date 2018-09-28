@@ -1,21 +1,18 @@
 {% extends "base.html" %}
 {% load static from staticfiles %}
 {% load explorer_extras %}
-{% debug %}
 
 {% block static %}
+<script src="{% static 'js/bootstrap-toggle.min.js' %}"></script>
+<link href="{% static 'css/bootstrap-toggle.min.css' %}" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'explorer/css/explorer.css' %}">
+<script src="{% static 'explorer/js/compare.js' %}"></script>
+<script src="{% static 'explorer/js/export.js' %}"></script>
 {% endblock %}
 
 {% block title %}tRNAviz | Compare{% endblock %}
 
 {% block filterjs %}
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
-<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
-<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
-
 <script type='text/javascript'>
 $(document).ready(function() {
 	$('#clade-select-0').select2({
@@ -46,10 +43,9 @@ $(document).ready(function() {
 	$('#id_form-1-use_fasta').bootstrapToggle('destroy');
 })
 
-
 $(document).on('click', '.toggle', function(e) {
 	e.preventDefault();
-	
+
   // Form watches for "checked" attribute in checkbox input but toggle machinery doesn't do this
 	var form_switch = $(this).find('input')[0];
 	if (form_switch.hasAttribute('checked')) $(form_switch).removeAttr('checked');
@@ -70,7 +66,6 @@ $(document).on('click', '.toggle', function(e) {
 		domain_select.css('display', 'none');
 	}
 });
-
 
 $(document).on('click', '.add-form-row', function(e){
   e.preventDefault();
@@ -146,7 +141,6 @@ $(document).on('click', '.remove-form-row', function(e){
       else {
       	$(this).select2({width: "100%", allowClear: true, placeholder: select2_placeholders[field]});
       }
-
     });
   }
 });
@@ -154,19 +148,19 @@ $(document).on('click', '.remove-form-row', function(e){
 {% endblock %}
 
 {% block plotjs %}
-<script src='https://d3js.org/d3.v4.min.js'></script>
-<script src="{% static 'explorer/js/compare.js' %}"></script>
 <script type="text/javascript">
 $(document).ready(function () {
 	if ('{{ valid_form }}' == 'True') {
-
 		d3.json('{% url "explorer:bitchart" formset_json=formset_json %}', 
 			function(plot_data) {
-			  d3.select('#compare-area .loading-overlay').style('display', 'none');
-			  if ("server_error" in plot_data) d3.select('#compare-area').text(plot_data['server_error'])
+			  d3.select('#bitchart-area .loading-overlay').style('display', 'none');
+			  if ("server_error" in plot_data) d3.select('#bitchart-area').text(plot_data['server_error'])
 			  else draw_bitchart(plot_data);
-			});
-	}
+			}
+		);
+
+		$('#bitchart-download-pdf').click(function() { download_pdf('bitchart'); });
+  }
 })
 
 </script>
@@ -313,7 +307,7 @@ $(document).ready(function () {
 		{% if forloop.counter == 1 %}
 		<tr>
 			<th scope="row">Reference</th>
-			<td>{{ form.clade.value }}, {{ form.isotype.value }}</td>
+			<td>{{ form.clade.value|clade_lookup }}, {{ form.isotype.value }}</td>
 		</tr>
 		{% elif forloop.counter > 2 %}
 		<tr>
@@ -333,39 +327,50 @@ $(document).ready(function () {
 
 
 {% block plots %}
-<div class="p-3">
-	{% if valid_form and formset_json != 'none' %}
-	<div class="p-3" id="compare-area">
-		<div class="loading-overlay">
+{% if valid_form and formset_json != 'none' %}
+<div class="plotbox-row">
+	<div class="plotbox-outer">
+		<div class="plotbox-header">
+			<div class="download-box dropdown">
+  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
+  			<div class="dropdown-menu">
+    			<a class="dropdown-item" href="#" id='bitchart-download-pdf'>PDF</a>
+  			</div>
+  		</div>
+			<h5>Nucleotide distribution by position / isotype</h5>
+		</div>
+		<div class="plotbox-inner" id="bitchart-area">
+			<div class="loading-overlay" style='margin-left: 20em; margin-right: 20em'></div>
+		</div>
 	</div>
-	{% endif %}
+</div>
+{% endif %}
 	
 
-	<div class="tooltip" style="opacity:0">
-		<table class="table table-sm table-striped table-bordered table-light">
-			<tbody>
-				<tr>
-					<th scope="col">Position</th>
-					<td id="tooltip-position"></td>
-				</tr>
-				<tr>
-					<th scope="col">Group</th>
-					<td id="tooltip-group"></td>
-				</tr>
-				<tr>
-					<th scope="col">Score (mean)</th>
-					<td id="tooltip-score"></td>
-				</tr>
-				<tr>
-					<th scope="col">Feature (mode)</th>
-					<td id="tooltip-feature"></td>
-				</tr>
-				<tr>
-					<th scope="col">No. tRNAs</th>
-					<td id="tooltip-freq"></td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
+<div class="tooltip" style="opacity:0">
+	<table class="table table-sm table-striped table-bordered table-light">
+		<tbody>
+			<tr>
+				<th scope="col">Position</th>
+				<td id="tooltip-position"></td>
+			</tr>
+			<tr>
+				<th scope="col">Group</th>
+				<td id="tooltip-group"></td>
+			</tr>
+			<tr>
+				<th scope="col">Score (mean)</th>
+				<td id="tooltip-score"></td>
+			</tr>
+			<tr>
+				<th scope="col">Feature (mode)</th>
+				<td id="tooltip-feature"></td>
+			</tr>
+			<tr>
+				<th scope="col">No. tRNAs</th>
+				<td id="tooltip-freq"></td>
+			</tr>
+		</tbody>
+	</table>
 </div>
 {% endblock %}

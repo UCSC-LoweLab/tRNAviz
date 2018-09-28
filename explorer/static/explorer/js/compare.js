@@ -5,18 +5,20 @@ var draw_bitchart = function(plot_data) {
 	var bits = Object.values(plot_data['bits']);
 	var groups = plot_data['groups'];
 
-	var plot_width = sorted_positions.length * 40,
-			plot_height = groups.length * 40,
-			plot_margin = 100,
+  var y_axis_offset = 7 * groups.reduce(function (a, b) { return a.length > b.length ? a : b; }).length;
+
+	var bitchart_area_width = sorted_positions.length * 35 + y_axis_offset,
+			bitchart_area_height = groups.length * 35 + 50,
 			tile_width = 30;
 	
 	var y_axis_offset = 7 * groups.reduce(function (a, b) { return a.length > b.length ? a : b; }).length;
 
-	var svg = d3.select('#compare-area')
+	var svg = d3.select('#bitchart-area')
 		.append('svg')
-		.attr('id', 'plot-svg')
-		.attr('width', plot_width + plot_margin)
-		.attr('height', plot_height + plot_margin)
+    .attr('class', 'bitchart-svg')
+		.attr('id', 'bitchart')
+		.attr('width', bitchart_area_width)
+		.attr('height', bitchart_area_height)
 	
   var tooltip = d3.select('.tooltip');
   var tooltip_position = tooltip.select('#tooltip-position');
@@ -74,21 +76,22 @@ var draw_bitchart = function(plot_data) {
   	.data(bits)
   	.enter()
   	.append('g')
-  	.attr('class', 'tile')
+    .attr('id', d => 'tile-' + d['position'].replace(':', '-') + '-' + d['group'])
+    .attr('width', tile_width)
+    .attr('height', tile_width)
 
   tiles.append('rect')
-  	.attr('id', d => 'tile-' + d['position'] + '-' + escape(d['group']))
-  	.attr('class', 'bitchart-rect')
+  	.attr('id', d => 'rect-' + d['position'].replace(':', '-') + '-' + d['group'])
   	.attr('transform', 'translate(' + y_axis_offset + ', 0)')
   	.attr('x', d => position_scale(d['position']))
-  	.attr('y', d => group_scale(d['group']))
+  	.attr('y', d => group_scale(d['group_name']))
   	.attr('width', tile_width)
   	.attr('height', tile_width)
   	.style('fill', d => score_scale(d['score']))
   	.style('fill-opacity', d => alpha_scale(d['score']))
     .on('mouseover', function(d, i) {
       tooltip_position.html(d['position']);
-      tooltip_group.html(d['group']);
+      tooltip_group.html(d['group_name']);
       tooltip_score.html(d['score']);
       tooltip_feature.html(d['label']);
       tooltip_freq.html(d['total']);
@@ -117,15 +120,12 @@ var draw_bitchart = function(plot_data) {
     });
 
   tiles.append('text')
-  	.attr('id', d => 'annot-' + d['position'] + '-' + escape(d['group']))
-  	.attr('class', 'bitchart-annot')
+  	.attr('id', d => 'annot-' + d['position'].replace(':', '-') + '-' + d['group'])
   	.attr('transform', 'translate(' + y_axis_offset + ', 0)')
     .attr('text-anchor', 'middle')
-    .attr('alignment-baseline', 'middle')
-    .attr('dominant-baseline', 'middle')
-    .attr('font-size', '0.8em')
+    .attr('font-size', '12.5px')
   	.attr('x', d => position_scale(d['position']) + tile_width / 2)
-  	.attr('y', d => group_scale(d['group']) + tile_width / 2)
+  	.attr('y', d => group_scale(d['group_name']) + tile_width / 2 + 3) // use +3px because svg2js doesn't handle the dominant-baseline properly
   	.text(d => d['feature'])
     .style('pointer-events', 'none')
   	.style('fill', d => (d['score'] < -4) ? 'white' : 'black');

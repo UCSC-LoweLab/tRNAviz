@@ -50,7 +50,7 @@ class SummaryServicesTests(TestCase):
   @tag('compare', 'cloverleaf')
   def test_services_coords(self):
     json_response = self.client.get(reverse('explorer:coords'))
-    coords_list = json.loads(response.content.decode('utf8'))
+    coords_list = json.loads(json_response.content.decode('utf8'))
     self.assertEqual(len(coords_list), 95)
     for key in ['x', 'y', 'position', 'radius']:
       with self.subTest(key = key):

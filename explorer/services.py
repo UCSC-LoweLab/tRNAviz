@@ -42,7 +42,6 @@ CONSENSUS_PAIRED_LABELS = {
   'Paired': ('Paired', 'Paired'), 'Bulge': ('Bulge', 'Bulge'), 'Mismatched': ('Mismatched', 'Mismatched'), 'NN': ('N', 'N'), None: ('', '')
 }
 
-
 def get_coords(request):
   data = models.Coord.objects.all()
   serializer = serializers.CoordSerializer(data, many = True)
@@ -60,7 +59,6 @@ def taxonomy_search(request):
   taxonomy_qs = models.Taxonomy.objects.filter(name__icontains = query).exclude(rank = 'assembly')
   data = {'results': [{'id': tax.taxid, 'text': str(tax)} for tax in taxonomy_qs] , 'more': False}
   return JsonResponse(data, safe = False)
-
 
 def gather_cloverleaf_freqs(clade_txid, isotype):
   freqs_qs = models.Freq.objects.filter(taxid = clade_txid, isotype = isotype)
@@ -114,7 +112,6 @@ def cloverleaf(request, clade_txid, isotype):
     return JsonResponse({'server_error': 'Server error - most likely, tRNAs for your selection do not exist in the tRNAviz database. Try a different selection.'})
   except Exception as e:
     return JsonResponse({'server_error': 'Unknown server error'})
-
 
 def taxonomy_summary(request, clade_txid, isotype):
   try:
@@ -375,7 +372,6 @@ def distribution(request, clade_txids, isotypes, positions):
   except Exception as e:
     return JsonResponse({'server_error': 'Unknown server error'})
 
-
 def species_convert_trnas_to_freqs_df(trnas, isotypes, positions):
   freqs = trnas.groupby(['isotype', 'group', 'assembly']).apply(lambda position_counts: position_counts.drop(['isotype', 'group', 'assembly'], axis = 1).apply(lambda x: x.value_counts()).fillna(0))
   freqs = freqs.unstack(fill_value = 0).stack(0).reset_index().rename(columns = {'level_3': 'position'})
@@ -408,4 +404,3 @@ def species_distribution(request, clade_txids, foci):
     return JsonResponse({'server_error': 'Server error - most likely, tRNAs for your selection do not exist in the tRNAviz database. Try a different selection.'})
   except Exception as e:
     return JsonResponse({'server_error': 'Unknown server error'})
-

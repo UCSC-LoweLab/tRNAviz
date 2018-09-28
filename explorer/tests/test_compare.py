@@ -52,7 +52,8 @@ class CompareTests(TestCase):
         clade_qs = models.Taxonomy.objects.filter(taxid = cls.formset_data[i + 2]['clade']).values()[0]
         cls.num_model = compare.NUMBERING_MODELS[clade_qs['domain']]
       current_bits = compare.align_trnas_collect_bit_scores(trna_fasta_fh.name, cls.num_model, cls.ref_model_fh.name)
-      current_bits['group'] = cls.formset_data[i + 2]['name']
+      current_bits['group_name'] = cls.formset_data[i + 2]['name']
+      current_bits['group'] = 'group-{}'.format(i)
       cls.bits = cls.bits.append(current_bits)
     cls.bits['score'] = round(cls.bits.apply(lambda x: x['score'] - cls.ref_bits[cls.ref_bits.position == x['position']]['score'].values[0], axis = 1), 2)
 
@@ -88,20 +89,20 @@ class CompareTests(TestCase):
     bits = compare.align_trnas_collect_bit_scores(self.trna_fasta_files[0].name, self.num_model, self.ref_model_fh.name)
     self.assertEqual(bits.shape, (67, 4))
     self.assertIn('total', bits.columns)
-    self.assertEqual(self.bits.group.unique()[0], 'Test')
+    self.assertEqual(self.bits.group_name.unique()[0], 'Test')
 
   def test_compare_get_cons_bits(self):
     ref_cons = compare.get_cons_bits(self.ref_taxid, self.ref_isotype)
-    self.assertEqual(len(ref_cons.columns), 5)
-    self.assertEqual(ref_cons.group[0], 'Reference consensus')
+    self.assertEqual(len(ref_cons.columns), 6)
+    self.assertEqual(ref_cons.group_name[0], 'Reference consensus')
 
   def test_compare_get_modal_bits(self):
     ref_freqs = compare.get_modal_freqs(self.ref_taxid, self.ref_isotype)
-    self.assertEqual(ref_freqs.shape, (132, 5))
-    self.assertEqual(ref_freqs.group[0], 'Most common feature')
+    self.assertEqual(ref_freqs.shape, (132, 6))
+    self.assertEqual(ref_freqs.group_name[0], 'Most common feature')
 
   def test_compare_check_bits_processed(self):
-    groups = sorted(self.bits.group.unique())
+    groups = sorted(self.bits.group_name.unique())
     self.assertEqual(groups, ['Most common feature', 'Reference consensus', 'Test'])
     try:
       scores = self.bits.score.astype(float)
@@ -113,7 +114,7 @@ class CompareTests(TestCase):
     plot_data = compare.format_bits_for_viz(self.bits)
     self.assertIn('bits', plot_data)
     self.assertEqual(plot_data['groups'], ['Reference consensus', 'Most common feature', 'Test'])
-    bit_dict_keys = ['feature', 'group', 'label', 'position', 'score', 'total']
+    bit_dict_keys = ['feature', 'group', 'group_name', 'label', 'position', 'score', 'total']
     for i, row in plot_data['bits'].items():
       self.assertEqual(sorted(row.keys()), bit_dict_keys)
 

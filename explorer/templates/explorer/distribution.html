@@ -3,10 +3,6 @@
 {% load explorer_extras %}
 
 {% block filterjs %}
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
-
 <script>	
 $(document).ready(function() {
 
@@ -24,20 +20,22 @@ $(document).ready(function() {
 	}
 	$('#id_isotypes').select2({width: "100%", allowClear: true, placeholder: "Select isotype(s)"});
 	$('#id_positions').select2({width: "100%", allowClear: true, placeholder: "Select position(s)"});
+
+
+  $('#distribution-download-pdf').click(function() { download_pdf('distribution'); });
+  $('#distribution-download-png').click(function() { download_png('distribution'); });
 })
 </script>
 {% endblock %}
 
 
 {% block plotjs %}
-<script src='https://d3js.org/d3.v4.min.js'></script>
-<script src="{% static 'explorer/js/distributions.js' %}"></script>
 <script type = "text/javascript">
 
 d3.json('{% url "explorer:distribution" clade_txids=clade_groups|clade_groups_to_url_string isotypes=isotypes|list_to_url_string positions=positions|list_to_url_string %}', function(plot_data) {
   d3.select('#distribution-area .loading-overlay').style('display', 'none');
   if ("server_error" in plot_data) d3.select('#distribution-area').text(plot_data['server_error'])
-	else draw_distribution(plot_data)
+	else draw_distribution(plot_data);
 });
 </script>
 {% endblock %}

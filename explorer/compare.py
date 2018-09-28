@@ -69,7 +69,8 @@ def bitchart(request, formset_json):
         clade_qs = models.Taxonomy.objects.filter(taxid = formset_data[i + 2]['clade']).values()[0]
         num_model = NUMBERING_MODELS[clade_qs['domain']]
       current_bits = align_trnas_collect_bit_scores(trna_fasta_fh.name, num_model, ref_model_fh.name)
-      current_bits['group'] = formset_data[i + 2]['name']
+      current_bits['group_name'] = formset_data[i + 2]['name']
+      current_bits['group'] = 'group-{}'.format(i)
       bits = bits.append(current_bits)
 
     # Normalize bits against reference bits
@@ -167,7 +168,8 @@ def calculate_normalizing_scores(ref_model_fh):
   cmd_cmalign = 'cmalign -g --notrunc --matchonly --tfile {} {} {} > /dev/null'.format(cons_parsetree_fh.name, ref_model_fh.name, cons_fasta_fh.name)
   res = subprocess.run(cmd_cmalign, shell = True)
   ref_bits = pd.DataFrame(parse_parsetree(cons_parsetree_fh))
-  ref_bits.group = 'Reference consensus'
+  ref_bits.group_name = 'Reference consensus'
+  ref_bits.group = 'ref-cons'
   return ref_bits
 
 
@@ -208,7 +210,8 @@ def get_cons_bits(ref_taxid, ref_isotype):
   ref_cons.position = ref_cons.position.apply(lambda x: x[1:].replace('_', ':'))
   ref_cons['score'] = 0
   ref_cons['total'] = ''
-  ref_cons['group'] = 'Reference consensus'
+  ref_cons['group_name'] = 'Reference consensus'
+  ref_cons['group'] = 'ref-cons'
   return ref_cons
 
 def get_modal_freqs(ref_taxid, ref_isotype):
@@ -217,7 +220,8 @@ def get_modal_freqs(ref_taxid, ref_isotype):
   ref_freqs['feature'] = ref_freqs.drop(['position', 'total'], axis = 1).idxmax(axis = 1)
   ref_freqs = ref_freqs[['position', 'feature', 'total']]
   ref_freqs['score'] = 0
-  ref_freqs['group'] = 'Most common feature'
+  ref_freqs['group_name'] = 'Most common feature'
+  ref_freqs['group'] = 'ref-modal'
   return ref_freqs
 
 def format_bits_for_viz(bits):
@@ -226,7 +230,7 @@ def format_bits_for_viz(bits):
   bits['feature'] = bits.feature.apply(lambda x: IUPAC_CODES[x] if x in IUPAC_CODES else x)
 
   # Format data for d3
-  groups = ['Reference consensus', 'Most common feature'] + list(filter(lambda x: x not in ['Reference consensus', 'Most common feature'], bits.group.unique()))
+  groups = ['Reference consensus', 'Most common feature'] + list(filter(lambda x: x not in ['Reference consensus', 'Most common feature'], bits.group_name.unique()))
   bits = bits[bits.position.isin(BITCHART_POSITIONS)].to_dict(orient = 'index')
   plot_data = {'bits': bits, 'groups': groups}
   return plot_data

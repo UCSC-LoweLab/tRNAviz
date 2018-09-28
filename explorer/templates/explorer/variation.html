@@ -5,47 +5,59 @@
 {% block static %}
 <link rel="stylesheet" href="{% static 'explorer/css/explorer.css' %}">
 <script src="{% static 'explorer/js/export.js' %}"></script>
+<script src="{% static 'explorer/js/distributions.js' %}"></script>
 {% endblock %}
 
 {% block title %}tRNAviz | Variation{% endblock %}
 
 {% block plots %}
-<div class="p-3">
-	
-	<div class="p-3" id="distribution-area">
-		<div class="loading-overlay" style="margin-left: 5em; margin-right: 5em;">
+<div class="plotbox-row">
+	<div class="plotbox-outer">
+		<div class="plotbox-header">
+			<div class="download-box dropdown">
+  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
+  			<div class="dropdown-menu">
+    			<a class="dropdown-item" href="#" id='distribution-download-png'>PNG</a>
+    			<a class="dropdown-item" href="#" id='distribution-download-pdf'>PDF</a>
+  			</div>
+  		</div>
+			<h5>Sequence feature distribution</h5>
+		</div>
+		<div class="plotbox-inner" id="distribution-area">
+			<div class="loading-overlay" style="margin-left: 10em; margin-right: 10em;">
 		</div>
 	</div>
-
-	<div class="tooltip" style="opacity:0">
-		<table class="table table-sm table-striped table-bordered table-light">
-			<tbody>
-				<tr>
-					<th scope="col">Position</th>
-					<td id="tooltip-position"></td>
-				</tr>
-				<tr>
-					<th scope="col">Isotype</th>
-					<td id="tooltip-isotype"></td>
-				</tr>
-				<tr>
-					<th scope="col">Group</th>
-					<td id="tooltip-group"></td>
-				</tr>
-				<tr>
-					<th scope="col">Feature</th>
-					<td id="tooltip-feature"></td>
-				</tr>
-				<tr>
-					<th scope="col">Frequency</th>
-					<td id="tooltip-freq"></td>
-				</tr>
-				<tr>
-					<th scope="col">Count</th>
-					<td id="tooltip-count"></td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
 </div>
+
+<div class="tooltip" style="opacity:0">
+	<table class="table table-sm table-striped table-bordered table-light">
+		<tbody>
+			<tr>
+				<th scope="col">Position</th>
+				<td id="tooltip-position"></td>
+			</tr>
+			<tr>
+				<th scope="col">Isotype</th>
+				<td id="tooltip-isotype"></td>
+			</tr>
+			<tr>
+				<th scope="col">Group</th>
+				<td id="tooltip-group"></td>
+			</tr>
+			<tr>
+				<th scope="col">Feature</th>
+				<td id="tooltip-feature"></td>
+			</tr>
+			<tr>
+				<th scope="col">Frequency</th>
+				<td id="tooltip-freq"></td>
+			</tr>
+			<tr>
+				<th scope="col">Count</th>
+				<td id="tooltip-count"></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
 {% endblock %}
