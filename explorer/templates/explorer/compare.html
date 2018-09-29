@@ -166,6 +166,25 @@ $(document).ready(function () {
   }
 })
 
+d3.json("{% url 'explorer:coords' %}", function(coords) {
+	var circles = d3.select('#tooltip-cloverleaf')
+		.append('svg')
+		.attr('id', 'tooltip-cloverleaf-svg')
+		.attr('width', 132)
+		.attr('height', 136)
+		.append('g')
+		.selectAll('circle')
+    .data(coords, d => 'circle' + d['position'])
+    .enter()
+    .append('circle')
+    .attr('class', 'tooltip-cloverleaf-circle')
+    .attr('id', d => 'circle' + d['position'])
+    .attr('cx', d => d['x'] * 0.25)
+    .attr('cy', d => d['y'] * 0.25)
+    .attr('r', d => d['radius'] * 0.25);
+});
+
+
 </script>
 {% endblock %}
 
@@ -358,6 +377,8 @@ $(document).ready(function () {
 			<tr>
 				<th scope="col">Position</th>
 				<td id="tooltip-position"></td>
+				<td id="tooltip-cloverleaf" rowspan="5">
+				</td>
 			</tr>
 			<tr>
 				<th scope="col">Group</th>

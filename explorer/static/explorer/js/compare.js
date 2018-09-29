@@ -22,10 +22,12 @@ var draw_bitchart = function(plot_data) {
 	
   var tooltip = d3.select('.tooltip-compare');
   var tooltip_position = tooltip.select('#tooltip-position');
+  var tooltip_cloverleaf = tooltip.select('#tooltip-cloverleaf');
   var tooltip_group = tooltip.select('#tooltip-group');
   var tooltip_score = tooltip.select('#tooltip-score');
   var tooltip_feature = tooltip.select('#tooltip-feature');
   var tooltip_freq = tooltip.select('#tooltip-freq');
+
 
 	var bitchart = svg.append('g')
 		.attr('id', 'bitchart-plot')
@@ -99,9 +101,6 @@ var draw_bitchart = function(plot_data) {
       tooltip_score.html(d['score']);
       tooltip_feature.html(d['label']);
       tooltip_freq.html(d['total']);
-      // tooltip.transition()
-      //   .duration(100)
-      //   .style('opacity', .9);
       $('.tooltip-compare').css({
         opacity: 0.9,
       }).position({
@@ -109,6 +108,8 @@ var draw_bitchart = function(plot_data) {
         of: d3.event,
         collision: "flip"
       })
+      highlight_cloverleaf_tooltip(d['position']);
+
       d3.select(this)
         .transition()
         .duration(100)
@@ -125,12 +126,14 @@ var draw_bitchart = function(plot_data) {
     })
     .on('mouseout', function(d) {   
       tooltip.transition()    
-        .duration(100)    
+        .duration(100)
         .style('opacity', 0); 
       d3.select(this)
         .transition()
         .duration(100)
         .attr('class', 'bitchart-rect');
+      // dehighlight cloverleaf tooltip
+      d3.selectAll('circle').attr('class', 'tooltip-cloverleaf-circle');
     });
 
   tiles.append('text')
@@ -205,4 +208,10 @@ var draw_bitchart = function(plot_data) {
     .attr('class', 'gradient-title')
     .text('Score')
     .attr('transform', 'translate(-60, 10)')
+};
+
+var highlight_cloverleaf_tooltip = function(positions) {
+  var highlight_positions = positions.split(':');
+  d3.select('#circle' + highlight_positions[0]).attr('class', 'tooltip-cloverleaf-highlight')
+  if (highlight_positions.length > 1) d3.select('#circle' + highlight_positions[1]).attr('class', 'tooltip-cloverleaf-highlight')
 };

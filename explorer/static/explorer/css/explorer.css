@@ -41,6 +41,14 @@ div.tooltip th {
   stroke: #ff0000;
   stroke-width: 3;
 }
+.tooltip-cloverleaf-circle {
+  stroke: gray;
+  fill: gray;
+}
+.tooltip-cloverleaf-highlight {
+  stroke: #ff4444;
+  fill: #ff4444;
+}
 h2.display-title {
   height: 10em;
   display: block;
