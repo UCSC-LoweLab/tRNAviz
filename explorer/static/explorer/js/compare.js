@@ -10,7 +10,7 @@ var draw_bitchart = function(plot_data) {
   var y_axis_offset = 7 * group_names.reduce(function (a, b) { return a.length > b.length ? a : b; }).length;
 
 	var bitchart_area_width = sorted_positions.length * 35 + y_axis_offset,
-			bitchart_area_height = groups.length * 35 + 50,
+			bitchart_area_height = groups.length * 35 + 100,
 			tile_width = 30;
 	
 	var svg = d3.select('#bitchart-area')
@@ -132,4 +132,66 @@ var draw_bitchart = function(plot_data) {
   	.text(d => d['feature'])
     .style('pointer-events', 'none')
   	.style('fill', d => (d['score'] < -4) ? 'white' : 'black');
+
+
+  var legend = d3.select('#bitchart')
+    .append('g')
+    .attr('id', 'legend')
+    .attr('transform', 'translate(' + (y_axis_offset + sorted_positions.length * 35 / 2 - 180) + ', ' + (groups.length * 35 + 70) + ")")
+
+  // define gradient properties
+  var defs = legend.append('defs')
+    .append('linearGradient')
+    .attr('id', 'fill-defs')
+    .attr("spreadMethod", "pad");
+
+  defs.append('stop')
+    .attr('id', 'stop0')
+    .attr('offset', 0)
+    .attr('stop-color', '#5d478b');
+
+  defs.append('stop')
+    .attr('id', 'stop66')
+    .attr('offset', 0.66)
+    .attr('stop-color', '#b22222');
+
+  defs.append('stop')
+    .attr('id', 'stop100')
+    .attr('offset', 1)
+    .attr('stop-color', '#ffffff');
+
+  // link rect to gradient properties
+  legend.append('rect')
+    .style('fill', 'url(#fill-defs)')
+    .attr('width', 400)
+    .attr('height', 10);
+
+  // create score labels
+  var gradient_scale = d3.scaleLinear()
+    .domain([-15, 0])
+    .range([0, 400])
+
+  var gradient_axis = d3.axisBottom()
+    .scale(gradient_scale)
+    .tickValues([-15, -5, 0])
+
+  legend.append('g')
+    .attr('class', 'gradient-axis')
+    .attr('id', 'gradient-axis')
+    .attr('transform', 'translate(0, 10)')
+    .call(gradient_axis)
+
+  // don't display line and ticks
+  legend.select('path')
+    .style('display', 'none')
+
+  legend.selectAll('.tick line')
+    .style('display', 'none')
+
+  // legend label
+  legend.append('text')
+    .attr('id', 'gradient-title')
+    .attr('class', 'gradient-title')
+    .text('Score')
+    .attr('transform', 'translate(-60, 10)')
 };

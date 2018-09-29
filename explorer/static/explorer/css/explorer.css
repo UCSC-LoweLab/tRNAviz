@@ -197,3 +197,11 @@ td.cons-specific {
 .dropdown-menu {
   margin: 0;
 }
+
+.gradient-axis {
+  font-size: 12px;
+}
+
+.gradient-title {
+  font-size: 15px;
+}
