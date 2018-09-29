@@ -301,27 +301,29 @@ $(document).ready(function () {
 
 {% block table %}
 {% if valid_form %}
-<table class="table">
-	<tbody>
-		{% for form in formset.forms %}
-		{% if forloop.counter == 1 %}
-		<tr>
-			<th scope="row">Reference</th>
-			<td>{{ form.clade.value|clade_lookup }}, {{ form.isotype.value }}</td>
-		</tr>
-		{% elif forloop.counter > 2 %}
-		<tr>
-			<th scope="row">Selection {{ forloop.counter|minus2 }}: {{ form.name.value }}</th>
-			{% if form.use_fasta.value %}
-			<td>User FASTA input</td>
-			{% else %}
-			<td>{{ form.clade.value|clade_lookup }}, {{ form.isotype.value }}</td>
+<div class="data-select-table">
+	<table class="table sticky-top">
+		<tbody>
+			{% for form in formset.forms %}
+			{% if forloop.counter == 1 %}
+			<tr>
+				<th scope="row">Reference</th>
+				<td>{{ form.clade.value|clade_lookup }}, {{ form.isotype.value }}</td>
+			</tr>
+			{% elif forloop.counter > 2 %}
+			<tr>
+				<th scope="row">Selection {{ forloop.counter|minus2 }}: {{ form.name.value }}</th>
+				{% if form.use_fasta.value %}
+				<td>User FASTA input</td>
+				{% else %}
+				<td>{{ form.clade.value|clade_lookup }}, {{ form.isotype.value }}</td>
+				{% endif %}
+			</tr>
 			{% endif %}
-		</tr>
-		{% endif %}
-		{% endfor %}
-	</tbody>
-</table>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
 {% endif %}
 {% endblock %}
 

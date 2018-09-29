@@ -13,13 +13,11 @@ var draw_distribution = function(plot_data) {
   var facet_width = (plot_width - 30) / isotypes.length - 5;
   var facet_height = plot_height / positions.length - 10; 
 
-  d3.select('#distribution-area')
+  var svg = d3.select('#distribution-area')
     .append('svg')
-    .attr('id', 'distribution-svg')
+    .attr('id', 'distribution')
     .attr('width', plot_width + plot_margin)
     .attr('height', plot_height + plot_margin)
-    .append('g')
-    .attr('id', 'distribution-plots');
 
   var isotype_scale = d3.scaleBand()
     .domain(isotypes)
@@ -38,9 +36,6 @@ var draw_distribution = function(plot_data) {
   var feature_scale = d3.scaleOrdinal()
     .domain(['A', 'C', 'G', 'U', '-', 'A:A', 'A:C', 'A:G', 'A:U', 'C:A', 'C:C', 'C:G', 'C:U', 'G:A', 'G:C', 'G:G', 'G:U', 'U:A', 'U:C', 'U:G', 'U:U'])
     .range(['#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#cccccc'].concat(d3.schemeCategory20));
-
-  var svg = d3.select('#distribution-svg');
-
   svg.append('g')
     .attr('class', 'xaxis')
     .attr('transform', 'translate(60, 20)')
@@ -53,11 +48,11 @@ var draw_distribution = function(plot_data) {
 
   svg.selectAll('.xaxis text')
     .attr('class', 'axis-text')
-    .attr('id', d => 'tick-' + isotypes[d])
+    .attr('id', d => 'tick-' + d)
 
   svg.selectAll('.yaxis text')
     .attr('class', 'axis-text')
-    .attr('id', d => 'tick-' + positions[d])
+    .attr('id', d => 'tick-' + d.replace(':', '-'))
 
   var draw_facet = function(isotype, position, data) {
 
@@ -82,10 +77,10 @@ var draw_distribution = function(plot_data) {
       return d3.max(stacked, function(d) { return d[1]; });
     }
 
-    var facet = d3.select('#distribution-plots')
+    var facet = d3.select('#distribution')
       .append('g')
       .attr('class', 'facet')
-      .attr('id', current_facet)
+      .attr('id', current_facet.replace(':', '-'))
       .attr('isotype', isotype)
       .attr('position', position)
       .attr('transform', d => {
@@ -192,13 +187,11 @@ var draw_species_distribution = function(plot_data) {
   var facet_width = 250;
   var y_axis_offset = 50 + 7 * assemblies.reduce(function (a, b) { return a.length > b.length ? a : b; }).length;
 
-  d3.select('#distribution-area')
+  var svg = d3.select('#distribution-area')
     .append('svg')
-    .attr('id', 'distribution-svg')
+    .attr('id', 'distribution')
     .attr('width', plot_width + plot_margin)
     .attr('height', plot_height + plot_margin)
-    .append('g')
-    .attr('id', 'distribution-plots');
 
   var focus_scale = d3.scaleBand()
     .domain(foci)
@@ -225,9 +218,6 @@ var draw_species_distribution = function(plot_data) {
   var feature_scale = d3.scaleOrdinal()
     .domain(['A', 'C', 'G', 'U', '-', 'A:A', 'A:C', 'A:G', 'A:U', 'C:A', 'C:C', 'C:G', 'C:U', 'G:A', 'G:C', 'G:G', 'G:U', 'U:A', 'U:C', 'U:G', 'U:U'])
     .range(['#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#cccccc'].concat(d3.schemeCategory20));
-
-  var svg = d3.select('#distribution-svg');
-
     
   svg.append('g')
     .attr('class', 'xaxis')
@@ -236,7 +226,7 @@ var draw_species_distribution = function(plot_data) {
 
   svg.selectAll('.xaxis text')
     .attr('class', 'axis-text')
-    .attr('id', d => 'tick-' + foci[d])
+    .attr('id', d => 'tick-' + d.replace(':', '-'))
 
   svg.append('g')
     .attr('class', 'yaxis')
@@ -245,7 +235,6 @@ var draw_species_distribution = function(plot_data) {
 
   svg.selectAll('.yaxis text')
     .attr('class', 'axis-text')
-    .attr('id', d => 'tick-' + y_axis_labels[d])
 
   svg.selectAll('.yaxis .tick')
     .attr('opacity', d => {
@@ -260,10 +249,10 @@ var draw_species_distribution = function(plot_data) {
       .offset(d3.stackOffsetExpand)(data); 
 
 
-    var facet = d3.select('#distribution-plots')
+    var facet = d3.select('#distribution')
       .append('g')
       .attr('class', 'facet')
-      .attr('id', current_facet)
+      .attr('id', current_facet.replace(':', '-'))
       .attr('focus', focus)
       .attr('group', group)
       .attr('transform', d => {
@@ -302,7 +291,6 @@ var draw_species_distribution = function(plot_data) {
       .attr("x", d => bar_x_scale(d[0]))
       .attr("y", d => assembly_group_scale(d.data.assembly))
       .attr("width", d => {
-        adata = d;
         return bar_x_scale(d[1] - d[0]) })
       .attr("height", assembly_group_scale.bandwidth)
       .attr("stroke-width", 1)
@@ -345,7 +333,6 @@ var draw_species_distribution = function(plot_data) {
   for (focus of foci) {
     for (group of groups) {
       draw_facet(focus, group, plot_data[focus].filter(x => x['group'] == group));
-      console.log(plot_data[focus].filter(x => x['group'] == group).length)
     };
   };
 

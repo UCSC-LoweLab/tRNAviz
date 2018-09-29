@@ -23,7 +23,6 @@ $(document).ready(function() {
 
 
   $('#distribution-download-pdf').click(function() { download_pdf('distribution'); });
-  $('#distribution-download-png').click(function() { download_png('distribution'); });
 })
 </script>
 {% endblock %}
@@ -93,20 +92,22 @@ d3.json('{% url "explorer:distribution" clade_txids=clade_groups|clade_groups_to
 
 
 {% block table %}
-<table class="table">
-	<thead>
-		<tr>
-			<th scope="col">Clade(s)</th>
-			<th scope="col">Isotype(s)</th>
-			<th scope="col">Position(s)</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td>{{ clade_group_names|clade_names_to_pretty_string|linebreaks }}</td>
-			<td>{{ isotypes|list_to_pretty_string }}</td>
-			<td>{{ positions|list_to_pretty_string }}</td>
-		</tr>
-	</tbody>
-</table>
+<div class="data-select-table">
+	<table class="table sticky-top">
+		<thead>
+			<tr>
+				<th scope="col">Clade(s)</th>
+				<th scope="col">Isotype(s)</th>
+				<th scope="col">Position(s)</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>{{ clade_group_names|clade_names_to_pretty_string|linebreaks }}</td>
+				<td>{{ isotypes|list_to_pretty_string }}</td>
+				<td>{{ positions|list_to_pretty_string }}</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
 {% endblock %}

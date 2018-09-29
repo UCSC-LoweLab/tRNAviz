@@ -19,6 +19,9 @@ $(document).ready(function() {
 	  $('#id_focus_' + i + '_0').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
 	  $('#id_focus_' + i + '_1').select2({width: "100%", allowClear: true, placeholder: "Select position"});
 	}
+
+  $('#distribution-download-pdf').click(function() { download_pdf('distribution'); });
+  // $('#distribution-download-png').click(function() { download_png('distribution'); });
 })
 </script>
 {% endblock %}
@@ -99,16 +102,18 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 {% endblock %}
 
 {% block table %}
-<table class="table">
-	<tbody>
-		<tr>
-			<th scope="row">Clade groups</th>
-			<td>{{ clade_group_names|clade_names_to_pretty_string|linebreaks }}</td>
-		</tr>
-		<tr>
-			<th scope="row">Foci</th>
-			<td>{{ foci|foci_to_pretty_string|linebreaks }}</td>
-		</tr>
-	</tbody>
-</table>
+<div class="data-select-table">
+	<table class="table sticky-top">
+		<tbody>
+			<tr>
+				<th scope="row">Clade groups</th>
+				<td>{{ clade_group_names|clade_names_to_pretty_string|linebreaks }}</td>
+			</tr>
+			<tr>
+				<th scope="row">Foci</th>
+				<td>{{ foci|foci_to_pretty_string|linebreaks }}</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
 {% endblock %}
