@@ -5,6 +5,8 @@
 {% block static %}
 <script src="{% static 'js/bootstrap-toggle.min.js' %}"></script>
 <link href="{% static 'css/bootstrap-toggle.min.css' %}" rel="stylesheet">
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}">
 <link rel="stylesheet" href="{% static 'explorer/css/explorer.css' %}">
 <script src="{% static 'explorer/js/compare.js' %}"></script>
 <script src="{% static 'explorer/js/export.js' %}"></script>
@@ -160,6 +162,7 @@ $(document).ready(function () {
 		);
 
 		$('#bitchart-download-pdf').click(function() { download_pdf('bitchart'); });
+		$('[data-toggle="tooltip"]').tooltip(); 
   }
 })
 
@@ -349,7 +352,7 @@ $(document).ready(function () {
 {% endif %}
 	
 
-<div class="tooltip" style="opacity:0">
+<div class="tooltip tooltip-compare" style="opacity:0">
 	<table class="table table-sm table-striped table-bordered table-light">
 		<tbody>
 			<tr>

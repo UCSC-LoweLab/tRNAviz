@@ -12,6 +12,12 @@ div.tooltip-cloverleaf {
   font: 1em sans-serif;
   background: lightsteelblue;
 }
+div.tooltip-compare {
+  position: fixed;
+  zIndex: 5000;
+  whiteSpace: nowrap;
+  display: inline-block;
+}
 div.tooltip table {
   margin-bottom: 0;
 }
