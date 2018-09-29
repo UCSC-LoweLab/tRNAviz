@@ -230,7 +230,8 @@ def format_bits_for_viz(bits):
   bits['feature'] = bits.feature.apply(lambda x: IUPAC_CODES[x] if x in IUPAC_CODES else x)
 
   # Format data for d3
-  groups = ['Reference consensus', 'Most common feature'] + list(filter(lambda x: x not in ['Reference consensus', 'Most common feature'], bits.group_name.unique()))
+  groups = [('ref-cons', 'Reference consensus'), ('ref-modal', 'Most common feature')]
+  groups = groups + [(group[0], group[1]) for group in bits.loc[bits.group.str.contains('group'), ['group', 'group_name']].drop_duplicates().set_index('group').itertuples()]
   bits = bits[bits.position.isin(BITCHART_POSITIONS)].to_dict(orient = 'index')
   plot_data = {'bits': bits, 'groups': groups}
   return plot_data
