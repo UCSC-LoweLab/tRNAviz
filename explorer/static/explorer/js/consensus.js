@@ -47,8 +47,14 @@ var provenance = {'A': ['A'], 'C': ['C'], 'G': ['G'], 'U': ['U'],
   'Purine:Pyrimidine': ['G:C', 'A:U', 'Purine:Pyrimidine'], 'Pyrimidine:Purine': ['C:G', 'U:A', 'Pyrimidine:Purine'], 'G:U / U:G': ['G:U', 'U:G'], 'G:C / C:G': ['G:C', 'C:G'], 'A:U / U:A': ['A:U', 'U:A'], 'A:U / C:G': ['A:U', 'C:G'], 'G:C / U:A': ['G:C', 'U:A']}
 
 var feature_scale = d3.scaleOrdinal()
-  .domain(['', 'A', 'C', 'G', 'U', '-', 'Purine', 'Pyrimidine', 'Weak', 'Strong','Amino','Keto','B','D','H','V','N','Absent','Mismatched','Paired','High mismatch rate'])
-  .range(['#ffffff', '#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#dddddd', '#ff8300','#66c2a5','#b3de69','#fb72b2','#c1764a','#b26cbd','#e5c494','#ccebd5','#ffa79d','#a6cdea','white','#ffffff','#cccccc','#ffffcc','#222222']);
+  .domain(['', 'A', 'C', 'G', 'U', '-', 'Purine', 'Pyrimidine', 'Weak', 'Strong', 'Amino', 'Keto', 'B', 'D', 'H', 'V', 'N', 'Absent', 'Mismatched', 'Paired', 'High mismatch rate',
+    'A / U', 'G / C', 'A / C', 'G / U', 'C / G / U', 'A / G / U', 'A / C / U', 'A / C / G',
+    'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'U:C', 'C:U', 'A:G', 'G:A', 'A:C', 'C:A', 'A:A', 'G:G', 'U:U', 'C:C', 'A:A', 'A:C', 'A:G', 'A:U', 'C:A', 'C:C', 'C:G', 'C:U', 'G:A', 'G:C', 'G:G', 'G:U', 'U:A', 'U:C', 'U:G', 'U:U', 
+    'Missing', 'A:-', '-:A', 'C:-', '-:C', 'G:-', '-:G', 'U:-', '-:U'])
+  .range(['#ffffff', '#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#7f7f7f', '#ff8300','#66c2a5','#b3de69','#fb72b2','#c1764a','#b26cbd', '#e5c494','#ccebd5','#ffa79d','#a6cdea','#ffffff', '#7f7f7f','#333333','#ffffcc','#b3b3b3',
+    '#b3de69', '#fb72b2', '#c1764a', '#b26cbd', '#e5c494', '#ccebd5', '#ffa79d', '#a6cdea',
+    '#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00', '#ffff33', '#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd',
+    '#7f7f7f', '#7f7f7f', '#7f7f7f', '#7f7f7f', '#7f7f7f', '#7f7f7f', '#7f7f7f', '#7f7f7f', '#7f7f7f']);
 
 var draw_cloverleaf = function(cloverleaf_data) {
   var cloverleaf_area_width = 525,
@@ -304,11 +310,6 @@ var draw_base_distro = function(freq_data, plot_type) {
       .attr('transform', 'translate(46, 10)')
       .call(base_freq_axis);
 
-    // update features for fill scale
-    var base_fill_scale = d3.scaleOrdinal()
-      .domain(['A', 'C', 'G', 'U', '-', 'A:A', 'A:C', 'A:G', 'A:U', 'C:A', 'C:C', 'C:G', 'C:U', 'G:A', 'G:C', 'G:G', 'G:U', 'U:A', 'U:C', 'U:G', 'U:U'])
-      .range(['#ffd92f', '#4daf4a', '#e41a1c', '#377eb8'].concat(d3.schemeCategory20));
-
     base_distro.selectAll('.base-xaxis .tick text, .base-yaxis .tick text')  // select all the text elements for the xaxis
       .attr('text-anchor', 'center')
       .attr('class', 'axis-text');
@@ -327,7 +328,7 @@ var draw_base_distro = function(freq_data, plot_type) {
       .attr('width', function() { return base_feature_scale.bandwidth(); })
       .attr('stroke', '#666666')
       .attr('stroke-width', '1')
-      .style('fill', function(d) { return base_fill_scale(d['key']); })
+      .style('fill', function(d) { return feature_scale(d['key']); })
       .style('fill-opacity', 0.7);
   }
 };
@@ -382,11 +383,6 @@ var draw_tilemap = function(tilemap_data) {
   var isotype_axis = d3.axisLeft(isotype_scale)
     .ticks(isotypes.length)
     .tickFormat(d => isotypes[d]);
-
-  var feature_scale = d3.scaleOrdinal()
-    // .domain(['A', 'C', 'G', 'U', '-', 'A:A', 'A:C', 'A:G', 'A:U', 'C:A', 'C:C', 'C:G', 'C:U', 'G:A', 'G:C', 'G:G', 'G:U', 'U:A', 'U:C', 'U:G', 'U:U'])
-    .domain(['A', 'C', 'G', 'U', '-', 'Purine','Pyrimidine','Weak','Strong','Amino','Keto','B','D','H','V','N','Absent','Mismatched','Paired','High mismatch rate'])
-    .range(['#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#dddddd', '#ff8300','#66c2a5','#b3de69','#fb72b2','#c1764a','#b26cbd','#e5c494','#ccebd5','#ffa79d','#a6cdea','white','#ffffff','#cccccc','#ffffcc','#222222']);
 
   tilemap.append('g')
     .attr('class', 'xaxis')

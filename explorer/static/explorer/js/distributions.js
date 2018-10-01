@@ -1,5 +1,14 @@
 var all_features = ['A', 'C', 'G', 'U', '-', 'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'A:A', 'A:C', 'A:G', 'C:A', 'C:C', 'C:U', 'G:A', 'G:G', 'U:C', 'U:U', '-:A', '-:C', '-:G', '-:U']
-var sorted_positions = ['1:72', '2:71', '3:70', '4:69', '5:68', '6:67', '7:66', '8', '9', '10:25', '11:24', '12:23', '13:22', '14', '15', '16', '17', '17a', '18', '19', '20', '20a', '20b', '21', '26', '27:43', '28:42', '29:41', '30:40', '31:39', '32', '33', '34', '35', '36', '37', '38', '44', '45', '46', '47', '48', 'V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27', 'V1', 'V2', 'V3', 'V4', 'V5', '49:65', '50:64', '51:63', '52:62', '53:61', '54', '55', '56', '57', '58', '59', '60', '73']
+var sorted_positions = ['1:72', '2:71', '3:70', '4:69', '5:68', '6:67', '7:66', '8', '8:14', '9', '9:23', '10:25', '10:45', '11:24', '12:23', '13:22', '14', '15', '15:48', '16', '17', '17a', '18', '18:55', '19', '19:56', '20', '20a', '20b', '21', '22:46', '26', '26:44', '27:43', '28:42', '29:41', '30:40', '31:39', '32', '33', '34', '35', '36', '37', '38', '44', '45', '46', '47', '48', 'V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27', 'V1', 'V2', 'V3', 'V4', 'V5', '49:65', '50:64', '51:63', '52:62', '53:61', '54', '54:58', '55', '56', '57', '58', '59', '60', '73']
+var feature_scale = d3.scaleOrdinal()
+  .domain(['', 'A', 'C', 'G', 'U', '-', 'Purine', 'Pyrimidine', 'Weak', 'Strong', 'Amino', 'Keto', 'B', 'D', 'H', 'V', 'N', 'Absent', 'Mismatched', 'Paired', 'High mismatch rate',
+    'A / U', 'G / C', 'A / C', 'G / U', 'C / G / U', 'A / G / U', 'A / C / U', 'A / C / G',
+    'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'U:C', 'C:U', 'A:G', 'G:A', 'A:C', 'C:A', 'A:A', 'G:G', 'U:U', 'C:C', 'A:A', 'A:C', 'A:G', 'A:U', 'C:A', 'C:C', 'C:G', 'C:U', 'G:A', 'G:C', 'G:G', 'G:U', 'U:A', 'U:C', 'U:G', 'U:U', 
+    'Missing', 'A:-', '-:A', 'C:-', '-:C', 'G:-', '-:G', 'U:-', '-:U'])
+  .range(['#ffffff', '#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#7f7f7f', '#ff8300','#66c2a5','#b3de69','#fb72b2','#c1764a','#b26cbd', '#e5c494','#ccebd5','#ffa79d','#a6cdea','#ffffff', '#7f7f7f','#333333','#ffffcc','#b3b3b3',
+    '#b3de69', '#fb72b2', '#c1764a', '#b26cbd', '#e5c494', '#ccebd5', '#ffa79d', '#a6cdea',
+    '#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00', '#ffff33', '#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd',
+    '#7f7f7f', '#7f7f7f', '#7f7f7f', '#7f7f7f', '#7f7f7f', '#7f7f7f', '#7f7f7f', '#7f7f7f', '#7f7f7f']);
 
 var draw_distribution = function(plot_data) {
   var isotypes = Object.keys(plot_data).sort();
@@ -7,35 +16,31 @@ var draw_distribution = function(plot_data) {
   var features = Object.keys(plot_data[isotypes[0]][positions[0]][0]).filter(d => all_features.includes(d))
   var num_groups = plot_data[isotypes[0]][positions[0]].length;
 
-  var plot_width = 60 * isotypes.length;
-  var plot_height = 65 * positions.length;
-  var plot_margin = 100; // extra for placing axes and tooltips
-  var facet_width = (plot_width - 30) / isotypes.length - 5;
-  var facet_height = plot_height / positions.length - 10; 
+  var facet_width = 30 + 5 * num_groups;
+  var facet_height = 40; 
+  var plot_width = 80 + (facet_width * isotypes.length);
+  var plot_height = 40 + (facet_height * positions.length);
 
   var svg = d3.select('#distribution-area')
     .append('svg')
     .attr('id', 'distribution')
-    .attr('width', plot_width + plot_margin)
-    .attr('height', plot_height + plot_margin)
+    .attr('width', plot_width)
+    .attr('height', plot_height)
 
   var isotype_scale = d3.scaleBand()
     .domain(isotypes)
-    .rangeRound([10, plot_width - 30])
-    .padding(0.1);
+    .rangeRound([0, facet_width * isotypes.length])
+    .paddingInner(0.1);
 
   var isotype_axis = d3.axisTop(isotype_scale);
 
   var position_scale = d3.scaleBand()
     .domain(positions)
-    .rangeRound([10, plot_height - 30])
+    .rangeRound([0, facet_height * positions.length])
     .paddingInner(0.1);
 
   var position_axis = d3.axisLeft(position_scale);
 
-  var feature_scale = d3.scaleOrdinal()
-    .domain(['A', 'C', 'G', 'U', '-', 'A:A', 'A:C', 'A:G', 'A:U', 'C:A', 'C:C', 'C:G', 'C:U', 'G:A', 'G:C', 'G:G', 'G:U', 'U:A', 'U:C', 'U:G', 'U:U'])
-    .range(['#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#cccccc'].concat(d3.schemeCategory20));
   svg.append('g')
     .attr('class', 'xaxis')
     .attr('transform', 'translate(60, 20)')
@@ -67,7 +72,7 @@ var draw_distribution = function(plot_data) {
 
     var bar_y_scale = d3.scaleLinear()
       .domain([d3.min(stacked, stackMin), d3.max(stacked, stackMax)])
-      .range([0, facet_height]);
+      .range([0, facet_height - 5]);
 
     function stackMin(stacked) {
       return d3.min(stacked, function(d) { return d[0]; });
@@ -85,11 +90,9 @@ var draw_distribution = function(plot_data) {
       .attr('position', position)
       .attr('transform', d => {
         x = isotype_scale(isotype) + 60;
-        y = position_scale(position) + 20;
+        y = position_scale(position) + 22;
         return "translate(" + x + "," + y + ")";
       })
-      // .attr('width', plot_width)
-      // .attr('height', plot_height);
 
     var bars = facet.append('g')
       .selectAll('g')
@@ -183,15 +186,14 @@ var draw_species_distribution = function(plot_data) {
 
   var plot_width = 250 * foci.length + 400;
   var plot_height = 20 * assemblies.length + 10 * groups.length;
-  var plot_margin = 100; 
   var facet_width = 250;
   var y_axis_offset = 50 + 7 * assemblies.reduce(function (a, b) { return a.length > b.length ? a : b; }).length;
 
   var svg = d3.select('#distribution-area')
     .append('svg')
     .attr('id', 'distribution')
-    .attr('width', plot_width + plot_margin)
-    .attr('height', plot_height + plot_margin)
+    .attr('width', plot_width)
+    .attr('height', plot_height)
 
   var focus_scale = d3.scaleBand()
     .domain(foci)
@@ -214,10 +216,6 @@ var draw_species_distribution = function(plot_data) {
     .paddingInner(0.1)
 
   var assembly_group_axis = d3.axisLeft(assembly_group_scale);
-
-  var feature_scale = d3.scaleOrdinal()
-    .domain(['A', 'C', 'G', 'U', '-', 'A:A', 'A:C', 'A:G', 'A:U', 'C:A', 'C:C', 'C:G', 'C:U', 'G:A', 'G:C', 'G:G', 'G:U', 'U:A', 'U:C', 'U:G', 'U:U'])
-    .range(['#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#cccccc'].concat(d3.schemeCategory20));
     
   svg.append('g')
     .attr('class', 'xaxis')
