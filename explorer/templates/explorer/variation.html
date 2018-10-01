@@ -3,9 +3,35 @@
 {% load explorer_extras %}
 
 {% block static %}
-<link rel="stylesheet" href="{% static 'explorer/css/explorer.css' %}">
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}">
+<script src="{% static 'explorer/js/tooltip.js' %}"></script>
 <script src="{% static 'explorer/js/export.js' %}"></script>
 <script src="{% static 'explorer/js/distributions.js' %}"></script>
+<link rel="stylesheet" href="{% static 'explorer/css/explorer.css' %}">
+{% endblock %}
+
+{% block plotjs %}
+<!-- js for loading tooltip -->
+<script>
+d3.json("{% url 'explorer:coords' %}", function(coords) {
+	var circles = d3.select('#tooltip-cloverleaf')
+		.append('svg')
+		.attr('id', 'tooltip-cloverleaf-svg')
+		.attr('width', 155)
+		.attr('height', 160)
+		.append('g')
+		.selectAll('circle')
+    .data(coords, d => 'circle' + d['position'])
+    .enter()
+    .append('circle')
+    .attr('class', 'tooltip-cloverleaf-circle')
+    .attr('id', d => 'circle' + d['position'])
+    .attr('cx', d => d['x'] * 0.3)
+    .attr('cy', d => d['y'] * 0.3)
+    .attr('r', d => d['radius'] * 0.3);
+});
+</script>
 {% endblock %}
 
 {% block title %}tRNAviz | Variation{% endblock %}
@@ -23,17 +49,18 @@
 			<h5>Sequence feature distribution</h5>
 		</div>
 		<div class="plotbox-inner" id="distribution-area">
-			<div class="loading-overlay" style="margin-left: 10em; margin-right: 10em;">
+			<div class="loading-overlay" style="margin-left: 10em; margin-right: 10em;"></div>
 		</div>
 	</div>
 </div>
 
-<div class="tooltip" style="opacity:0">
+<div class="tooltip tooltip-distribution" style="opacity:0">
 	<table class="table table-sm table-striped table-bordered table-light">
 		<tbody>
 			<tr>
 				<th scope="col">Position</th>
 				<td id="tooltip-position"></td>
+				<td id="tooltip-cloverleaf" rowspan="6"></td>
 			</tr>
 			<tr>
 				<th scope="col">Isotype</th>

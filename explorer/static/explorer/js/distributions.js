@@ -103,7 +103,6 @@ var draw_distribution = function(plot_data) {
       .on('mouseover', d => {
         tooltip_feature.html(d.key);
         tooltip_feature.style('text-color', feature_scale(d.key));
-        // tooltip_count.html(plot_data)
       })
       .selectAll('rect')
       .data(d => d)
@@ -116,17 +115,21 @@ var draw_distribution = function(plot_data) {
       .attr("width", bar_x_scale.bandwidth)
       .attr("stroke-width", 1)
       .attr("stroke", "black")
+      .attr('data-toggle', 'tooltip')
       .on('mouseover', function(d, i) {
         tooltip_position.html(position);
         tooltip_isotype.html(isotype);
         tooltip_group.html(d.data.group);
         tooltip_freq.html(Math.round((d[1] - d[0]) * 100) / 100)
         tooltip_count.html(plot_data[isotype][position].filter(x => x['group'] == d.data.group)[0][d3.select('#tooltip-feature').html()]);
-        tooltip.transition()
-          .duration(100)
-          .style('opacity', .9)
-          .style('left', d3.event.pageX + 'px')
-          .style('top', d3.event.pageY + 'px');
+        $('.tooltip-distribution').css({
+          opacity: 0.9,
+        }).position({
+          my: "left top",
+          of: d3.event,
+          collision: "flip"
+        });
+        highlight_cloverleaf_tooltip(position);
         d3.select(this)
           .transition()
           .duration(100)
@@ -135,9 +138,14 @@ var draw_distribution = function(plot_data) {
       .on('mousemove', function(d, i) {  
         tooltip_freq.html(Math.round((d[1] - d[0]) * 100) / 100)
         tooltip_count.html(plot_data[isotype][position].filter(x => x['group'] == d.data.group)[0][d3.select('#tooltip-feature').html()]);
-        tooltip.style('left', d3.event.pageX + 'px')
-          .style('top', d3.event.pageY + 'px');
-        })
+        $('.tooltip-distribution').css({
+          opacity: 0.9,
+        }).position({
+          my: "left top",
+          of: d3.event,
+          collision: "flip"
+        });
+      })
       .on('mouseout', function(d) {   
         tooltip.transition()    
           .duration(100)    
@@ -146,6 +154,7 @@ var draw_distribution = function(plot_data) {
           .transition()
           .duration(100)
           .attr('class', 'distro-rect');
+        d3.selectAll('circle').attr('class', 'tooltip-cloverleaf-circle');
       });
 
   };
@@ -279,7 +288,6 @@ var draw_species_distribution = function(plot_data) {
       .on('mouseover', d => {
         tooltip_feature.html(d.key);
         tooltip_feature.style('text-color', feature_scale(d.key));
-        // tooltip_count.html(plot_data)
       })
       .selectAll('rect')
       .data(d => d)
@@ -293,29 +301,34 @@ var draw_species_distribution = function(plot_data) {
       .attr("height", assembly_group_scale.bandwidth)
       .attr("stroke-width", 1)
       .attr("stroke", "black")
+      .attr('data-toggle', 'tooltip')
       .on('mouseover', function(d, i) {
         tooltip_position.html(d.data.focus.split('-')[1]);
         tooltip_isotype.html(d.data.focus.split('-')[0]);
         tooltip_group.html(d.data.group);
         tooltip_freq.html(Math.round((d[1] - d[0]) * 100) / 100)
         tooltip_count.html(plot_data[d.data.focus].filter(x => x['group'] == d.data.group && x['assembly'] == d.data.assembly)[0][d3.select('#tooltip-feature').html()]);
-        tooltip.transition()
-          .duration(100)
-          .style('opacity', .9)
-          .style('left', d3.event.pageX + 'px')
-          .style('top', d3.event.pageY + 'px');
-        d3.select(this)
-          .transition()
-          .duration(100)
-          .attr('class', 'distro-rect-highlight');
+        $('.tooltip-distribution').css({
+          opacity: 0.9,
+        }).position({
+          my: "left top",
+          of: d3.event,
+          collision: "flip"
+        });
+        highlight_cloverleaf_tooltip(d.data.focus.split('-')[1]);
       })
       .on('mousemove', function(d, i) {  
         tooltip_freq.html(Math.round((d[1] - d[0]) * 100) / 100)
         var feature = d3.select('#tooltip-feature').html()
         tooltip_count.html(plot_data[d.data.focus].filter(x => x['group'] == d.data.group && x['assembly'] == d.data.assembly)[0][d3.select('#tooltip-feature').html()]);
-        tooltip.style('left', d3.event.pageX + 'px')
-          .style('top', d3.event.pageY + 'px');
-        })
+        $('.tooltip-distribution').css({
+          opacity: 0.9,
+        }).position({
+          my: "left top",
+          of: d3.event,
+          collision: "flip"
+        });
+      })
       .on('mouseout', function(d) {   
         tooltip.transition()    
           .duration(100)    
@@ -324,6 +337,7 @@ var draw_species_distribution = function(plot_data) {
           .transition()
           .duration(100)
           .attr('class', 'distro-rect');
+        d3.selectAll('circle').attr('class', 'tooltip-cloverleaf-circle');
       });
 
   };
