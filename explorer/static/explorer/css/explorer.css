@@ -219,3 +219,12 @@ td.cons-specific {
 .gradient-title {
   font-size: 15px;
 }
+
+.legend-rect {
+  stroke: #666666;
+  stroke-width: 1px;
+}
+
+.legend-label {
+  font-size: 12px;
+}

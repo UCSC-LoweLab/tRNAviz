@@ -49,7 +49,7 @@ var provenance = {'A': ['A'], 'C': ['C'], 'G': ['G'], 'U': ['U'],
 var feature_scale = d3.scaleOrdinal()
   .domain(['', 'A', 'C', 'G', 'U', '-', 'Purine', 'Pyrimidine', 'Weak', 'Strong', 'Amino', 'Keto', 'B', 'D', 'H', 'V', 'N', 'Absent', 'Mismatched', 'Paired', 'High mismatch rate',
     'A / U', 'G / C', 'A / C', 'G / U', 'C / G / U', 'A / G / U', 'A / C / U', 'A / C / G',
-    'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'U:C', 'C:U', 'A:G', 'G:A', 'A:C', 'C:A', 'A:A', 'G:G', 'U:U', 'C:C', 'A:A', 'A:C', 'A:G', 'A:U', 'C:A', 'C:C', 'C:G', 'C:U', 'G:A', 'G:C', 'G:G', 'G:U', 'U:A', 'U:C', 'U:G', 'U:U', 
+    'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'U:C', 'C:U', 'A:G', 'G:A', 'A:C', 'C:A', 'A:A', 'G:G', 'U:U', 'C:C', 
     'Missing', 'A:-', '-:A', 'C:-', '-:C', 'G:-', '-:G', 'U:-', '-:U'])
   .range(['#ffffff', '#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#7f7f7f', '#ff8300','#66c2a5','#b3de69','#fb72b2','#c1764a','#b26cbd', '#e5c494','#ccebd5','#ffa79d','#a6cdea','#ffffff', '#7f7f7f','#333333','#ffffcc','#b3b3b3',
     '#b3de69', '#fb72b2', '#c1764a', '#b26cbd', '#e5c494', '#ccebd5', '#ffa79d', '#a6cdea',
