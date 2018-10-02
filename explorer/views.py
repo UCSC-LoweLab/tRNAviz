@@ -64,7 +64,6 @@ def variation_species(request):
   foci = [('Ala', '3:70'), ('Gly', '3:70'), ('Ala', '46'), ('Gly', '46')]
 
   form = forms.SpeciesDistributionForm()
-  trna_form = forms.tRNAForm()
 
   if request.method == "POST":
     form = forms.SpeciesDistributionForm(request.POST)
@@ -80,7 +79,6 @@ def variation_species(request):
     'clade_groups': clade_groups,
     'foci': foci,
     'clade_group_names': clade_group_names,
-    'trna_form': trna_form
   })
 
 def compare(request):

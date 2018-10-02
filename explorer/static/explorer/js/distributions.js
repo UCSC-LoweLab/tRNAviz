@@ -1,4 +1,4 @@
-var all_features = ['A', 'C', 'G', 'U', '-', 'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'A:A', 'A:C', 'A:G', 'C:A', 'C:C', 'C:U', 'G:A', 'G:G', 'U:C', 'U:U', '-:A', '-:C', '-:G', '-:U']
+var all_features = ['A', 'C', 'G', 'U', '-', 'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'A:A', 'A:C', 'A:G', 'C:A', 'C:C', 'C:U', 'G:A', 'G:G', 'U:C', 'U:U', '-:A', '-:C', '-:G', '-:U', '-:-']
 var sorted_positions = ['1:72', '2:71', '3:70', '4:69', '5:68', '6:67', '7:66', '8', '8:14', '9', '9:23', '10:25', '10:45', '11:24', '12:23', '13:22', '14', '15', '15:48', '16', '17', '17a', '18', '18:55', '19', '19:56', '20', '20a', '20b', '21', '22:46', '26', '26:44', '27:43', '28:42', '29:41', '30:40', '31:39', '32', '33', '34', '35', '36', '37', '38', '44', '45', '46', '47', '48', 'V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27', 'V1', 'V2', 'V3', 'V4', 'V5', '49:65', '50:64', '51:63', '52:62', '53:61', '54', '54:58', '55', '56', '57', '58', '59', '60', '73']
 var feature_scale = d3.scaleOrdinal()
   .domain(['', 'A', 'C', 'G', 'U', '-', 'Purine', 'Pyrimidine', 'Weak', 'Strong', 'Amino', 'Keto', 'B', 'D', 'H', 'V', 'N', 'Absent', 'Mismatched', 'Paired', 'High mismatch rate',
@@ -175,16 +175,10 @@ var draw_distribution = function(plot_data) {
 
 };
 
-
 var draw_species_distribution = function(plot_data) {
   d3.select('#distribution-area .loading-overlay').style('display', 'none');
-
   var foci = Object.keys(plot_data).sort();
-  var assembly_groups = []
-  for (focus of foci) {
-    assembly_groups = assembly_groups.concat(plot_data[focus].map(d => [d['assembly'], d['group']]))
-  }
-  assembly_groups = Array.from(new Set(assembly_groups.map(x => JSON.stringify(x)))).map(x => JSON.parse(x))
+  var assembly_groups = Array.from(new Set([].concat.apply([], Object.keys(plot_data).map(focus => plot_data[focus].map(d => [d['assembly'], d['group']]).map(group => JSON.stringify(group)))))).map(group => JSON.parse(group)).sort((a, b) => parseInt(a[1]) - parseInt(b[1]));
   var assemblies = assembly_groups.map(x => x[0])
   var groups = Array.from(new Set(assembly_groups.map(x => x[1])))
 
@@ -192,12 +186,12 @@ var draw_species_distribution = function(plot_data) {
     .sort()
     .reduce((acc, val) => acc.set(val, 1 + (acc.get(val) || 0)), new Map())
     .values())
-
-  var plot_width = 250 * foci.length + 400;
-  var plot_height = 20 * assemblies.length + 10 * groups.length;
-  var facet_width = 250;
-  var y_axis_offset = 50 + 7 * assemblies.reduce(function (a, b) { return a.length > b.length ? a : b; }).length;
-
+  
+  var facet_width = 150;
+  var x_axis_offset = 7 * assemblies.reduce(function (a, b) { return a.length > b.length ? a : b; }).length;
+  var plot_width = 100 + 15 * assemblies.length + 15 * (groups.length - 1);
+  var plot_height = 100 + (x_axis_offset + facet_width * foci.length);
+  
   var svg = d3.select('#distribution-area')
     .append('svg')
     .attr('id', 'distribution')
@@ -206,55 +200,69 @@ var draw_species_distribution = function(plot_data) {
 
   var focus_scale = d3.scaleBand()
     .domain(foci)
-    .range([10, foci.length * facet_width])
+    .range([0, foci.length * facet_width])
     .padding(0.1);
 
-  var focus_axis = d3.axisTop(focus_scale);
+  var focus_axis = d3.axisLeft(focus_scale);
 
-  // generate y axis and put spacers in between groups
-  var assemblies_sorted = assembly_groups.sort((a, b) => parseInt(a[1]) - parseInt(b[1])).map(d => d[0]);
-  var y_axis_labels = [];
-  for (i in group_sizes) {
-    y_axis_labels = y_axis_labels.concat(assemblies_sorted.splice(0, group_sizes[i]));
-    if (i != groups.length - 1) y_axis_labels.push('spacer' + i);
-  }
+  // generate x axis and put spacers in between groups
+  var x_axis_labels = [].concat.apply([], group_sizes
+    .map((d, i) => assembly_groups.filter(assembly => assembly[1] == i + 1).map(assembly => assembly[0])) // recreate assembly groups without indexes
+    .sort()
+    .map((d, i) => i != group_sizes.length - 1 ? d.concat(['spacer' + i]) : d) // add spacer
+  )
+  
+  // use unique label ids
+  var x_axis_label_ids = [].concat.apply([], group_sizes
+    .map((d, i) => assembly_groups
+      .filter(assembly => assembly[1] == i + 1)
+      .map(assembly => (assembly[0] + '-' + assembly[1]).replace(/[^a-zA-Z0-9\-]/g, '_'))
+    ).sort()
+    .map((d, i) => i != group_sizes.length - 1 ? d.concat(['spacer' + i]) : d) // add spacer
+  )
+
+  var assembly_group_format = function(d, i) { return x_axis_labels[i]; }
 
   var assembly_group_scale = d3.scaleBand()
-    .domain(y_axis_labels)
-    .range([10, 20 * assemblies.length])
+    .domain(Object.values(x_axis_label_ids))
+    .range([10, 15 * x_axis_labels.length])
     .paddingInner(0.1)
 
-  var assembly_group_axis = d3.axisLeft(assembly_group_scale);
-    
+  var assembly_group_axis = d3.axisBottom(assembly_group_scale)
+    .ticks(x_axis_labels.length)
+    .tickFormat(assembly_group_format)
+
   svg.append('g')
     .attr('class', 'xaxis')
-    .attr('transform', 'translate(' + y_axis_offset + ', 35)')
-    .call(focus_axis);
+    .attr('transform', 'translate(60, ' + (plot_height - 100 - x_axis_offset) + ')')
+    .call(assembly_group_axis);
 
   svg.selectAll('.xaxis text')
     .attr('class', 'axis-text')
-    .attr('id', d => 'tick-' + d.replace(':', '-'))
+    .attr('text-anchor', 'end')
+    .attr('transform', function(d) { return 'translate(-' + this.getBBox().height + ', ' + (this.getBBox().height) + ') rotate(-90)'; });
 
-  svg.append('g')
-    .attr('class', 'yaxis')
-    .attr('transform', 'translate(' + y_axis_offset + ', 40)')
-    .call(assembly_group_axis);
 
-  svg.selectAll('.yaxis text')
-    .attr('class', 'axis-text')
-
-  svg.selectAll('.yaxis .tick')
+  svg.selectAll('.xaxis .tick')
     .attr('opacity', d => {
       if (d.substring(0, 6) == 'spacer') return 0;
       return 1;
     })
 
+  svg.append('g')
+    .attr('class', 'yaxis')
+    .attr('transform', 'translate(60, 0)')
+    .call(focus_axis);
+
+  svg.selectAll('.yaxis text')
+    .attr('class', 'axis-text')
+    .attr('id', d => 'tick-' + d.replace(':', '-'))
+
   var draw_facet = function(focus, group, data) {
 
     var current_facet = focus + '-' + group;
     var stacked = d3.stack().keys(all_features)
-      .offset(d3.stackOffsetExpand)(data); 
-
+      .offset(d3.stackOffsetExpand)(data);
 
     var facet = d3.select('#distribution')
       .append('g')
@@ -263,8 +271,7 @@ var draw_species_distribution = function(plot_data) {
       .attr('focus', focus)
       .attr('group', group)
       .attr('transform', d => {
-        x = focus_scale(focus) + y_axis_offset - 10;
-        return "translate(" + x + ",40)";
+        return "translate(60, " + focus_scale(focus) + ")";
       })
 
     function stackMin(stacked) {
@@ -275,7 +282,7 @@ var draw_species_distribution = function(plot_data) {
       return d3.max(stacked, function(d) { return d[1]; });
     };
 
-    var bar_x_scale = d3.scaleLinear()
+    var bar_y_scale = d3.scaleLinear()
       .domain([d3.min(stacked, stackMin), d3.max(stacked, stackMax)])
       .range([0, facet_width - 20]);
 
@@ -294,18 +301,22 @@ var draw_species_distribution = function(plot_data) {
       .enter()
       .append('rect')
       .attr('class', 'distro-rect')
-      .attr("x", d => bar_x_scale(d[0]))
-      .attr("y", d => assembly_group_scale(d.data.assembly))
-      .attr("width", d => {
-        return bar_x_scale(d[1] - d[0]) })
-      .attr("height", assembly_group_scale.bandwidth)
+      .attr("x", function(d, i) {
+        return assembly_group_scale((d.data.assembly + '-' + d.data.group).replace(/[^a-zA-Z0-9\-]/g, '_')) // reconstruct label id based on group
+      })
+      .attr("y", d => bar_y_scale(d[0]))
+      .attr("width", assembly_group_scale.bandwidth)
+      .attr("height", d => {
+        if (isNaN(d[1]) || isNaN(d[0])) return 0;
+        else return bar_y_scale(d[1] - d[0]);
+      })
       .attr("stroke-width", 1)
       .attr("stroke", "black")
       .attr('data-toggle', 'tooltip')
       .on('mouseover', function(d, i) {
         tooltip_position.html(d.data.focus.split('-')[1]);
         tooltip_isotype.html(d.data.focus.split('-')[0]);
-        tooltip_group.html(d.data.group);
+        tooltip_group.html(d.data.assembly + '<br><i>Group ' + d.data.group + '</i>');
         tooltip_freq.html(Math.round((d[1] - d[0]) * 100) / 100)
         tooltip_count.html(plot_data[d.data.focus].filter(x => x['group'] == d.data.group && x['assembly'] == d.data.assembly)[0][d3.select('#tooltip-feature').html()]);
         $('.tooltip-distribution').css({
