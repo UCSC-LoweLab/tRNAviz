@@ -49,11 +49,11 @@ var provenance = {'A': ['A'], 'C': ['C'], 'G': ['G'], 'U': ['U'],
 var feature_scale = d3.scaleOrdinal()
   .domain(['', 'A', 'C', 'G', 'U', '-', 'Purine', 'Pyrimidine', 'Weak', 'Strong', 'Amino', 'Keto', 'B', 'D', 'H', 'V', 'N', 'Absent', 'Mismatched', 'Paired', 'High mismatch rate',
     'A / U', 'G / C', 'A / C', 'G / U', 'C / G / U', 'A / G / U', 'A / C / U', 'A / C / G',
-    'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'A:G', 'G:A', 'C:U', 'U:C', 'A:C', 'C:A', 'A:A', 'G:G', 'U:U', 'C:C', 
+    'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'A:G', 'G:A', 'C:U', 'U:C', 'A:C', 'C:A', 'A:A', 'C:C', 'G:G', 'U:U', 
     'Missing', 'A:-', '-:A', 'C:-', '-:C', 'G:-', '-:G', 'U:-', '-:U'])
   .range(['#ffffff', '#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#7f7f7f', '#ff8300','#66c2a5','#b3de69','#fb72b2','#c1764a','#b26cbd', '#e5c494','#ccebd5','#ffa79d','#a6cdea','#ffffff', '#7f7f7f','#333333','#ffffcc','#b3b3b3',
     '#b3de69', '#fb72b2', '#c1764a', '#b26cbd', '#e5c494', '#ccebd5', '#ffa79d', '#a6cdea',
-    '#17b3cf', '#9ed0e5', '#ff7f0e', '#ffbb78', '#a067bc', '#ceafd5', '#2fc69e', '#8be4cf', '#e377c2', '#f7b6d2', '#8c564b', '#c49c94', '#e7cb94', '#e7969c', '#9ca8de', '#cedb9c',
+    '#17b3cf', '#9ed0e5', '#ff7f0e', '#ffbb78', '#a067bc', '#ceafd5', '#2fc69e', '#8be4cf', '#e377c2', '#f7b6d2', '#c47b70', '#f0a994', '#e7cb94', '#cedb9c', '#e7969c', '#9ca8de',
     '#333333', '#333333', '#333333', '#333333', '#333333', '#333333', '#333333', '#333333', '#333333']);
 
 var draw_cloverleaf = function(cloverleaf_data) {

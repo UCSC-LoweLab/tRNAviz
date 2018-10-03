@@ -42,17 +42,15 @@ class CladeGroupFormSetTests(TestCase):
     self.clade_groups = [['4930', '4895'], ['5204']]
     self.clade_group_names = [['Saccharomyces (genus)', 'Schizosaccharomyces (genus)'], ['Basidiomycota (phylum)']]
     self.form_data = {
-      'clade-0-': [],
-      'clade-clade_group-1': ['4930', '4895'],
-      'clade-clade_group-2': ['5204'],
+      'clade-0-clade_group': [],
+      'clade-1-clade_group': ['4930', '4895'],
+      'clade-2-clade_group': ['5204'],
       'clade-TOTAL_FORMS': '3', 'clade-MIN_NUM_FORMS': '0', 'clade-MAX_NUM_FORMS': '1000', 'clade-INITIAL_FORMS': '0',
     }
 
   @tag('current')
   def test_get_clade_groups(self):
     formset = forms.CladeGroupFormSet(self.form_data, prefix = 'clade')
-    import pdb
-    pdb.set_trace()
     clade_groups = formset.get_clade_groups()
     self.assertEqual(clade_groups, self.clade_groups)
 

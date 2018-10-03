@@ -29,8 +29,6 @@ class CladeGroupForm(forms.Form):
 class BaseCladeGroupFormSet(forms.BaseFormSet):
   def get_clade_groups(self):
     clade_groups = []
-    import pdb
-    pdb.set_trace()
     for i, form in enumerate(self.forms):
       if i == 0: continue # skip first dummy row
       clade_group = form['clade_group'].value()

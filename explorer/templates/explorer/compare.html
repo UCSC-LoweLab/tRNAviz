@@ -88,7 +88,7 @@ $(document).on('click', '.add-form-row', function(e){
 	  use_fasta_toggle = new_form.find('#id_form-1-use_fasta');
 	  use_fasta_toggle.attr({'name': 'form-' + form_index + '-use_fasta', 'id': 'id_form-' + form_index + '-use_fasta'}).val('');
 	  $('#id_form-TOTAL_FORMS').val(++form_index);
-	  $('.form-row:last').after(new_form)
+	  $('.form-row:last').after(new_form);
   }
 
   $.when(addFormRow()).done( function() {
