@@ -89,11 +89,9 @@ class FocusForm(forms.Form):
 FocusFormSet = formset_factory(FocusForm, formset = forms.BaseFormSet, extra = 3)
 
 class SpeciesCladeGroupForm(CladeGroupForm):
-  clade_group_1 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
-  clade_group_2 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
-  clade_group_3 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
-  clade_group_4 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
-  clade_group_5 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
+  clade_group = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
+
+CladeGroupFormSet = formset_factory(SpeciesCladeGroupForm, formset = forms.BaseFormSet, extra = 3)
 
 
 class CompareForm(forms.Form):

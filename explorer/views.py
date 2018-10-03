@@ -63,11 +63,11 @@ def variation_species(request):
   clade_group_names = [['Saccharomyces (genus)', 'Schizosaccharomyces (genus)'], ['Basidiomycota (phylum)']]
   foci = [('3:70', 'Gly', 'All', '0', '100.1'), ('3:70', 'His', 'All', '0', '100.1')]
 
-  clade_group_form = forms.SpeciesCladeGroupForm()
+  clade_formset = forms.CladeGroupFormSet(prefix = 'clade')
   focus_formset = forms.FocusFormSet(prefix = 'focus')
 
   if request.method == "POST":
-    clade_group_form = forms.SpeciesCladeGroupForm(request.POST)
+    clade_formset = forms.CladeGroupFormSet(request.POST, prefix = 'clade')
     focus_formset = forms.FocusFormSet(request.POST, prefix = 'focus')
     # if form.is_valid():
       # clade_groups = form.get_clade_groups()
@@ -76,7 +76,7 @@ def variation_species(request):
 
     print(request.POST)
   return render(request, 'explorer/species.html', {
-    'clade_group_form': clade_group_form,
+    'clade_formset': clade_formset,
     'focus_formset': focus_formset,
     'clade_groups': clade_groups,
     'foci': foci,

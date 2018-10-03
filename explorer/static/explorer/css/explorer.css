@@ -64,7 +64,7 @@ div.vertical-align {
 div.data-select-bar {
   background: #eeeeee;
 }
-div.reference-select-bar {
+div.reference-select-bar, .clade-select-bar {
   background: #dddddd;
 }
 
@@ -228,21 +228,22 @@ td.cons-specific {
 .legend-label {
   font-size: 12px;
 }
-.focus-position, .focus-isotype, .focus-anticodon {
-}
-.focus-score {
-}
-.focus-score-slider {
+/*.focus-score-slider {
   align-items: center;
   display: flex;
 }
 .focus-score-slider > .ui-slider {
   width: 10em;
+}*/
+
+.ui-slider {
+  width: 99%;
 }
+
 .score-slider {
   border: 0;
-  width: 8em;
+  width: 4em;
   margin: 0;
   background-color: transparent;
-  text-align: center;
+  text-align: left;
 }

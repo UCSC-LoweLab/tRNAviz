@@ -7,8 +7,8 @@
 $(document).ready(function() {
 
 	// Initialize select2 fields
-	for (var i = 1; i < 6; i++) {
-		$('#id_clade_group_' + i).select2({
+	for (var i = 1, form_rows = $('.clade-form-row'); i <= form_rows.length; i++) {
+		$('#id_clade_group-' + i).select2({
 			width: "100%", 
 			allowClear: true, 
 			placeholder: "Select clade(s)", 
@@ -19,17 +19,27 @@ $(document).ready(function() {
 	  	}
 		});
 	}
-	for (var i = 0, form_rows = $('.form-row'); i < form_rows.length; i++) {
+	for (var i = 1, form_rows = $('.focus-form-row'); i <= form_rows.length; i++) {
 		$('#id_focus-' + i + '-isotype').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
 	  $('#id_focus-' + i + '-position').select2({width: "100%", allowClear: true, placeholder: "Select position"});
 	  $('#id_focus-' + i + '-anticodon').select2({width: "100%", allowClear: true, placeholder: "Select anticodon"});
+		$('#id_focus-' + i + '-anticodon').select2({
+			width: "100%", 
+			allowClear: true, 
+			placeholder: "Select anticodon", 
+			minimumInputLength: 3,
+		  ajax: {
+		  	url: "{% url 'explorer:search' search_type='anticodon' %}",
+	    	dataType: 'json'
+	  	}
+		});
 	}
-	// Initialize jquery UI range slider
 
 	// Set onclick download
 	$('#distribution-download-pdf').click(function() { download_pdf('distribution'); });
 })
 
+// initialize score sliders 
 var init_slider = function(i) {
 	return function() {
 		$('#focus-' + i + '-score-slider').slider({
@@ -38,15 +48,155 @@ var init_slider = function(i) {
       max: 100,
       values: [90, 100],
       slide: function( event, ui ) {
-        $('#id_focus-' + i + '-score').val('Score: ' + ui.values[0] + " - " + ui.values[1]);
+        $('#id_focus-' + i + '-score').val(ui.values[0] + " - " + ui.values[1]);
       }
     });
-    $('#id_focus-' + i + '-score').val('Score: ' + $('#focus-' + i + '-score-slider').slider('values', 0) + " - " + $('#focus-' + i + '-score-slider').slider('values', 1));
+    $('#id_focus-' + i + '-score').val($('#focus-' + i + '-score-slider').slider('values', 0) + " - " + $('#focus-' + i + '-score-slider').slider('values', 1));
 	}
-}
+};
+
 $(function() {
-	for (var i = 0, form_rows = $('.form-row'); i < form_rows.length; i++) {
+	for (var i = 1, form_rows = $('.focus-form-row'); i <= form_rows.length; i++) {
 		init_slider(i)();
+  }
+});
+
+// Functions for adding and removing foci / clades
+$(document).on('click', '.add-clade-group', function(e){
+  e.preventDefault();
+  var clade_select;
+
+  var add_clade_group = function () {
+  	var new_form = $('.clade-form-row-dummy').clone(true).removeClass().addClass('clade-form-row').css('display', 'block');
+  	var form_index = $('#id_clade-TOTAL_FORMS').val();
+	  clade_select = new_form.find('#id_clade_group-0');
+	  clade_select.attr({
+	  	'name': 'clade_group-' + form_index + '-clade', 
+	  	'id': 'id_clade_group-' + form_index,
+	  	'data-select2-id': 'id_clade_group-' + form_index
+	  }).val('');
+	  $('#id_clade-TOTAL_FORMS').val(++form_index);
+	  $('.clade-form-row:last').after(new_form)
+  }
+
+  $.when(add_clade_group()).done( function() {
+  	clade_select.select2({
+			width: "100%", 
+			allowClear: true, 
+			placeholder: "Select clade(s)", 
+			minimumInputLength: 3,
+		  ajax: {
+				url: "{% url 'explorer:search' search_type='taxonomy' %}",
+	    	dataType: 'json'
+	  	}
+		});
+  });
+});
+
+$(document).on('click', '.remove-clade-group', function(e){
+  e.preventDefault();
+
+  var form_number = parseInt($('#id_clade-TOTAL_FORMS').val());
+  $(this).closest('.clade-form-row').remove();
+  $('#id_clade-TOTAL_FORMS').val(--form_number);
+  // loop through all forms and update field numbering
+  for (var i = 1, form_index = 2, form_rows = $('.clade-form-row'); i < form_rows.length; i++, form_index++) {
+  	var clade_select =  $(form_rows.get(i)).find('select')
+    var id = 'id_clade_group-' + form_index;
+    clade_select.attr({
+    	'name': 'clade_group-' + form_index + '-clade',
+    	'id': id
+    }).val('');
+    clade_select.select2("destroy");
+    clade_select.attr('data-select2-id', id);
+    clade_select.select2({
+			width: "100%", 
+			allowClear: true, 
+			placeholder: "Select clade(s)", 
+			minimumInputLength: 3,
+		  ajax: {
+		  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
+	    	dataType: 'json'
+	  	}
+		});
+  }
+});
+
+$(document).on('click', '.add-focus', function(e){
+  e.preventDefault();
+  var form_index, position_select, isotype_select, anticodon_select, score_input, score_slider;
+
+  var add_focus_row = function () {
+  	var new_form = $('.focus-form-row-dummy').clone(true).removeClass().addClass('focus-form-row').css('display', 'block');
+  	var form_index = $('#id_focus-TOTAL_FORMS').val();
+	  position_select = new_form.find('#id_focus-0-position');
+	  position_select.attr({
+	  	'name': 'focus-' + form_index + '-position',
+	  	'id': 'id_focus-' + form_index + '-position'
+	  });
+	  isotype_select = new_form.find('#id_focus-0-isotype');
+	  isotype_select.attr({
+	  	'name': 'focus-' + form_index + '-isotype',
+	  	'id': 'id_focus-' + form_index + '-isotype'
+	  });
+	  anticodon_select = new_form.find('#id_focus-0-anticodon');
+		anticodon_select.attr({
+	  	'name': 'focus-' + form_index + '-anticodon',
+	  	'id': 'id_focus-' + form_index + '-anticodon'
+	  });
+	  score_input = new_form.find('#id_focus-0-score');
+	  score_input.attr({
+	  	'name': 'focus-' + form_index + '-score', 
+	  	'id': 'id_focus-' + form_index + '-score'
+	  });
+	  score_slider = new_form.find('#focus-0-score-slider');
+	  score_slider.attr('id', 'focus-' + form_index + '-score-slider');
+	  $('#id_focus-TOTAL_FORMS').val(++form_index);
+	  $('.focus-form-row:last').after(new_form);
+  };
+
+  $.when(add_focus_row()).done( function() {
+  	position_select.select2({width: "100%", allowClear: true, placeholder: "Select position"});
+  	isotype_select.select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
+  	anticodon_select.select2({width: "100%", allowClear: true, placeholder: "Select anticodon"});
+  	init_slider($('#id_focus-TOTAL_FORMS').val() - 1)();
+  });
+});
+
+var select2_placeholders = {
+	'position': 'Select position', 
+	'isotype': 'Select isotype', 
+	'anticodon': 'Select anticodon'
+};
+
+$(document).on('click', '.remove-focus', function(e){
+  e.preventDefault();
+  $(this).closest('.focus-form-row').remove();
+  $('#id_focus-TOTAL_FORMS').val(--parseInt($('#id_focus-TOTAL_FORMS').val()));
+  // loop through all forms and update field numbering
+  for (var i = 1, form_index = 2, form_rows = $('.focus-form-row'); i < form_rows.length; i++, form_index++) {
+  	// Handle all fields, including score slider (using input field as an anchor)
+    $(form_rows.get(i)).find(':input').each(function() {
+    	if ($(this).hasClass('btn')) return true;
+
+  		var old_number_regex = new RegExp('focus-\\d+');
+      var name = $(this).attr('name').replace(old_number_regex, 'focus-' + form_index)
+      var id = $(this).attr('id').replace(old_number_regex, 'focus-' + form_index)
+      console.log(form_index)
+      console.log(id)
+      console.log($(this).attr('id'))
+      $(this).attr({'name': name, 'id': id});
+      if ($(this).prop('tagName') == 'SELECT') {
+      	// remove and rebind select2 for select fields
+      	$(this).select2("destroy");
+      	$(this).attr('data-select2-id', id);
+      	$(this).select2({width: "100%", allowClear: true, placeholder: select2_placeholders[name.split('-').pop()]});
+      }
+      else if ($(this).prop('tagName') == 'INPUT') {
+      	$(this).next().attr('id', $(this).next().attr('id').replace(old_number_regex, 'focus-' + form_index));
+
+      }
+    });
   }
 });
 
@@ -89,20 +239,37 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 <div class='p-3'>
 	<form id='data-select-form' action='{% url "explorer:variation_species" %}' method="POST">
 	{% csrf_token %}
-	<div class='row vertical-align select-bar data-select-bar'>
+	<div class='row vertical-align clade-select-bar'>
 		<div class='col-md-2 p-3'>
 			<h4>Select Clades</h4>
 		</div>
 
 		<div class='col-md-10 p-3'>
-			{% for field in clade_group_form.visible_fields %}
-				<div class='my-2'>
-					<select class='form-control multiselect clade-select' multiple name="{{ field.name }}" id="id_{{ field.name }}" data-select2-id="id_{{ field.name }}">
-						{% for choice in field.value %}
-						<option value="{{ choice }}" selected >{{ choice|clade_lookup }}</option>
+			{{ clade_formset.management_form }}
+			{% for clade_group_form in clade_formset.forms %}
+			{% if forloop.counter0 == 0 %}
+			<!-- Dummy clade form row -->
+			<div class='clade-form-row-dummy' style='display:none;'>
+			{% else %}
+			<div class='clade-form-row'>
+			{% endif %}
+				<div class="row">
+					<div class="col-11">
+						{% for field in clade_group_form.visible_fields %}
+						<select class='form-control multiselect clade-select' multiple name="{{ field.name }}-{{ forloop.parentloop.counter0 }}" id="id_{{ field.name }}-{{ forloop.parentloop.counter0 }}" data-select2-id="id_{{ field.name }}-{{ forloop.parentloop.counter0 }}">
+							{% for choice in field.value %}
+							<option value="{{ choice }}" selected >{{ choice|clade_lookup }}</option>
+							{% endfor %}
+						</select>
 						{% endfor %}
-					</select>
+					</div>
+					<div class="col-1">
+				  	{% if forloop.counter0 != 1 %}
+						<button class="btn btn-sm btn-danger remove-clade-group">Delete</button>
+				  	{% endif %}
+					</div>
 				</div>
+			</div>
 			{% endfor %}
 		</div>
 
@@ -116,19 +283,18 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 		<div class='col-md-10 p-3'>
 			{{ focus_formset.management_form }}
 			{% for focus_form in focus_formset.forms %}
-			<div class='my-2 form-row'>
-				<div class='row'>
+			{% if forloop.counter0 == 0 %}
+			<!-- Dummy focus form row -->
+			<div class='focus-form-row-dummy' style='display:none;'>
+			{% else %}
+			<div class='focus-form-row'>
+			{% endif %}
+				<div class='row vertical-align'>
 					{% for field in focus_form.visible_fields %}
 					{% if field.name == 'score' %}
-					<div class="col-4 focus-score">
-						<div class="row">
-							<div class="focus-score-updated-value">
-						  	<input type="text" id="id_focus-{{ forloop.parentloop.counter0 }}-score" name="{{ field.html_name }}" readonly class="score-slider">
-						  </div>
-						  <div class="col focus-score-slider">
-						  	<div id="{{ field.html_name }}-slider"></div>
-						  </div>
-						</div>
+					<div class="col-5 focus-score">
+						Score: <input type="text" id="id_focus-{{ forloop.parentloop.counter0 }}-score" name="{{ field.html_name }}" readonly class="score-slider"> bits
+				  	<div id="{{ field.html_name }}-slider"></div>
 					</div>
 					{% else %}
 					{% if field.name == 'anticodon' %}
@@ -136,23 +302,29 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 						{{ field }}
 					</div>
 					{% else %}
-					<div class='col-3 focus-{{ field.name }}'>
+					<div class='col-2 focus-{{ field.name }}'>
 						{{ field }}
 					</div>
 					{% endif %}
 					{% endif %}
 					{% endfor %}
+					{% if forloop.counter0 != 1 %}
+				  <div class="col-1">
+						<button class="btn btn-sm btn-danger remove-focus">Delete</button>
+				  </div>
+				  {% endif %}
 				</div>
+				<hr class="col-md-10">
 			</div>
 			{% endfor %}
-
 			<div class='my-2'>
+				<button class="btn btn-success add-clade-group">Add clade group</button>
+		    <button class="btn btn-success add-focus">Add focus</button>
 				<button class='btn btn-primary' type='submit'>Submit</button>
 			</div>
 		</div>
-
-		</form>
 	</div>
+  </form>
 </div>
 {% endblock %}
 
