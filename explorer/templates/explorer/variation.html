@@ -5,13 +5,95 @@
 {% block static %}
 <script src="{% static 'explorer/js/tooltip.js' %}"></script>
 <script src="{% static 'explorer/js/export.js' %}"></script>
-<script src="{% static 'explorer/js/distributions.js' %}"></script>
+<script src="{% static 'explorer/js/distribution.js' %}"></script>
 <link rel="stylesheet" href="{% static 'explorer/css/explorer.css' %}">
+{% endblock %}
+
+{% block filterjs %}
+<!-- js for working with clade groups -->
+<script type="text/javascript">
+$(document).ready(function() {
+	// Initialize clade group select2 fields
+	for (var i = 1, form_rows = $('.clade-form-row'); i <= form_rows.length; i++) {
+		$('#id_clade-' + i + '-clade_group').select2({
+			width: "100%", 
+			allowClear: true, 
+			placeholder: "Select clade(s)", 
+			minimumInputLength: 3,
+		  ajax: {
+		  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
+	    	dataType: 'json'
+	  	}
+		});
+	};
+});
+
+// Functions for adding and removing clade groups
+$(document).on('click', '.add-clade-group', function(e){
+  e.preventDefault();
+  var clade_select;
+
+  var add_clade_group = function () {
+  	var new_form = $('.clade-form-row-dummy').clone(true).removeClass().addClass('clade-form-row').css('display', 'block');
+  	var form_index = $('#id_clade-TOTAL_FORMS').val();
+	  clade_select = new_form.find('#id_clade-0-clade_group');
+	  clade_select.attr({
+	  	'name': 'clade-' + form_index + '-clade_group', 
+	  	'id': '#id_clade-' + form_index + '-clade_group',
+	  	'data-select2-id': '#id_clade-' + form_index + '-clade_group'
+	  }).val('');
+	  $('#id_clade-TOTAL_FORMS').val(++form_index);
+	  $('.clade-form-row:last').after(new_form)
+  }
+
+  $.when(add_clade_group()).done( function() {
+  	clade_select.select2({
+			width: "100%", 
+			allowClear: true, 
+			placeholder: "Select clade(s)", 
+			minimumInputLength: 3,
+		  ajax: {
+				url: "{% url 'explorer:search' search_type='taxonomy' %}",
+	    	dataType: 'json'
+	  	}
+		});
+  });
+});
+
+$(document).on('click', '.remove-clade-group', function(e){
+  e.preventDefault();
+
+  var form_number = parseInt($('#id_clade-TOTAL_FORMS').val());
+  $(this).closest('.clade-form-row').remove();
+  $('#id_clade-TOTAL_FORMS').val(--form_number);
+  // loop through all forms and update field numbering
+  for (var i = 1, form_index = 2, form_rows = $('.clade-form-row'); i < form_rows.length; i++, form_index++) {
+  	var clade_select =  $(form_rows.get(i)).find('select')
+    var id = '#id_clade-' + form_index + '-clade_group';
+    clade_select.attr({
+    	'name': 'clade-' + form_index + '-clade_group',
+    	'id': id
+    });
+    clade_select.select2("destroy");
+    clade_select.attr('data-select2-id', id);
+    clade_select.select2({
+			width: "100%", 
+			allowClear: true, 
+			placeholder: "Select clade(s)", 
+			minimumInputLength: 3,
+		  ajax: {
+		  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
+	    	dataType: 'json'
+	  	}
+		});
+  }
+});
+</script>
 {% endblock %}
 
 {% block plotjs %}
 <!-- js for loading tooltip -->
-<script>
+<script type="text/javascript">
 d3.json("{% url 'explorer:coords' %}", function(coords) {
 	var circles = d3.select('#tooltip-cloverleaf')
 		.append('svg')
@@ -29,6 +111,11 @@ d3.json("{% url 'explorer:coords' %}", function(coords) {
     .attr('cy', d => d['y'] * 0.3)
     .attr('r', d => d['radius'] * 0.3);
 });
+</script>
+
+<!-- js for initializing download -->
+<script type="text/javascript">
+  $('#distribution-download-pdf').click(function() { download_pdf('distribution'); });
 </script>
 {% endblock %}
 

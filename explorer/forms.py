@@ -24,19 +24,26 @@ class SummaryForm(forms.Form):
     required = True)
 
 class CladeGroupForm(forms.Form):
-  '''Abstract for any forms that use clade groups'''
+  clade_group = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
+
+class BaseCladeGroupFormSet(forms.BaseFormSet):
   def get_clade_groups(self):
     clade_groups = []
-    for i in range(1, 6):
-      clade_group = self['clade_group_{}'.format(i)].value()
+    import pdb
+    pdb.set_trace()
+    for i, form in enumerate(self.forms):
+      if i == 0: continue # skip first dummy row
+      clade_group = form['clade_group'].value()
       if clade_group is not None and len(clade_group) > 0:
         clade_groups.append(clade_group)
     return clade_groups
 
   def get_clade_group_names(self):
     clade_group_names = []
-    for clade_group in self.get_clade_groups():
+    for i, form in enumerate(self.forms):
+      if i == 0: continue # skip first dummy row
       names = []
+      clade_group = form['clade_group'].value()
       for clade_taxid, clade in choices.CLADES:
         if clade_taxid in clade_group: 
           names.append(clade)
@@ -47,12 +54,9 @@ class CladeGroupForm(forms.Form):
     if len(self.get_clade_groups()) == 0:
       raise ValidationError('no clades specified')
 
-class DistributionForm(CladeGroupForm):
-  clade_group_1 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
-  clade_group_2 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
-  clade_group_3 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
-  clade_group_4 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
-  clade_group_5 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
+CladeGroupFormSet = formset_factory(CladeGroupForm, formset = BaseCladeGroupFormSet, extra = 3)
+
+class DistributionForm(forms.Form):
   isotypes = forms.MultipleChoiceField(
     widget = forms.SelectMultiple({'class': 'form-control multiselect isotype-select'}),
     initial = '',
@@ -64,21 +68,7 @@ class DistributionForm(CladeGroupForm):
     choices = choices.POSITIONS,
     required = True)
 
-  def as_dict(self):
-    return {
-      'clade_groups': self.get_clade_groups(),
-      'isotypes': self['isotypes'].value(),
-      'positions': self['positions'].value(),
-    }
-
-class ScoreField(forms.CharField):
-
-  def __init__(self, *args, **kwargs):
-    super(ScoreField, self).__init__(required = False, *args, **kwargs)
-
 class FocusForm(forms.Form):
-  score_max = models.tRNA.objects.aggregate(Max('score'))['score__max']
-  score_min = models.tRNA.objects.aggregate(Min('score'))['score__min']
   position = forms.ChoiceField(
     widget = forms.Select({'class': 'form-control multiselect isotype-select'}),
     choices = choices.POSITIONS_DISTINCT,
@@ -99,10 +89,6 @@ class FocusForm(forms.Form):
 
 FocusFormSet = formset_factory(FocusForm, formset = forms.BaseFormSet, extra = 3)
 
-class SpeciesCladeGroupForm(CladeGroupForm):
-  clade_group = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
-
-CladeGroupFormSet = formset_factory(SpeciesCladeGroupForm, formset = forms.BaseFormSet, extra = 3)
 
 
 class CompareForm(forms.Form):

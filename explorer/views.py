@@ -38,19 +38,23 @@ def variation_distribution(request):
   clade_group_names = [['Saccharomyces (genus)', 'Schizosaccharomyces (genus)'], ['Basidiomycota (phylum)']]
   isotypes = ['All']
   positions = ['8', '9', '14', '35', '36', '37', '46', '73', '12:23', '18:55', '11:24']
-  form_clade_values = []
 
   form = forms.DistributionForm()
+  clade_formset = forms.CladeGroupFormSet(prefix = 'clade')
+
   if request.method == "POST":
     form = forms.DistributionForm(request.POST)
+    clade_formset = forms.CladeGroupFormSet(request.POST, prefix = 'clade')
     if form.is_valid():
-      clade_groups = form.get_clade_groups()
       isotypes = form['isotypes'].value()
       positions = form['positions'].value()
-      clade_group_names = form.get_clade_group_names()
+    if clade_formset.is_valid():
+      clade_groups = clade_formset.get_clade_groups()
+      clade_group_names = clade_formset.get_clade_group_names()
 
   return render(request, 'explorer/distribution.html', {
     'form': form,
+    'clade_formset': clade_formset,
     'clade_groups': clade_groups,
     'isotypes': isotypes,
     'positions': positions,
@@ -61,7 +65,8 @@ def variation_distribution(request):
 def variation_species(request):
   clade_groups = [['4930', '4895'], ['5204']]
   clade_group_names = [['Saccharomyces (genus)', 'Schizosaccharomyces (genus)'], ['Basidiomycota (phylum)']]
-  foci = [('3:70', 'Gly', 'All', '0', '100.1'), ('3:70', 'His', 'All', '0', '100.1')]
+  foci = [{'position': '3:70', 'isotype': 'Gly', 'anticodon': 'All', 'score': '16.5 - 100.1'}, 
+      {'position': '3:70', 'isotype': 'Asn', 'anticodon': 'All', 'score': '16.5 - 70.1'}]
 
   clade_formset = forms.CladeGroupFormSet(prefix = 'clade')
   focus_formset = forms.FocusFormSet(prefix = 'focus')
@@ -73,8 +78,7 @@ def variation_species(request):
       # clade_groups = form.get_clade_groups()
       # foci = form.get_foci()
       # clade_group_names = form.get_clade_group_names()
-
-    print(request.POST)
+  print(request.POST)
   return render(request, 'explorer/species.html', {
     'clade_formset': clade_formset,
     'focus_formset': focus_formset,

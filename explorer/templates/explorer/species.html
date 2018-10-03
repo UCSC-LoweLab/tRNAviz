@@ -3,30 +3,16 @@
 {% load explorer_extras %}
 
 {% block filterjs %}
-<script>	
+{{ block.super }}
+<!-- initialize filter functions -->
+<script type="text/javascript">
 $(document).ready(function() {
-
-	// Initialize select2 fields
-	for (var i = 1, form_rows = $('.clade-form-row'); i <= form_rows.length; i++) {
-		$('#id_clade_group-' + i).select2({
-			width: "100%", 
-			allowClear: true, 
-			placeholder: "Select clade(s)", 
-			minimumInputLength: 3,
-		  ajax: {
-		  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
-	    	dataType: 'json'
-	  	}
-		});
-	}
+	// initialize select2 fields
 	for (var i = 1, form_rows = $('.focus-form-row'); i <= form_rows.length; i++) {
 		$('#id_focus-' + i + '-isotype').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
 	  $('#id_focus-' + i + '-position').select2({width: "100%", allowClear: true, placeholder: "Select position"});
 	  $('#id_focus-' + i + '-anticodon').select2({width: "100%", allowClear: true, placeholder: "Select anticodon"});
 	}
-
-	// Set onclick download
-	$('#distribution-download-pdf').click(function() { download_pdf('distribution'); });
 })
 
 // initialize score sliders 
@@ -53,67 +39,7 @@ $(function() {
   }
 });
 
-// Functions for adding and removing foci / clades
-$(document).on('click', '.add-clade-group', function(e){
-  e.preventDefault();
-  var clade_select;
-
-  var add_clade_group = function () {
-  	var new_form = $('.clade-form-row-dummy').clone(true).removeClass().addClass('clade-form-row').css('display', 'block');
-  	var form_index = $('#id_clade-TOTAL_FORMS').val();
-	  clade_select = new_form.find('#id_clade_group-0');
-	  clade_select.attr({
-	  	'name': 'clade_group-' + form_index + '-clade', 
-	  	'id': 'id_clade_group-' + form_index,
-	  	'data-select2-id': 'id_clade_group-' + form_index
-	  }).val('');
-	  $('#id_clade-TOTAL_FORMS').val(++form_index);
-	  $('.clade-form-row:last').after(new_form)
-  }
-
-  $.when(add_clade_group()).done( function() {
-  	clade_select.select2({
-			width: "100%", 
-			allowClear: true, 
-			placeholder: "Select clade(s)", 
-			minimumInputLength: 3,
-		  ajax: {
-				url: "{% url 'explorer:search' search_type='taxonomy' %}",
-	    	dataType: 'json'
-	  	}
-		});
-  });
-});
-
-$(document).on('click', '.remove-clade-group', function(e){
-  e.preventDefault();
-
-  var form_number = parseInt($('#id_clade-TOTAL_FORMS').val());
-  $(this).closest('.clade-form-row').remove();
-  $('#id_clade-TOTAL_FORMS').val(--form_number);
-  // loop through all forms and update field numbering
-  for (var i = 1, form_index = 2, form_rows = $('.clade-form-row'); i < form_rows.length; i++, form_index++) {
-  	var clade_select =  $(form_rows.get(i)).find('select')
-    var id = 'id_clade_group-' + form_index;
-    clade_select.attr({
-    	'name': 'clade_group-' + form_index + '-clade',
-    	'id': id
-    }).val('');
-    clade_select.select2("destroy");
-    clade_select.attr('data-select2-id', id);
-    clade_select.select2({
-			width: "100%", 
-			allowClear: true, 
-			placeholder: "Select clade(s)", 
-			minimumInputLength: 3,
-		  ajax: {
-		  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
-	    	dataType: 'json'
-	  	}
-		});
-  }
-});
-
+// Functions for adding and removing foci
 $(document).on('click', '.add-focus', function(e){
   e.preventDefault();
   var form_index, position_select, isotype_select, anticodon_select, score_input, score_slider;
@@ -249,7 +175,7 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 				<div class="row">
 					<div class="col-11">
 						{% for field in clade_group_form.visible_fields %}
-						<select class='form-control multiselect clade-select' multiple name="{{ field.name }}-{{ forloop.parentloop.counter0 }}" id="id_{{ field.name }}-{{ forloop.parentloop.counter0 }}" data-select2-id="id_{{ field.name }}-{{ forloop.parentloop.counter0 }}">
+						<select class='form-control multiselect clade-select' multiple name="clade-{{ forloop.parentloop.counter0 }}-clade_group" id="id_clade-{{ forloop.parentloop.counter0 }}-clade_group" data-select2-id="id_clade-{{ forloop.parentloop.counter0 }}-clade_group">
 							{% for choice in field.value %}
 							<option value="{{ choice }}" selected >{{ choice|clade_lookup }}</option>
 							{% endfor %}

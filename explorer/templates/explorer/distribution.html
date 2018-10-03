@@ -3,25 +3,13 @@
 {% load explorer_extras %}
 
 {% block filterjs %}
-<script>	
+{{ block.super }}
+<!-- initialize filter functions -->
+<script type="text/javascript">
 $(document).ready(function() {
-
-	for (var i = 1; i < 6; i++) {
-		$('#id_clade_group_' + i).select2({
-			width: "100%", 
-			allowClear: true, 
-			placeholder: "Select clade(s)", 
-			minimumInputLength: 3,
-		  ajax: {
-		  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
-	    	dataType: 'json'
-	  	}
-		});
-	}
+	// Initialize select2 fields
 	$('#id_isotypes').select2({width: "100%", allowClear: true, placeholder: "Select isotype(s)"});
 	$('#id_positions').select2({width: "100%", allowClear: true, placeholder: "Select position(s)"});
-
-  $('#distribution-download-pdf').click(function() { download_pdf('distribution'); });
 })
 </script>
 {% endblock %}
@@ -29,8 +17,8 @@ $(document).ready(function() {
 
 {% block plotjs %}
 {{ block.super }}
-<script type = "text/javascript">
-
+<!-- send valid queries to api -->
+<script type="text/javascript">
 d3.json('{% url "explorer:distribution" clade_txids=clade_groups|clade_groups_to_url_string isotypes=isotypes|list_to_url_string positions=positions|list_to_url_string %}', function(plot_data) {
   d3.select('#distribution-area .loading-overlay').style('display', 'none');
   if ("server_error" in plot_data) d3.select('#distribution-area').text(plot_data['server_error'])
@@ -59,34 +47,64 @@ d3.json('{% url "explorer:distribution" clade_txids=clade_groups|clade_groups_to
 {% endif %}
 
 <div class='p-3'>
-	<div class='row vertical-align select-bar data-select-bar'>
+	<form id='data-select-form' action='{% url "explorer:variation_distribution" %}' method="POST">
+	{% csrf_token %}
+	<div class='row vertical-align clade-select-bar'>
 		<div class='col-md-2 p-3'>
-			<h4>Select tRNAs</h4>
+			<h4>Select Clades</h4>
 		</div>
+
 		<div class='col-md-10 p-3'>
-
-			<form id='data-select-form' action='{% url "explorer:variation_distribution" %}' method="POST">
-				{% csrf_token %}
-				{% for field in form.visible_fields %}
-					<div class='my-2'>
-					{% if field.name == 'isotypes' or field.name == 'positions' %}
-						{{ field }}
-					{% else %}
-					<select class='form-control multiselect clade-select' multiple name="{{ field.name }}" id="id_{{ field.name }}" data-select2-id="id_{{ field.name }}">
-						{% for choice in field.value %}
-						<option value="{{ choice }}" selected >{{ choice|clade_lookup }}</option>
+			{{ clade_formset.management_form }}
+			{% for clade_group_form in clade_formset.forms %}
+			{% if forloop.counter0 == 0 %}
+			<!-- Dummy clade form row -->
+			<div class='clade-form-row-dummy' style='display:none;'>
+			{% else %}
+			<div class='clade-form-row'>
+			{% endif %}
+				<div class="row">
+					<div class="col-11">
+						{% for field in clade_group_form.visible_fields %}
+						<select class='form-control multiselect clade-select' multiple name="clade-{{ forloop.parentloop.counter0 }}-clade_group" id="id_clade-{{ forloop.parentloop.counter0 }}-clade_group" data-select2-id="id_clade-{{ forloop.parentloop.counter0 }}-clade_group">
+							{% for choice in field.value %}
+							<option value="{{ choice }}" selected >{{ choice|clade_lookup }}</option>
+							{% endfor %}
+						</select>
 						{% endfor %}
-					</select>
-					{% endif %}
 					</div>
-				{% endfor %}
-
-				<div class='my-2'>
-					<button class='btn btn-primary' type='submit'>Submit</button>
+					<div class="col-1">
+				  	{% if forloop.counter0 != 1 %}
+						<button class="btn btn-sm btn-danger remove-clade-group">Delete</button>
+				  	{% endif %}
+					</div>
 				</div>
-			</form>
+			</div>
+			{% endfor %}
+			<div class='my-2'>
+				<button class="btn btn-success add-clade-group">Add clade group</button>
+			</div>
 		</div>
 	</div>
+
+
+	<div class='row vertical-align select-bar data-select-bar'>
+		<div class='col-md-2 p-3'>
+			<h4>Select Foci</h4>
+		</div>
+
+		<div class='col-md-10 p-3'>
+			{% for field in form.visible_fields %}
+			<div class='my-2'>
+					{{ field }}
+			</div>
+			{% endfor %}
+			<div class='my-2'>
+				<button class='btn btn-primary' type='submit'>Submit</button>
+			</div>
+		</div>
+	</div>
+  </form>
 </div>
 {% endblock %}
 

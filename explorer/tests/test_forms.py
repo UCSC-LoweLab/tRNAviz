@@ -36,12 +36,35 @@ class SummaryFormTests(TestCase):
     form = forms.SummaryForm(data = form_data)
     self.assertFalse(form.is_valid())
 
+@tag('variation')
+class CladeGroupFormSetTests(TestCase):
+  def setUp(self):
+    self.clade_groups = [['4930', '4895'], ['5204']]
+    self.clade_group_names = [['Saccharomyces (genus)', 'Schizosaccharomyces (genus)'], ['Basidiomycota (phylum)']]
+    self.form_data = {
+      'clade-0-': [],
+      'clade-clade_group-1': ['4930', '4895'],
+      'clade-clade_group-2': ['5204'],
+      'clade-TOTAL_FORMS': '3', 'clade-MIN_NUM_FORMS': '0', 'clade-MAX_NUM_FORMS': '1000', 'clade-INITIAL_FORMS': '0',
+    }
+
+  @tag('current')
+  def test_get_clade_groups(self):
+    formset = forms.CladeGroupFormSet(self.form_data, prefix = 'clade')
+    import pdb
+    pdb.set_trace()
+    clade_groups = formset.get_clade_groups()
+    self.assertEqual(clade_groups, self.clade_groups)
+
+  @tag('current')
+  def test_get_clade_group_names(self):
+    formset = forms.CladeGroupFormSet(self.form_data, prefix = 'clade')
+    clade_group_names = formset.get_clade_group_names()
+    self.assertEqual(clade_group_names, self.clade_group_names)
 
 @tag('variation', 'distribution')
 class DistributionFormTests(TestCase):
   def setUp(self):
-    self.clade_groups = [['4930', '4895'], ['5204']]
-    self.clade_group_names = [['Saccharomyces (genus)', 'Schizosaccharomyces (genus)'], ['Basidiomycota (phylum)']]
     self.form_data = {
       'clade_group_1': self.clade_groups[0], 
       'clade_group_2': self.clade_groups[1],
@@ -57,18 +80,6 @@ class DistributionFormTests(TestCase):
       'isotypes': ['Arg', 'Glu', 'His'],
       'positions': ['8', '9', '14', '35', '36', '37', '46', '73', '12:23', '18:55', '11:24']
     }
-
-  @tag('species')
-  def test_get_clade_groups(self):
-    form = forms.DistributionForm(self.form_data)
-    clade_groups = form.get_clade_groups()
-    self.assertEqual(clade_groups, self.clade_groups)
-
-  @tag('species')
-  def test_get_clade_group_names(self):
-    form = forms.DistributionForm(self.form_data)
-    clade_group_names = form.get_clade_group_names()
-    self.assertEqual(clade_group_names, self.clade_group_names)
 
   @tag('species')
   def test_clade_group_form_clean_raises_error(self):
@@ -92,48 +103,39 @@ class DistributionFormTests(TestCase):
 class SpeciesFormTests(TestCase):
   def setUp(self):
     self.clade_groups = [['4930', '4895'], ['5204']]
+    self.foci = [{'position': '3:70', 'isotype': 'Gly', 'anticodon': 'All', 'score': '16.5 - 100.1'}, 
+      {'position': '3:70', 'isotype': 'Asn', 'anticodon': 'All', 'score': '16.5 - 70.1'}]
     self.form_data = {
-      'clade_group_1': self.clade_groups[0], 
-      'clade_group_2': self.clade_groups[1],
-      'focus_1_0': 'Asn',
-      'focus_1_1': '46',
-      'focus_2_0': 'Met',
-      'focus_2_1': '46'
-    }
-    self.foci = [('Asn', '46'), ('Met', '46')]
-
-    self.invalid_form_data = {
-      'clade_group_1': ['0', 'invalid'],
-      'focus_1_0': 'n/a',
-      'focus_1_1': 'n/a'
-    }
-    self.invalid_focus_form_data = {
-      'clade_group_1': self.clade_groups[0], 
-      'clade_group_2': self.clade_groups[1],
-      'focus_1_0': 'Met',
-      'focus_1_1': '',
-    }
-    self.empty_focus_form_data = {
-      'clade_group_1': self.clade_groups[0], 
-      'clade_group_2': self.clade_groups[1],
-      'focus_1_0': '',
-      'focus_1_1': '',
+      'clade_group-1': self.clade_groups[0], 
+      'clade_group-2': self.clade_groups[1],
+      'clade-TOTAL_FORMS': '3', 'clade-MIN_NUM_FORMS': '0', 'clade-MAX_NUM_FORMS': '1000', 'clade-INITIAL_FORMS': '0',
+      'focus-0-isotype': 'Gly', 'focus-0-position': '3:70', 'focus-0-anticodon': 'All', 'focus-0-score': '16.5 - 109.5',
+      'focus-1-isotype': 'Gly', 'focus-1-position': '3:70', 'focus-1-anticodon': 'All', 'focus-1-score': '16.5 - 109.5',
+      'focus-2-isotype': 'Asn', 'focus-2-position': '3:70', 'focus-2-anticodon': 'All', 'focus-2-score': '16.5 - 60.1',
+      'focus-TOTAL_FORMS': '3', 'focus-MIN_NUM_FORMS': '0', 'focus-MAX_NUM_FORMS': '1000', 'focus-INITIAL_FORMS': '0'
     }
 
-  def test_species_form_valid_clade_select(self):
-    clade_group_form = forms.SpeciesCladeForm(data = self.form_data)
+    self.form_data = {
+      'clade_group-1': self.clade_groups[0], 
+      'clade_group-2': self.clade_groups[1],
+      **{'focus-0-' + key: value for key, value in self.foci[0]},
+      **{'focus-1-' + key: value for key, value in self.foci[1]},
+      **{'focus-2-' + key: value for key, value in self.foci[0]},
+      'clade-TOTAL_FORMS': '3', 'clade-MIN_NUM_FORMS': '0', 'clade-MAX_NUM_FORMS': '1000', 'clade-INITIAL_FORMS': '0',
+      'focus-TOTAL_FORMS': '3', 'focus-MIN_NUM_FORMS': '0', 'focus-MAX_NUM_FORMS': '1000', 'focus-INITIAL_FORMS': '0'
+    }
+
+  def test_species_form_valid_select(self):
+    clade_group_form = forms.CladeGroupFormSet(data = self.form_data, prefix = 'clade')
     self.assertTrue(clade_group_form.is_valid())
-
-  @tag('current')
-  def test_species_form_valid_foci_select(self):
-    focus_form = forms.FocusFormSet(data = self.form_data)
-    import pdb
-    pdb.set_trace()
+    focus_form = forms.FocusFormSet(data = self.form_data, prefix = 'focus')
     self.assertTrue(focus_form.is_valid())
 
-  def test_species_form_invalid_select(self):
-    form = forms.SpeciesDistributionForm(data = self.invalid_form_data)
-    self.assertFalse(form.is_valid())
+  def test_species_form_invalid_clade(self):
+    clade_group_form = forms.CladeGroupFormSet(data = self.invalid_form_data, prefix = 'clade')
+    self.assertFalse(clade_group_form.is_valid())
+    focus_form = forms.FocusFormSet(data = self.form_data, prefix = 'focus')
+    self.assertFalse(focus_form.is_valid())
 
   def test_species_form_malformed_form(self):
     form = forms.SpeciesDistributionForm(data = {'invalid': 'void'})
