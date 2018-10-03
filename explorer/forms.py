@@ -3,11 +3,13 @@ from django.forms import formset_factory
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
 from django.utils.html import escape
+from django.db.models import Max, Min
 
 import re
 
 from . import choices
 from . import compare
+from . import models
 
 class SummaryForm(forms.Form):
   clade = forms.ChoiceField(
@@ -69,7 +71,14 @@ class DistributionForm(CladeGroupForm):
       'positions': self['positions'].value(),
     }
 
+class ScoreField(forms.CharField):
+
+  def __init__(self, *args, **kwargs):
+    super(ScoreField, self).__init__(required = False, *args, **kwargs)
+
 class FocusForm(forms.Form):
+  score_max = models.tRNA.objects.aggregate(Max('score'))['score__max']
+  score_min = models.tRNA.objects.aggregate(Min('score'))['score__min']
   position = forms.ChoiceField(
     widget = forms.Select({'class': 'form-control multiselect isotype-select'}),
     choices = choices.POSITIONS_DISTINCT,
@@ -84,7 +93,9 @@ class FocusForm(forms.Form):
     initial = 'All',
     choices = choices.ANTICODONS,
     required = True)
-  score = forms.CharField()
+  score = forms.CharField(
+    initial = '{} - {}'.format(models.tRNA.objects.aggregate(Min('score'))['score__min'], models.tRNA.objects.aggregate(Max('score'))['score__max'])
+  )
 
 FocusFormSet = formset_factory(FocusForm, formset = forms.BaseFormSet, extra = 3)
 

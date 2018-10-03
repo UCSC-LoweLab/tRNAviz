@@ -23,16 +23,6 @@ $(document).ready(function() {
 		$('#id_focus-' + i + '-isotype').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
 	  $('#id_focus-' + i + '-position').select2({width: "100%", allowClear: true, placeholder: "Select position"});
 	  $('#id_focus-' + i + '-anticodon').select2({width: "100%", allowClear: true, placeholder: "Select anticodon"});
-		$('#id_focus-' + i + '-anticodon').select2({
-			width: "100%", 
-			allowClear: true, 
-			placeholder: "Select anticodon", 
-			minimumInputLength: 3,
-		  ajax: {
-		  	url: "{% url 'explorer:search' search_type='anticodon' %}",
-	    	dataType: 'json'
-	  	}
-		});
 	}
 
 	// Set onclick download
@@ -42,11 +32,13 @@ $(document).ready(function() {
 // initialize score sliders 
 var init_slider = function(i) {
 	return function() {
+		var score_range = $('#focus-' + i + '-score-slider').prev().attr('score-range').split(' - ').map(Number);
+		var selected_score = $('#focus-' + i + '-score-slider').prev().attr('value').split(' - ').map(Number);
 		$('#focus-' + i + '-score-slider').slider({
       range: true,
-      min: 0,
-      max: 100,
-      values: [90, 100],
+      min: score_range[0],
+      max: score_range[1],
+      values: selected_score,
       slide: function( event, ui ) {
         $('#id_focus-' + i + '-score').val(ui.values[0] + " - " + ui.values[1]);
       }
@@ -172,7 +164,8 @@ var select2_placeholders = {
 $(document).on('click', '.remove-focus', function(e){
   e.preventDefault();
   $(this).closest('.focus-form-row').remove();
-  $('#id_focus-TOTAL_FORMS').val(--parseInt($('#id_focus-TOTAL_FORMS').val()));
+  var form_number = parseInt($('#id_focus-TOTAL_FORMS').val());
+  $('#id_focus-TOTAL_FORMS').val(--form_number);
   // loop through all forms and update field numbering
   for (var i = 1, form_index = 2, form_rows = $('.focus-form-row'); i < form_rows.length; i++, form_index++) {
   	// Handle all fields, including score slider (using input field as an anchor)
@@ -293,7 +286,7 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 					{% for field in focus_form.visible_fields %}
 					{% if field.name == 'score' %}
 					<div class="col-5 focus-score">
-						Score: <input type="text" id="id_focus-{{ forloop.parentloop.counter0 }}-score" name="{{ field.html_name }}" readonly class="score-slider"> bits
+						Score (bits): <input type="text" id="id_focus-{{ forloop.parentloop.counter0 }}-score" name="{{ field.html_name }}" readonly class="score-slider" value="{{ field.value }}" score-range="{% score_range %}">
 				  	<div id="{{ field.html_name }}-slider"></div>
 					</div>
 					{% else %}

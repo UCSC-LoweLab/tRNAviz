@@ -1,7 +1,9 @@
 from django import template
 from django.utils.safestring import mark_safe
+from django.db.models import Max, Min
 
 from .. import choices
+from .. import models
 
 # register is an object that helps us register new tags
 register = template.Library()
@@ -65,3 +67,7 @@ def haserrors(formset):
   if len(formset.non_form_errors()) > 0:
     return True
   return False
+
+@register.simple_tag
+def score_range():
+  return '{} - {}'.format(models.tRNA.objects.aggregate(Min('score'))['score__min'], models.tRNA.objects.aggregate(Max('score'))['score__max'])
