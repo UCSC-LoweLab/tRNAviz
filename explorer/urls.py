@@ -24,7 +24,6 @@ urlpatterns = [
   path('api/cloverleaf/<str:clade_txid>/<str:isotype>/', services.cloverleaf, name = 'cloverleaf'),
   path('api/tilemap/<str:clade_txid>/', services.tilemap, name = 'tilemap'),
 
-  path('variation/', views.variation_distribution, name = 'variation'),
   path('variation/distribution', views.variation_distribution, name = 'variation_distribution'),
   path('variation/species', views.variation_species, name = 'variation_species'),
   path('api/distribution/<str:clade_txids>/<str:isotypes>/<str:positions>/', services.distribution, name = 'distribution'),
@@ -32,4 +31,5 @@ urlpatterns = [
 
   path('compare/', views.compare, name = 'compare'),
   re_path('api/bitchart/(?P<formset_json>.+)', compare.bitchart, name = 'bitchart'),
+
 ]

@@ -390,7 +390,7 @@ var draw_species_distribution = function(plot_data) {
       .on('mouseover', function(d, i) {
         tooltip_position.html(d.data.focus.split('-')[1]);
         tooltip_isotype.html(d.data.focus.split('-')[0]);
-        tooltip_group.html(d.data.assembly + '<br><i>Group ' + d.data.group + '</i>');
+        tooltip_group.html(d.data.assembly);
         tooltip_freq.html(Math.round((d[1] - d[0]) * 100) / 100)
         tooltip_count.html(plot_data[d.data.focus].filter(x => x['group'] == d.data.group && x['assembly'] == d.data.assembly)[0][d3.select('#tooltip-feature').html()]);
         $('.tooltip-distribution').css({

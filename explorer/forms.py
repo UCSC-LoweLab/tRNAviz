@@ -8,12 +8,6 @@ import re
 
 from . import choices
 from . import compare
-from . import models
-
-class tRNAForm(forms.ModelForm):
-  class Meta:
-    model = models.tRNA
-    fields = ['isotype', 'anticodon', 'score', 'best_model', 'isoscore', 'primary']
 
 class SummaryForm(forms.Form):
   clade = forms.ChoiceField(
@@ -59,12 +53,12 @@ class DistributionForm(CladeGroupForm):
   clade_group_5 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
   isotypes = forms.MultipleChoiceField(
     widget = forms.SelectMultiple({'class': 'form-control multiselect isotype-select'}),
-    initial = 'All',
+    initial = '',
     choices = choices.ISOTYPES,
     required = True)
   positions = forms.MultipleChoiceField(
     widget = forms.SelectMultiple({'class': 'form-control multiselect isotype-select'}),
-    initial = 'single',
+    initial = '',
     choices = choices.POSITIONS,
     required = True)
 
@@ -75,83 +69,31 @@ class DistributionForm(CladeGroupForm):
       'positions': self['positions'].value(),
     }
 
-class FocusWidget(forms.MultiWidget):
-  def __init__(self,*args,**kwargs):
-    widgets = (
-      forms.Select({'class': 'form-control multiselect isotype-select'}, choices = choices.ISOTYPES_DISTINCT), 
-      forms.Select({'class': 'form-control multiselect position-select'}, choices = choices.POSITIONS_DISTINCT)
-    )
-    super(FocusWidget, self).__init__(widgets, *args, **kwargs)
-  
-  def decompress(self, value):
-    return [value[0], value[1]] if value else [None, None]
+class FocusForm(forms.Form):
+  position = forms.ChoiceField(
+    widget = forms.Select({'class': 'form-control multiselect isotype-select'}),
+    choices = choices.POSITIONS_DISTINCT,
+    required = True)
+  isotype = forms.ChoiceField(
+    widget = forms.Select({'class': 'form-control multiselect isotype-select'}), 
+    initial = 'All',
+    choices = choices.ISOTYPES_DISTINCT,
+    required = True)
+  anticodon = forms.ChoiceField(
+    widget = forms.Select({'class': 'form-control multiselect isotype-select'}), 
+    initial = 'All',
+    choices = choices.ANTICODONS,
+    required = True)
+  score = forms.CharField()
 
-  def format_output(self, rendered_widgets):
-    return ''.join(rendered_widgets)
+FocusFormSet = formset_factory(FocusForm, formset = forms.BaseFormSet, extra = 3)
 
-  def render(self, name, value, attrs=None):
-    if self.is_localized:
-      for widget in self.widgets:
-        widget.is_localized = self.is_localized
-    if not isinstance(value, list):
-        value = self.decompress(value)
-    output = []
-    final_attrs = self.build_attrs(attrs)
-    id_ = final_attrs.get('id', None)
-    for i, widget in enumerate(self.widgets):
-        try: widget_value = value[i]
-        except IndexError: widget_value = None
-        if id_: final_attrs = dict(final_attrs, id='%s_%s' % (id_, i))
-        output.append(widget.render(name + '_%s' % i, widget_value, final_attrs))
-    # Original:
-    # return mark_safe(self.format_output(output))
-    # Only this line was written by myself:
-    return {'isotype': mark_safe(self.format_output(output[0])), 'position': mark_safe(self.format_output(output[1]))}
-
-class FocusField(forms.MultiValueField):
-  widget = FocusWidget
-
-  def __init__(self, *args, **kwargs):
-    fields = (
-      forms.ChoiceField(choices = choices.ISOTYPES_DISTINCT),
-      forms.ChoiceField(choices = choices.POSITIONS_DISTINCT)
-    )
-    super(FocusField, self).__init__(fields, required = False, *args, **kwargs)
-
-  def compress(self, data_list):
-    if data_list:
-      if data_list[0] in self.empty_values:
-          raise ValidationError('did not select an isotype/position pair', code = 'invalid_isotype')
-      if data_list[1] in self.empty_values:
-          raise ValidationError('did not select an isotype/position pair', code = 'invalid_position')
-      return tuple(data_list)
-    return None
-
-class SpeciesDistributionForm(CladeGroupForm):
+class SpeciesCladeGroupForm(CladeGroupForm):
   clade_group_1 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
   clade_group_2 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
   clade_group_3 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
   clade_group_4 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
   clade_group_5 = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
-  focus_1 = FocusField()
-  focus_2 = FocusField()
-  focus_3 = FocusField()
-  focus_4 = FocusField()
-  focus_5 = FocusField()
-
-  def get_foci(self):
-    foci = []
-    for i in range(1, 6):
-      isotype, position = self['focus_{}'.format(i)].value()
-      if isotype is not None and position is not None and isotype != '' and position != '':
-        foci.append((isotype, position))
-    return foci
-
-  def clean(self):
-    super().clean()
-    # Make sure at least one focus is listed
-    if len(self.get_foci()) == 0:
-      raise forms.ValidationError('no foci specified')
 
 
 class CompareForm(forms.Form):

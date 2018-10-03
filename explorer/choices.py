@@ -29,6 +29,26 @@ ISOTYPES = (
   ('iMet', 'iMet')
 )
 
+ANTICODONS = (
+  ('All', 'All'),
+  ('AAA', 'AAA'), ('AAC', 'AAC'), ('AAG', 'AAG'), ('AAU', 'AAU'), 
+  ('ACA', 'ACA'), ('ACC', 'ACC'), ('ACG', 'ACG'), ('ACU', 'ACU'), 
+  ('AGA', 'AGA'), ('AGC', 'AGC'), ('AGG', 'AGG'), ('AGU', 'AGU'), 
+  ('AUA', 'AUA'), ('AUC', 'AUC'), ('AUG', 'AUG'), ('AUU', 'AUU'), 
+  ('CAA', 'CAA'), ('CAC', 'CAC'), ('CAG', 'CAG'), ('CAU', 'CAU'), 
+  ('CCA', 'CCA'), ('CCC', 'CCC'), ('CCG', 'CCG'), ('CCU', 'CCU'), 
+  ('CGA', 'CGA'), ('CGC', 'CGC'), ('CGG', 'CGG'), ('CGU', 'CGU'), 
+  ('CUA', 'CUA'), ('CUC', 'CUC'), ('CUG', 'CUG'), ('CUU', 'CUU'), 
+  ('GAA', 'GAA'), ('GAC', 'GAC'), ('GAG', 'GAG'), ('GAU', 'GAU'), 
+  ('GCA', 'GCA'), ('GCC', 'GCC'), ('GCG', 'GCG'), ('GCU', 'GCU'), 
+  ('GGA', 'GGA'), ('GGC', 'GGC'), ('GGG', 'GGG'), ('GGU', 'GGU'), 
+  ('GUA', 'GUA'), ('GUC', 'GUC'), ('GUG', 'GUG'), ('GUU', 'GUU'), 
+  ('UAA', 'UAA'), ('UAC', 'UAC'), ('UAG', 'UAG'), ('UAU', 'UAU'), 
+  ('UCA', 'UCA'), ('UCC', 'UCC'), ('UCG', 'UCG'), ('UCU', 'UCU'), 
+  ('UGA', 'UGA'), ('UGC', 'UGC'), ('UGG', 'UGG'), ('UGU', 'UGU'), 
+  ('UUA', 'UUA'), ('UUC', 'UUC'), ('UUG', 'UUG'), ('UUU', 'UUU')
+)
+
 SINGLE_POSITIONS = (
   ('single', 'Single positions'),
   ('8', '8'),

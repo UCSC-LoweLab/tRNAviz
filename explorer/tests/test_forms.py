@@ -119,9 +119,16 @@ class SpeciesFormTests(TestCase):
       'focus_1_0': '',
       'focus_1_1': '',
     }
-  def test_species_form_valid_select(self):
-    form = forms.SpeciesDistributionForm(data = self.form_data)
-    self.assertTrue(form.is_valid())
+
+  @tag('current')
+  def test_species_form_valid_clade_select(self):
+    clade_group_form = forms.SpeciesCladeForm(data = self.form_data)
+    self.assertTrue(clade_group_form.is_valid())
+
+  @tag('current')
+  def test_species_form_valid_foci_select(self):
+    focus_form = forms.focusForm(data = self.form_data)
+    self.assertTrue(focus_form.is_valid())
 
   def test_species_form_invalid_select(self):
     form = forms.SpeciesDistributionForm(data = self.invalid_form_data)

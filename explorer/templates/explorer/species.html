@@ -5,6 +5,8 @@
 {% block filterjs %}
 <script>	
 $(document).ready(function() {
+
+	// Initialize select2 fields
 	for (var i = 1; i < 6; i++) {
 		$('#id_clade_group_' + i).select2({
 			width: "100%", 
@@ -16,12 +18,38 @@ $(document).ready(function() {
 	    	dataType: 'json'
 	  	}
 		});
-	  $('#id_focus_' + i + '_0').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
-	  $('#id_focus_' + i + '_1').select2({width: "100%", allowClear: true, placeholder: "Select position"});
 	}
+	for (var i = 0, form_rows = $('.form-row'); i < form_rows.length; i++) {
+		$('#id_focus-' + i + '-isotype').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
+	  $('#id_focus-' + i + '-position').select2({width: "100%", allowClear: true, placeholder: "Select position"});
+	  $('#id_focus-' + i + '-anticodon').select2({width: "100%", allowClear: true, placeholder: "Select anticodon"});
+	}
+	// Initialize jquery UI range slider
 
-  $('#distribution-download-pdf').click(function() { download_pdf('distribution'); });
+	// Set onclick download
+	$('#distribution-download-pdf').click(function() { download_pdf('distribution'); });
 })
+
+var init_slider = function(i) {
+	return function() {
+		$('#focus-' + i + '-score-slider').slider({
+      range: true,
+      min: 0,
+      max: 100,
+      values: [90, 100],
+      slide: function( event, ui ) {
+        $('#id_focus-' + i + '-score').val('Score: ' + ui.values[0] + " - " + ui.values[1]);
+      }
+    });
+    $('#id_focus-' + i + '-score').val('Score: ' + $('#focus-' + i + '-score-slider').slider('values', 0) + " - " + $('#focus-' + i + '-score-slider').slider('values', 1));
+	}
+}
+$(function() {
+	for (var i = 0, form_rows = $('.form-row'); i < form_rows.length; i++) {
+		init_slider(i)();
+  }
+});
+
 </script>
 {% endblock %}
 
@@ -59,41 +87,71 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 
 
 <div class='p-3'>
+	<form id='data-select-form' action='{% url "explorer:variation_species" %}' method="POST">
+	{% csrf_token %}
 	<div class='row vertical-align select-bar data-select-bar'>
 		<div class='col-md-2 p-3'>
-			<h4>Select tRNAs</h4>
+			<h4>Select Clades</h4>
 		</div>
+
 		<div class='col-md-10 p-3'>
-
-			<form id='data-select-form' action='{% url "explorer:variation_species" %}' method="POST">
-				{% csrf_token %}
-
-				{% for field in form.visible_fields %}
-					<div class='my-2'>
-					{% if 'focus' in field.name %}
-						<div class='row'>
-							<div class='col'>
-								{{ field.as_widget.isotype }}
-							</div>
-							<div class='col'>
-								{{ field.as_widget.position }}
-							</div>
-						</div>
-					{% else %}
-						<select class='form-control multiselect clade-select' multiple name="{{ field.name }}" id="id_{{ field.name }}" data-select2-id="id_{{ field.name }}">
-							{% for choice in field.value %}
-							<option value="{{ choice }}" selected >{{ choice|clade_lookup }}</option>
-							{% endfor %}
-						</select>
-					{% endif %}
-					</div>
-				{% endfor %}
-
+			{% for field in clade_group_form.visible_fields %}
 				<div class='my-2'>
-					<button class='btn btn-primary' type='submit'>Submit</button>
+					<select class='form-control multiselect clade-select' multiple name="{{ field.name }}" id="id_{{ field.name }}" data-select2-id="id_{{ field.name }}">
+						{% for choice in field.value %}
+						<option value="{{ choice }}" selected >{{ choice|clade_lookup }}</option>
+						{% endfor %}
+					</select>
 				</div>
-			</form>
+			{% endfor %}
 		</div>
+
+	</div>
+
+	<div class='row vertical-align select-bar data-select-bar'>
+		<div class='col-md-2 p-3'>
+			<h4>Select Foci</h4>
+		</div>
+
+		<div class='col-md-10 p-3'>
+			{{ focus_formset.management_form }}
+			{% for focus_form in focus_formset.forms %}
+			<div class='my-2 form-row'>
+				<div class='row'>
+					{% for field in focus_form.visible_fields %}
+					{% if field.name == 'score' %}
+					<div class="col-4 focus-score">
+						<div class="row">
+							<div class="focus-score-updated-value">
+						  	<input type="text" id="id_focus-{{ forloop.parentloop.counter0 }}-score" name="{{ field.html_name }}" readonly class="score-slider">
+						  </div>
+						  <div class="col focus-score-slider">
+						  	<div id="{{ field.html_name }}-slider"></div>
+						  </div>
+						</div>
+					</div>
+					{% else %}
+					{% if field.name == 'anticodon' %}
+					<div class='col-2 focus-anticodon'>
+						{{ field }}
+					</div>
+					{% else %}
+					<div class='col-3 focus-{{ field.name }}'>
+						{{ field }}
+					</div>
+					{% endif %}
+					{% endif %}
+					{% endfor %}
+				</div>
+			</div>
+			{% endfor %}
+
+			<div class='my-2'>
+				<button class='btn btn-primary' type='submit'>Submit</button>
+			</div>
+		</div>
+
+		</form>
 	</div>
 </div>
 {% endblock %}

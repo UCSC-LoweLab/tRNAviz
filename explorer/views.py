@@ -61,21 +61,23 @@ def variation_distribution(request):
 def variation_species(request):
   clade_groups = [['4930', '4895'], ['5204']]
   clade_group_names = [['Saccharomyces (genus)', 'Schizosaccharomyces (genus)'], ['Basidiomycota (phylum)']]
-  foci = [('Ala', '3:70'), ('Gly', '3:70'), ('Ala', '46'), ('Gly', '46')]
+  foci = [('3:70', 'Gly', 'All', '0', '100.1'), ('3:70', 'His', 'All', '0', '100.1')]
 
-  form = forms.SpeciesDistributionForm()
+  clade_group_form = forms.SpeciesCladeGroupForm()
+  focus_formset = forms.FocusFormSet(prefix = 'focus')
 
   if request.method == "POST":
-    form = forms.SpeciesDistributionForm(request.POST)
-    trna_form = forms.tRNAForm(request.POST)
-    if form.is_valid():
-      clade_groups = form.get_clade_groups()
-      foci = form.get_foci()
-      clade_group_names = form.get_clade_group_names()
+    clade_group_form = forms.SpeciesCladeGroupForm(request.POST)
+    focus_formset = forms.FocusFormSet(request.POST, prefix = 'focus')
+    # if form.is_valid():
+      # clade_groups = form.get_clade_groups()
+      # foci = form.get_foci()
+      # clade_group_names = form.get_clade_group_names()
 
-  print(request.POST)
+    print(request.POST)
   return render(request, 'explorer/species.html', {
-    'form': form,
+    'clade_group_form': clade_group_form,
+    'focus_formset': focus_formset,
     'clade_groups': clade_groups,
     'foci': foci,
     'clade_group_names': clade_group_names,
