@@ -372,13 +372,44 @@ def distribution(request, clade_txids, isotypes, positions):
   except Exception as e:
     return JsonResponse({'server_error': 'Unknown server error'})
 
-def species_convert_trnas_to_freqs_df(trnas, isotypes, positions):
-  freqs = trnas.groupby(['isotype', 'group', 'assembly']).apply(lambda position_counts: position_counts.drop(['isotype', 'group', 'assembly'], axis = 1).apply(lambda x: x.value_counts()).fillna(0))
-  freqs = freqs.unstack(fill_value = 0).stack(0).reset_index().rename(columns = {'level_3': 'position'})
-  freqs['position'] = freqs['position'].apply(lambda position: position[1:].replace('_', ':'))
-  freqs['focus'] = freqs.apply(lambda row: '{}-{}'.format(row['isotype'], row['position']), axis = 1)
-  freqs = freqs[freqs['focus'].isin(['{}-{}'.format(isotype, position) for isotype, position in zip(isotypes, positions)])]
-  cols = ['focus', 'group', 'assembly'] + ['A', 'C', 'G', 'U', '-'] + list(PAIRED_FEATURES.values())
+
+def query_trnas_for_species_distribution(clade_groups, clade_info, foci):
+  # Filter tRNA set with user queries
+  trnas = []
+  for clade_group_index, clade_group in enumerate(clade_groups):
+    # For filtering clades, the query is a series of or'd Q statements, e.g. Q('genus' = 'Saccharomyces') 
+    q_list = []
+    for taxid in clade_info:
+      if taxid not in clade_group: continue
+      name, rank = clade_info[taxid]
+      if rank == 'class': rank = 'taxclass'
+      q_list.append(Q(**{str(rank): name}))
+    query_filter_args = Q()
+    for q in q_list:
+      query_filter_args = query_filter_args | q
+
+    for focus_index, focus in enumerate(foci):
+      trna_qs = models.tRNA.objects.filter(*(query_filter_args,), isotype = focus['isotype'], score__lte = focus['score_max'], score__gte = focus['score_min'])
+      if focus['anticodon'] != 'All':
+        trna_qs = trna_qs.filter(anticodon = focus['anticodon'])
+      query_position = 'p{}'.format(focus['position'].replace(':', '_'))
+      trna_qs = trna_qs.values(query_position, 'assembly')
+      df = read_frame(trna_qs)
+      df.columns = ['feature', 'assembly']
+      df['position'] = focus['position']
+      df['isotype'] = focus['isotype']
+      df['anticodon'] = focus['anticodon']
+      df['score'] = '({} - {} bits)'.format(focus['score_min'], focus['score_max'])
+      df['group'] = str(clade_group_index + 1)
+      df['focus'] = str(focus_index + 1)
+      trnas.append(df)
+
+  return pd.concat(trnas)
+
+def species_convert_trnas_to_freqs_df(trnas, foci):
+  freqs = trnas.groupby(['focus', 'position', 'isotype', 'anticodon', 'score', 'group', 'assembly', 'feature']).size()
+  freqs = freqs.unstack(fill_value = 0).reset_index()
+  cols = ['focus', 'position', 'isotype', 'anticodon', 'score', 'group', 'assembly', 'feature', 'count'] + ['A', 'C', 'G', 'U', '-'] + list(PAIRED_FEATURES.values())
   freqs = freqs.loc[:, freqs.columns.intersection(cols)]
   freqs = freqs.set_index(['focus', 'group', 'assembly'], drop = False)
   return freqs
@@ -386,18 +417,14 @@ def species_convert_trnas_to_freqs_df(trnas, isotypes, positions):
 def species_distribution(request, clade_txids, foci):
   try:
     clade_groups, clade_info = reconstruct_clade_group_info(clade_txids)
-    foci = [tuple(focus.split(',')) for focus in foci.split(';')]
-    isotypes, positions = zip(*foci)
-    positions = [position for isotype, position in foci]
-    query_positions = ['p{}'.format(position.replace(':', '_')) for position in positions] + ['isotype', 'assembly']
-    trnas = query_trnas_for_distribution(clade_groups, clade_info, isotypes, query_positions)
-    freqs = species_convert_trnas_to_freqs_df(trnas, isotypes, positions)
+    foci = [dict(zip(['position', 'isotype', 'anticodon', 'score_min', 'score_max'], focus.split(','))) for focus in foci.split(';')]
+    trnas = query_trnas_for_species_distribution(clade_groups, clade_info, foci)
+    freqs = species_convert_trnas_to_freqs_df(trnas, foci)
 
     # convert to d3-friendly format
     plot_data = defaultdict(dict)
     for focus in freqs.index.levels[0]:
       plot_data[focus] = list(pd.DataFrame(freqs.loc[focus]).to_dict(orient = 'index').values())
-
     return JsonResponse(plot_data, safe = True)
 
   except AttributeError:

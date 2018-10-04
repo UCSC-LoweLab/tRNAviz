@@ -48,13 +48,11 @@ class CladeGroupFormSetTests(TestCase):
       'clade-TOTAL_FORMS': '3', 'clade-MIN_NUM_FORMS': '0', 'clade-MAX_NUM_FORMS': '1000', 'clade-INITIAL_FORMS': '0',
     }
 
-  @tag('current')
   def test_get_clade_groups(self):
     formset = forms.CladeGroupFormSet(self.form_data, prefix = 'clade')
     clade_groups = formset.get_clade_groups()
     self.assertEqual(clade_groups, self.clade_groups)
 
-  @tag('current')
   def test_get_clade_group_names(self):
     formset = forms.CladeGroupFormSet(self.form_data, prefix = 'clade')
     clade_group_names = formset.get_clade_group_names()
@@ -79,47 +77,41 @@ class DistributionFormTests(TestCase):
       'positions': ['8', '9', '14', '35', '36', '37', '46', '73', '12:23', '18:55', '11:24']
     }
 
-  @tag('species')
+  @tag('not-done')
   def test_clade_group_form_clean_raises_error(self):
     form = forms.DistributionForm(self.empty_clade_form_data)
     with self.assertRaisesMessage(ValidationError, 'no clades specified'):
       form.clean()
 
+  @tag('not-done')
   def test_distribution_form_valid_select(self):
     form = forms.DistributionForm(data = self.form_data)
     self.assertTrue(form.is_valid())
 
+  @tag('not-done')
   def test_distribution_form_invalid_select(self):
     form = forms.DistributionForm(data = self.invalid_form_data)
     self.assertFalse(form.is_valid())
 
+  @tag('not-done')
   def test_distribution_form_malformed_form(self):
     form = forms.DistributionForm(data = {'invalid': 'void'})
     self.assertFalse(form.is_valid())
 
 @tag('variation', 'species')
-class SpeciesFormTests(TestCase):
+class FocusFormSetTests(TestCase):
   def setUp(self):
     self.clade_groups = [['4930', '4895'], ['5204']]
-    self.foci = [{'position': '3:70', 'isotype': 'Gly', 'anticodon': 'All', 'score': '16.5 - 100.1'}, 
-      {'position': '3:70', 'isotype': 'Asn', 'anticodon': 'All', 'score': '16.5 - 70.1'}]
+    self.foci = [{'position': '3:70', 'isotype': 'Gly', 'anticodon': 'All', 'score_max': '109.5', 'score_min': '16.5'}, 
+      {'position': '3:70', 'isotype': 'Asn', 'anticodon': 'All', 'score_max': '60.1', 'score_min': '16.5'}]
     self.form_data = {
-      'clade_group-1': self.clade_groups[0], 
-      'clade_group-2': self.clade_groups[1],
+      'clade-0-clade-group': '',
+      'clade-1-clade_group': ['4930', '4895'], 
+      'clade-2-clade_group': '5204',
       'clade-TOTAL_FORMS': '3', 'clade-MIN_NUM_FORMS': '0', 'clade-MAX_NUM_FORMS': '1000', 'clade-INITIAL_FORMS': '0',
       'focus-0-isotype': 'Gly', 'focus-0-position': '3:70', 'focus-0-anticodon': 'All', 'focus-0-score': '16.5 - 109.5',
       'focus-1-isotype': 'Gly', 'focus-1-position': '3:70', 'focus-1-anticodon': 'All', 'focus-1-score': '16.5 - 109.5',
       'focus-2-isotype': 'Asn', 'focus-2-position': '3:70', 'focus-2-anticodon': 'All', 'focus-2-score': '16.5 - 60.1',
-      'focus-TOTAL_FORMS': '3', 'focus-MIN_NUM_FORMS': '0', 'focus-MAX_NUM_FORMS': '1000', 'focus-INITIAL_FORMS': '0'
-    }
-
-    self.form_data = {
-      'clade_group-1': self.clade_groups[0], 
-      'clade_group-2': self.clade_groups[1],
-      **{'focus-0-' + key: value for key, value in self.foci[0]},
-      **{'focus-1-' + key: value for key, value in self.foci[1]},
-      **{'focus-2-' + key: value for key, value in self.foci[0]},
-      'clade-TOTAL_FORMS': '3', 'clade-MIN_NUM_FORMS': '0', 'clade-MAX_NUM_FORMS': '1000', 'clade-INITIAL_FORMS': '0',
       'focus-TOTAL_FORMS': '3', 'focus-MIN_NUM_FORMS': '0', 'focus-MAX_NUM_FORMS': '1000', 'focus-INITIAL_FORMS': '0'
     }
 
@@ -128,31 +120,31 @@ class SpeciesFormTests(TestCase):
     self.assertTrue(clade_group_form.is_valid())
     focus_form = forms.FocusFormSet(data = self.form_data, prefix = 'focus')
     self.assertTrue(focus_form.is_valid())
-
+  
+  @tag('not-done')
   def test_species_form_invalid_clade(self):
     clade_group_form = forms.CladeGroupFormSet(data = self.invalid_form_data, prefix = 'clade')
     self.assertFalse(clade_group_form.is_valid())
-    focus_form = forms.FocusFormSet(data = self.form_data, prefix = 'focus')
+    focus_form = forms.FocusFormSet(data = self.invalid_form_data, prefix = 'focus')
     self.assertFalse(focus_form.is_valid())
 
+  @tag('not-done')
   def test_species_form_malformed_form(self):
     form = forms.SpeciesDistributionForm(data = {'invalid': 'void'})
     self.assertFalse(form.is_valid())
 
+  @tag('not-done')
   def test_focus_form_clean_raises_error(self):
     form = forms.SpeciesDistributionForm(self.empty_focus_form_data)
     with self.assertRaisesMessage(ValidationError, 'no foci specified'):
       form.clean()
     self.assertFalse(form.is_valid())
 
-    # self.assertIn('did not select an isotype/position pair', form.errors['focus_1'])
-
   def test_get_foci(self):
-    form = forms.SpeciesDistributionForm(self.form_data)
-    self.assertTrue(form.is_valid())
-    foci = form.get_foci()
+    formset = forms.FocusFormSet(self.form_data, prefix = 'focus')
+    self.assertTrue(formset.is_valid())
+    foci = formset.get_foci()
     self.assertEqual(foci, self.foci)
-
 
 @tag('compare')
 class CompareFormTests(TestCase):

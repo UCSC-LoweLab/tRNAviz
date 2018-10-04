@@ -129,7 +129,7 @@ class SummaryServicesTests(TestCase):
     self.assertIn('clade', cons[0])
     self.assertIn('domain', cons[0])
 
-  @tag('domain-features', 'current')
+  @tag('domain-features')
   def test_domain_features_same_clade(self):
     json_response = services.domain_features(self.request, '2', self.isotype)
     cons = json.loads(json_response.content.decode('utf8'))
@@ -226,18 +226,19 @@ class SpeciesServicesTests(TestCase):
     self.factory = RequestFactory()
     self.request = self.factory.get('')
     self.api_txids = '4930,4895;5204'
-    self.api_foci = 'His,1:72;Met,8'
+    self.api_foci = '3:70,Gly,All,16.5,100.1;3:70,Asn,All,16.5,70.1'
     self.clade_groups = [['4930', '4895'], ['5204']]
     self.clade_info = {
       '5204': ('Basidiomycota', 'phylum'), 
       '4895': ('Schizosaccharomyces', 'genus'), 
       '4930': ('Saccharomyces', 'genus')
     }
-    self.foci = [('His', '1:72'), ('Met', '8')]
-    self.isotypes, self.positions = zip(*self.foci)
-    self.query_positions = ['p{}'.format(position.replace(':', '_')) for position in self.positions] + ['isotype', 'assembly']
-    self.trnas = services.query_trnas_for_distribution(self.clade_groups, self.clade_info, self.isotypes, self.query_positions)
-    self.freqs = services.species_convert_trnas_to_freqs_df(self.trnas, self.isotypes, self.positions)
+    self.foci = [{'position': '3:70', 'isotype': 'Gly', 'anticodon': 'All', 'score_min': '16.5', 'score_max': '100.1'}, 
+      {'position': '3:70', 'isotype': 'Asn', 'anticodon': 'All', 'score_min': '16.5', 'score_max': '70.1'}]
+    # self.isotypes, self.positions = zip(*self.foci)
+    # self.query_positions = ['p{}'.format(position.replace(':', '_')) for position in self.positions] + ['isotype', 'assembly']
+    # self.trnas = services.query_trnas_for_distribution(self.clade_groups, self.clade_info, self.isotypes, self.query_positions)
+    # self.freqs = services.species_convert_trnas_to_freqs_df(self.trnas, self.isotypes, self.positions)
 
   def test_services_species_convert_trnas_to_freqs_df(self):
     self.assertIn('focus', self.freqs.columns)
@@ -247,6 +248,7 @@ class SpeciesServicesTests(TestCase):
     foci = set(['{}-{}'.format(focus[0], focus[1]) for focus in self.foci])
     self.assertEqual(foci, set(self.freqs.index.levels[0]))
 
+  @tag('current')
   def test_services_species(self):
     json_response = services.species_distribution(self.request, self.api_txids, self.api_foci)
     plot_data = json.loads(json_response.content.decode('utf8'))
@@ -254,5 +256,5 @@ class SpeciesServicesTests(TestCase):
     for focus in plot_data:
       for freqs_dict in plot_data[focus]:
         with self.subTest(focus = focus, assembly = freqs_dict['assembly']):
-          self.assertEqual(len(freqs_dict), 18)
+          self.assertEqual(len(freqs_dict), 21)
 

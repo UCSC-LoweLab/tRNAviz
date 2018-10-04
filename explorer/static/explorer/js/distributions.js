@@ -29,8 +29,8 @@ var draw_distribution = function(plot_data) {
   var legend_height = 80;
   var legend_width = 400;
   var x_axis_buffer = 40;
-  var y_axis_buffer = 80;
-  var plot_width = y_axis_buffer + (facet_width * isotypes.length);
+  var y_axis_buffer = 60;
+  var plot_width = y_axis_buffer + (facet_width * isotypes.length) + 20;
   var plot_height = x_axis_buffer + (facet_height * positions.length) + legend_height;
 
   var svg = d3.select('#distribution-area')
@@ -55,12 +55,12 @@ var draw_distribution = function(plot_data) {
 
   svg.append('g')
     .attr('class', 'xaxis')
-    .attr('transform', 'translate(60, 20)')
+    .attr('transform', 'translate(' + y_axis_buffer + ', 20)')
     .call(isotype_axis);
 
   svg.append('g')
     .attr('class', 'yaxis')
-    .attr('transform', 'translate(60, 20)')
+    .attr('transform', 'translate(' + y_axis_buffer + ', 20)')
     .call(position_axis);
 
   svg.selectAll('.xaxis text')
@@ -129,7 +129,7 @@ var draw_distribution = function(plot_data) {
       .attr('isotype', isotype)
       .attr('position', position)
       .attr('transform', d => {
-        x = isotype_scale(isotype) + 60;
+        x = isotype_scale(isotype) + y_axis_buffer;
         y = position_scale(position) + 22;
         return "translate(" + x + "," + y + ")";
       })
@@ -214,8 +214,9 @@ var draw_distribution = function(plot_data) {
   var tooltip_count = tooltip.select('#tooltip-count');
 
 };
-
+var adata;
 var draw_species_distribution = function(plot_data) {
+  adata = plot_data;
   d3.select('#distribution-area .loading-overlay').style('display', 'none');
   var foci = Object.keys(plot_data).sort();
   var assembly_groups = Array.from(new Set([].concat.apply([], Object.keys(plot_data).map(focus => plot_data[focus].map(d => [d['assembly'], d['group']]).map(group => JSON.stringify(group)))))).map(group => JSON.parse(group)).sort((a, b) => parseInt(a[1]) - parseInt(b[1]));
@@ -231,7 +232,7 @@ var draw_species_distribution = function(plot_data) {
   var x_axis_buffer = 7 * assemblies.reduce(function (a, b) { return a.length > b.length ? a : b; }).length;
   var legend_height = 80;
   var legend_width = 400;
-  var y_axis_buffer = 80;
+  var y_axis_buffer = 120;
   var plot_width = y_axis_buffer + 15 * assemblies.length + 15 * (groups.length - 1);
   var plot_height = legend_height + x_axis_buffer + facet_height * foci.length;
   
@@ -247,7 +248,45 @@ var draw_species_distribution = function(plot_data) {
     .range([0, foci.length * facet_height])
     .padding(0.1);
 
-  var focus_axis = d3.axisLeft(focus_scale);
+  var focus_format = function(d, i) {
+    var datapoint = plot_data[foci[i]][0];
+    if (datapoint['anticodon'] == 'All' ) {
+      return datapoint['isotype'] + ' / ' + datapoint['position'] + '<br>' + datapoint['score'];
+    };
+    return datapoint['isotype'] + '-' + datapoint['anticodon'] + ' / ' + datapoint['position'] + '<br>' + datapoint['score'];
+  }
+
+  var focus_axis = d3.axisLeft(focus_scale)
+    .ticks(foci.length)
+    .tickFormat(focus_format);
+
+
+  function wrapAxisText(text) {
+    text.each(function() {
+      var text = d3.select(this);
+      var lines = text.text().split('<br>');
+      if (lines.length == 1) {
+        text.text(null)
+          .append("tspan")
+          .text(lines[0])
+          .attr("x", -10)
+          .attr("y", text.attr("y"))
+      }
+      else {
+        text.text(null)
+          .append("tspan")
+          .text(lines[0])
+          .attr("x", -10)
+          .attr("y", -5)
+        text.append('tspan')
+          .text(lines[1])
+          .attr("x", -10)
+          .attr("y", 0)
+          .attr("dy", "1.1em")
+      }
+
+    })
+  };
 
   // generate x axis and put spacers in between groups
   var x_axis_labels = [].concat.apply([], group_sizes
@@ -281,7 +320,7 @@ var draw_species_distribution = function(plot_data) {
 
   svg.append('g')
     .attr('class', 'xaxis')
-    .attr('transform', 'translate(60, ' + (plot_height - legend_height - x_axis_buffer) + ')')
+    .attr('transform', 'translate(' + y_axis_buffer + ', ' + (plot_height - legend_height - x_axis_buffer) + ')')
     .call(assembly_group_axis);
 
   svg.selectAll('.xaxis text')
@@ -298,8 +337,10 @@ var draw_species_distribution = function(plot_data) {
 
   svg.append('g')
     .attr('class', 'yaxis')
-    .attr('transform', 'translate(60, 0)')
-    .call(focus_axis);
+    .attr('transform', 'translate(' + y_axis_buffer + ', 0)')
+    .call(focus_axis)
+    .selectAll('.tick text')
+    .call(wrapAxisText);
 
   svg.selectAll('.yaxis text')
     .attr('class', 'axis-text')
@@ -345,7 +386,7 @@ var draw_species_distribution = function(plot_data) {
       .attr('focus', focus)
       .attr('group', group)
       .attr('transform', d => {
-        return "translate(60, " + focus_scale(focus) + ")";
+        return 'translate(' + y_axis_buffer + ', ' + focus_scale(focus) + ')';
       })
 
     function stackMin(stacked) {

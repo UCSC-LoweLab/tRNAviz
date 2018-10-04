@@ -92,7 +92,7 @@ $(document).on('click', '.remove-clade-group', function(e){
 {% endblock %}
 
 {% block plotjs %}
-<!-- js for loading tooltip -->
+<!-- load cloverleaf tooltip -->
 <script type="text/javascript">
 d3.json("{% url 'explorer:coords' %}", function(coords) {
 	var circles = d3.select('#tooltip-cloverleaf')
@@ -113,9 +113,12 @@ d3.json("{% url 'explorer:coords' %}", function(coords) {
 });
 </script>
 
-<!-- js for initializing download -->
+<!-- initialize download -->
 <script type="text/javascript">
-  $('#distribution-download-pdf').click(function() { download_pdf('distribution'); });
+$(document).ready(function () {
+	$('#distribution-download-pdf').click(function() { download_pdf('distribution'); });	
+})
+  
 </script>
 {% endblock %}
 

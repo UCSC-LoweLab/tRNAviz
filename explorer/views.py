@@ -65,8 +65,8 @@ def variation_distribution(request):
 def variation_species(request):
   clade_groups = [['4930', '4895'], ['5204']]
   clade_group_names = [['Saccharomyces (genus)', 'Schizosaccharomyces (genus)'], ['Basidiomycota (phylum)']]
-  foci = [{'position': '3:70', 'isotype': 'Gly', 'anticodon': 'All', 'score': '16.5 - 100.1'}, 
-      {'position': '3:70', 'isotype': 'Asn', 'anticodon': 'All', 'score': '16.5 - 70.1'}]
+  foci = [{'position': '3:70', 'isotype': 'Gly', 'anticodon': 'All', 'score_min': '16.5', 'score_max': '100.1'}, 
+      {'position': '3:70', 'isotype': 'Asn', 'anticodon': 'All', 'score_min': '16.5', 'score_max': '70.1'}]
 
   clade_formset = forms.CladeGroupFormSet(prefix = 'clade')
   focus_formset = forms.FocusFormSet(prefix = 'focus')
@@ -74,11 +74,12 @@ def variation_species(request):
   if request.method == "POST":
     clade_formset = forms.CladeGroupFormSet(request.POST, prefix = 'clade')
     focus_formset = forms.FocusFormSet(request.POST, prefix = 'focus')
-    # if form.is_valid():
-      # clade_groups = form.get_clade_groups()
-      # foci = form.get_foci()
-      # clade_group_names = form.get_clade_group_names()
-  print(request.POST)
+    if clade_formset.is_valid():
+      clade_groups = clade_formset.get_clade_groups()
+      clade_group_names = clade_formset.get_clade_group_names()
+    if focus_formset.is_valid():
+      foci = focus_formset.get_foci()
+
   return render(request, 'explorer/species.html', {
     'clade_formset': clade_formset,
     'focus_formset': focus_formset,

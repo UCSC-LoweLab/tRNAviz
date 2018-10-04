@@ -125,6 +125,7 @@ $(document).on('click', '.remove-focus', function(e){
 
 {% block plotjs %}
 {{ block.super }}
+<!-- draw plot with current parameters -->
 <script type = "text/javascript">
 d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_groups_to_url_string foci=foci|foci_to_url_string %}',	function(plot_data) {
   d3.select('#distribution-area .loading-overlay').style('display', 'none');
@@ -250,16 +251,25 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 {% block table %}
 <div class="data-select-table">
 	<table class="table sticky-top">
-		<tbody>
-			<tr>
-				<th scope="row">Clade groups</th>
-				<td>{{ clade_group_names|clade_names_to_pretty_string|linebreaks }}</td>
-			</tr>
-			<tr>
-				<th scope="row">Foci</th>
-				<td>{{ foci|foci_to_pretty_string|linebreaks }}</td>
-			</tr>
-		</tbody>
+		<tr>
+			<th scope="row">Clade groups</th>
+			<td colspan="5">{{ clade_group_names|clade_names_to_pretty_string|linebreaks }}</td>
+		</tr>
+		<tr>
+			<th scope="col" rowspan="5">Foci</th>
+			<th scope="col">Position</th>
+			<th scope="col">Isotype</th>
+			<th scope="col">Anticodon</th>
+			<th scope="col">Score range</th>
+		</tr>
+		{% for focus in foci %}
+		<tr>
+			<td>{{ focus|focus_value:'position' }}</td>
+			<td>{{ focus|focus_value:'isotype' }}</td>
+			<td>{{ focus|focus_value:'anticodon' }}</td>
+			<td>{{ focus|focus_value:'score' }}</td>
+		</tr>
+		{% endfor %}
 	</table>
 </div>
 {% endblock %}

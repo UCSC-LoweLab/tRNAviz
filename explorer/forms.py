@@ -70,24 +70,49 @@ class FocusForm(forms.Form):
   position = forms.ChoiceField(
     widget = forms.Select({'class': 'form-control multiselect isotype-select'}),
     choices = choices.POSITIONS_DISTINCT,
-    required = True)
+    required = False)
   isotype = forms.ChoiceField(
     widget = forms.Select({'class': 'form-control multiselect isotype-select'}), 
     initial = 'All',
     choices = choices.ISOTYPES_DISTINCT,
-    required = True)
+    required = False)
   anticodon = forms.ChoiceField(
     widget = forms.Select({'class': 'form-control multiselect isotype-select'}), 
     initial = 'All',
     choices = choices.ANTICODONS,
-    required = True)
+    required = False)
   score = forms.CharField(
-    initial = '{} - {}'.format(models.tRNA.objects.aggregate(Min('score'))['score__min'], models.tRNA.objects.aggregate(Max('score'))['score__max'])
+    initial = '{} - {}'.format(models.tRNA.objects.aggregate(Min('score'))['score__min'], models.tRNA.objects.aggregate(Max('score'))['score__max'],
+    required = False)
   )
 
-FocusFormSet = formset_factory(FocusForm, formset = forms.BaseFormSet, extra = 3)
+  def as_dict(self):
+    score_min, score_max = self['score'].value().split(' - ')
+    return {
+      'position': str(self['position'].value()),
+      'isotype': str(self['isotype'].value()),
+      'anticodon': str(self['anticodon'].value()),
+      'score_min': score_min,
+      'score_max': score_max
+    }
 
+class BaseFocusFormSet(forms.BaseFormSet):
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    for form in self.forms:
+      form.empty_permitted = False
 
+  def get_foci(self):
+    foci = []
+    for i, form in enumerate(self.forms):
+      if i == 0: continue # skip first dummy row
+      focus = form.as_dict()
+      if focus['position'] == '' or focus['isotype'] == '' or focus['anticodon'] == '':
+        continue
+      foci.append(focus)
+    return foci
+
+FocusFormSet = formset_factory(FocusForm, formset = BaseFocusFormSet, extra = 3)
 
 class CompareForm(forms.Form):
   name = forms.CharField(widget = forms.TextInput({

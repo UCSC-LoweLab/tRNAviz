@@ -36,12 +36,10 @@ def list_to_pretty_string(mylist):
 
 @register.filter('foci_to_url_string')
 def foci_to_url_string(foci):
-  return ';'.join([','.join(focus) for focus in foci])
-
-@register.filter('foci_to_pretty_string')
-def foci_to_pretty_string(foci):
-  return '\n'.join([', '.join(focus) for focus in foci])
-
+  focus_strings = []
+  for focus in foci:
+    focus_strings.append('{},{},{},{},{}'.format(focus['position'], focus['isotype'], focus['anticodon'], focus['score_min'], focus['score_max']))    
+  return ';'.join(focus_strings)
 
 @register.filter('minus2')
 def minus2(number):
@@ -71,3 +69,9 @@ def haserrors(formset):
 @register.simple_tag
 def score_range():
   return '{} - {}'.format(models.tRNA.objects.aggregate(Min('score'))['score__min'], models.tRNA.objects.aggregate(Max('score'))['score__max'])
+
+@register.filter('focus_value')
+def focus_value(focus, key):
+  if key == 'score':
+    return '{} - {}'.format(focus['score_min'], focus['score_max'])
+  return focus[key]
