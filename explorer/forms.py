@@ -13,7 +13,7 @@ from . import models
 
 class SummaryForm(forms.Form):
   clade = forms.ChoiceField(
-    widget = forms.Select({'class': 'form-control multiselect isotype-select'}),
+    widget = forms.Select({'class': 'form-control multiselect clade-select'}),
     choices = choices.CLADES,
     required = True,
     initial = '4930')
@@ -61,23 +61,23 @@ class DistributionForm(forms.Form):
     choices = choices.ISOTYPES,
     required = True)
   positions = forms.MultipleChoiceField(
-    widget = forms.SelectMultiple({'class': 'form-control multiselect isotype-select'}),
+    widget = forms.SelectMultiple({'class': 'form-control multiselect position-select'}),
     initial = '',
     choices = choices.POSITIONS,
     required = True)
 
 class FocusForm(forms.Form):
   position = forms.ChoiceField(
-    widget = forms.Select({'class': 'form-control multiselect isotype-select'}),
+    widget = forms.Select({'class': 'form-control multiselect position-select'}),
     choices = choices.POSITIONS_DISTINCT,
     required = False)
   isotype = forms.ChoiceField(
     widget = forms.Select({'class': 'form-control multiselect isotype-select'}), 
     initial = 'All',
-    choices = choices.ISOTYPES_DISTINCT,
+    choices = choices.ISOTYPES,
     required = False)
   anticodon = forms.ChoiceField(
-    widget = forms.Select({'class': 'form-control multiselect isotype-select'}), 
+    widget = forms.Select({'class': 'form-control multiselect anticodon-select'}), 
     initial = 'All',
     choices = choices.ANTICODONS,
     required = False)
