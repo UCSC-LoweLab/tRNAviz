@@ -153,8 +153,6 @@ class SummaryServicesTests(TestCase):
     http = response.content.decode('utf8')
     self.assertIn('tRNAscan-SE ID', http)
 
-
-
 @tag('api', 'variation', 'distribution')
 class DistributionServicesTests(TestCase):
   def setUp(self):

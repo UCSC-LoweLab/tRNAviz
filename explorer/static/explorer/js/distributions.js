@@ -232,7 +232,7 @@ var draw_species_distribution = function(plot_data) {
   var x_axis_buffer = 7 * assemblies.reduce(function (a, b) { return a.length > b.length ? a : b; }).length;
   var legend_height = 80;
   var legend_width = 400;
-  var y_axis_buffer = 120;
+  var y_axis_buffer = 140;
   var plot_width = y_axis_buffer + 15 * assemblies.length + 15 * (groups.length - 1);
   var plot_height = legend_height + x_axis_buffer + facet_height * foci.length;
   
@@ -250,10 +250,13 @@ var draw_species_distribution = function(plot_data) {
 
   var focus_format = function(d, i) {
     var datapoint = plot_data[foci[i]][0];
-    if (datapoint['anticodon'] == 'All' ) {
-      return datapoint['isotype'] + ' / ' + datapoint['position'] + '<br>' + datapoint['score'];
-    };
-    return datapoint['isotype'] + '-' + datapoint['anticodon'] + ' / ' + datapoint['position'] + '<br>' + datapoint['score'];
+    var focus_str = datapoint['position'].includes(':') ? datapoint['position'] : 'Position ' + datapoint['position'];
+    if (datapoint['isotype'] != 'All' || datapoint['anticodon'] != 'All') {
+      focus_str += ' / ' + datapoint['isotype']
+      if (datapoint['anticodon'] != 'All') focus_str += '-' + datapoint['anticodon']
+    }
+    focus_str += datapoint['score'] != $('#id_focus-0-score').attr('score-range') ? '<br>' + datapoint['score'] : '';
+    return focus_str;
   }
 
   var focus_axis = d3.axisLeft(focus_scale)
@@ -429,11 +432,11 @@ var draw_species_distribution = function(plot_data) {
       .attr("stroke", "#333333")
       .attr('data-toggle', 'tooltip')
       .on('mouseover', function(d, i) {
-        tooltip_position.html(d.data.focus.split('-')[1]);
-        tooltip_isotype.html(d.data.focus.split('-')[0]);
+        tooltip_position.html(d.data.position);
+        tooltip_isotype.html(d.data.isotype);
         tooltip_group.html(d.data.assembly);
         tooltip_freq.html(Math.round((d[1] - d[0]) * 100) / 100)
-        tooltip_count.html(plot_data[d.data.focus].filter(x => x['group'] == d.data.group && x['assembly'] == d.data.assembly)[0][d3.select('#tooltip-feature').html()]);
+        tooltip_count.html(plot_data[d.data.focus].filter(x => x['assembly'] == d.data.assembly)[0][d3.select('#tooltip-feature').html()]);
         $('.tooltip-distribution').css({
           opacity: 0.9,
         }).position({
@@ -441,12 +444,12 @@ var draw_species_distribution = function(plot_data) {
           of: d3.event,
           collision: "flip"
         });
-        highlight_cloverleaf_tooltip(d.data.focus.split('-')[1]);
+        highlight_cloverleaf_tooltip(d.data.position);
       })
       .on('mousemove', function(d, i) {  
         tooltip_freq.html(Math.round((d[1] - d[0]) * 100) / 100)
         var feature = d3.select('#tooltip-feature').html()
-        tooltip_count.html(plot_data[d.data.focus].filter(x => x['group'] == d.data.group && x['assembly'] == d.data.assembly)[0][d3.select('#tooltip-feature').html()]);
+        tooltip_count.html(plot_data[d.data.focus].filter(x => x['assembly'] == d.data.assembly)[0][d3.select('#tooltip-feature').html()]);
         $('.tooltip-distribution').css({
           opacity: 0.9,
         }).position({
@@ -470,7 +473,7 @@ var draw_species_distribution = function(plot_data) {
 
   for (focus of foci) {
     for (group of groups) {
-      draw_facet(focus, group, plot_data[focus].filter(x => x['group'] == group));
+      draw_facet(focus, group, plot_data[focus]);
     };
   };
 
