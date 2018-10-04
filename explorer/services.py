@@ -389,9 +389,9 @@ def query_trnas_for_species_distribution(clade_groups, clade_info, foci):
       query_filter_args = query_filter_args | q
 
     for focus_index, focus in enumerate(foci):
-      trna_qs = models.tRNA.objects.filter(*(query_filter_args,), isotype = focus['isotype'], score__lte = focus['score_max'], score__gte = focus['score_min'])
-      if focus['anticodon'] != 'All':
-        trna_qs = trna_qs.filter(anticodon = focus['anticodon'])
+      trna_qs = models.tRNA.objects.filter(*(query_filter_args,), score__lte = focus['score_max'], score__gte = focus['score_min'])
+      if focus['isotype'] != 'All': trna_qs = trna_qs.filter(isotype = focus['isotype'])
+      if focus['anticodon'] != 'All': trna_qs = trna_qs.filter(anticodon = focus['anticodon'])
       query_position = 'p{}'.format(focus['position'].replace(':', '_'))
       trna_qs = trna_qs.values(query_position, 'assembly')
       df = read_frame(trna_qs)
