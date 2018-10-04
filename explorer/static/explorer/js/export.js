@@ -64,3 +64,6 @@ var download_png = function(id) {
   canvg(canvas, svg_str, {scaleWidth: selector.width() * 2, scaleHeight: selector.height() * 2, ignoreDimensions: true});
   download(canvas.toDataURL("image/png"), id + ".png", "image/png");
 }
+var download_json = function(json) {
+  download(JSON.stringify(json, null, 2), "data.json", 2);
+}

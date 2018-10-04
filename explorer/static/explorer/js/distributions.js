@@ -214,9 +214,8 @@ var draw_distribution = function(plot_data) {
   var tooltip_count = tooltip.select('#tooltip-count');
 
 };
-var adata;
+
 var draw_species_distribution = function(plot_data) {
-  adata = plot_data;
   d3.select('#distribution-area .loading-overlay').style('display', 'none');
   var foci = Object.keys(plot_data).sort();
   var assembly_groups = Array.from(new Set([].concat.apply([], Object.keys(plot_data).map(focus => plot_data[focus].map(d => [d['assembly'], d['group']]).map(group => JSON.stringify(group)))))).map(group => JSON.parse(group)).sort((a, b) => parseInt(a[1]) - parseInt(b[1]));

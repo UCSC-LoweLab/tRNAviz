@@ -113,13 +113,6 @@ d3.json("{% url 'explorer:coords' %}", function(coords) {
 });
 </script>
 
-<!-- initialize download -->
-<script type="text/javascript">
-$(document).ready(function () {
-	$('#distribution-download-pdf').click(function() { download_pdf('distribution'); });	
-})
-  
-</script>
 {% endblock %}
 
 {% block title %}tRNAviz | Variation{% endblock %}
@@ -132,6 +125,7 @@ $(document).ready(function () {
   			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
   			<div class="dropdown-menu">
     			<a class="dropdown-item" href="#" id='distribution-download-pdf'>PDF</a>
+    			<a class="dropdown-item" href="#" id='distribution-download-json'>JSON</a>
   			</div>
   		</div>
 			<h5>Sequence feature distribution</h5>
