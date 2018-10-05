@@ -113,7 +113,7 @@ class CompareTests(TestCase):
   def test_compare_format_bits_for_viz(self):
     plot_data = compare.format_bits_for_viz(self.bits)
     self.assertIn('bits', plot_data)
-    self.assertEqual(plot_data['groups'], ['Reference consensus', 'Most common feature', 'Test'])
+    self.assertEqual(plot_data['groups'], [('ref-cons', 'Reference consensus'), ('ref-modal', 'Most common feature'), ('group-0', 'Test')])
     bit_dict_keys = ['feature', 'group', 'group_name', 'label', 'position', 'score', 'total']
     for i, row in plot_data['bits'].items():
       self.assertEqual(sorted(row.keys()), bit_dict_keys)
