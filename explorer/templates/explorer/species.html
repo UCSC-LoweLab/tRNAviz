@@ -187,10 +187,6 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 
 
 {% if clade_formset|haserrors:'' or focus_formset|haserrors:'' %}
-{{ clade_formset.errors }}
-{{ focus_formset.errors }}
-{{ clade_formset.non_form_errors }}
-{{ focus_formset.non_form_errors }}
 <div class='alert alert-danger'>
 	The following errors were found:<br>
 	{% if clade_formset|haserrors:'' %}
@@ -201,11 +197,8 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 	  {% for errorlist in dict.values %}
 	  	<!-- suppress errors for dummy form -->
 	  	{% if errorlist and forloop.parentloop.counter0 != 0 %}
-	  	<ul>
-	  		{% for error in errorlist %}
-				<li>{{ error|safe }}</li>
-				{% endfor %}
-			</ul>
+	  		Clade group {{ forloop.parentloop.counter0 }}:
+	  		{{ dict }}
 			{% endif %}
 	  {% endfor %}
 		{% endfor %}
@@ -220,11 +213,8 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 	  {% for errorlist in dict.values %}
 	  	<!-- suppress errors for dummy form -->
 	  	{% if errorlist and forloop.parentloop.counter0 != 0 %}
-	  	<ul>
-	  		{% for error in errorlist %}
-				<li>{{ error|safe }}</li>
-				{% endfor %}
-			</ul>
+	  		Focus {{ forloop.parentloop.counter0 }}:
+	  		{{ dict }}
 			{% endif %}
 	  {% endfor %}
 		{% endfor %}
