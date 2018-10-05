@@ -180,6 +180,10 @@ class BaseFocusFormSet(DummyFormSet):
       foci.append(focus)
     return foci
 
+  def clean(self):
+    if len(self.get_foci()) == 0:
+      raise ValidationError('no foci specified')
+
 FocusFormSet = formset_factory(FocusForm, formset = BaseFocusFormSet, extra = 3)
 
 class CompareForm(forms.Form):

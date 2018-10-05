@@ -61,12 +61,14 @@ class DistributionViewTests(TestCase):
     self.assertContains(response, '<td>All</td>')
     self.assertContains(response, '<td>8, 9, 14, 35, 36, 37, 46, 73, 12:23, 18:55, 11:24</td>')
 
-  @tag('distribution', 'not-done')
+  @tag('distribution')
   def test_distribution_view_valid_post(self):
     request = self.factory.post(reverse('explorer:variation_distribution'), {
-      'clade_group_1': self.clade_txids[0],
-      'clade_group_2': self.clade_txids[1],
-      'clade_group_3': self.clade_txids[2],
+      'clade-0-clade_group': '',
+      'clade-1-clade_group': self.clade_txids[0],
+      'clade-2-clade_group': self.clade_txids[1],
+      'clade-3-clade_group': self.clade_txids[2],
+      'clade-TOTAL_FORMS': '4', 'clade-MIN_NUM_FORMS': '0', 'clade-MAX_NUM_FORMS': '1000', 'clade-INITIAL_FORMS': '0',
       'isotypes': self.isotypes,
       'positions': self.positions
     })
@@ -85,24 +87,29 @@ class SpeciesViewTests(TestCase):
     self.factory = RequestFactory()
     self.clade_txids = [['4930'], ['5204'], ['6033']]
     self.valid_post_data = {
-      'clade_group_1': self.clade_txids[0],
-      'clade_group_2': self.clade_txids[1],
-      'clade_group_3': self.clade_txids[2],
-      'focus_1_0': ['Asn'],
-      'focus_1_1': ['46'],
-      'focus_2_0': ['Met'],
-      'focus_2_1': ['46']
+      'clade-0-clade_group': '',
+      'clade-1-clade_group': self.clade_txids[0],
+      'clade-2-clade_group': self.clade_txids[1],
+      'clade-3-clade_group': self.clade_txids[2],
+      'clade-TOTAL_FORMS': '4', 'clade-MIN_NUM_FORMS': '0', 'clade-MAX_NUM_FORMS': '1000', 'clade-INITIAL_FORMS': '0',
+      'focus-0-isotype': 'All', 'focus-0-position': '', 'focus-0-anticodon': 'All', 'focus-0-score': '16.5 - 109.5',
+      'focus-1-isotype': 'Gly', 'focus-1-position': '3:70', 'focus-1-anticodon': 'All', 'focus-1-score': '16.5 - 109.5',
+      'focus-2-isotype': 'Met', 'focus-2-position': '3:70', 'focus-2-anticodon': 'All', 'focus-2-score': '30.5 - 80',
+      'focus-TOTAL_FORMS': '3', 'focus-MIN_NUM_FORMS': '0', 'focus-MAX_NUM_FORMS': '1000', 'focus-INITIAL_FORMS': '0'
+    
     }
 
-  @tag('not-done')
   def test_species_view_get(self):
     request = self.factory.get(reverse('explorer:variation_species'))
     response = views.variation_species(request)
     self.assertEqual(response.status_code, 200)
-    self.assertContains(response, '<td><p>Group 1: Saccharomyces (genus), Schizosaccharomyces (genus)')
-    self.assertContains(response, '<p>Ala, 3:70<br />Gly, 3:70<br />Ala, 46<br />Gly, 46</p>')
+    self.assertContains(response, 'Group 1: Saccharomyces (genus), Schizosaccharomyces (genus)')
+    self.assertContains(response, '<td>3:70</td>')
+    self.assertContains(response, '<td>Gly</td>')
+    self.assertContains(response, '<td>All</td>')
+    self.assertContains(response, '<td>16.5 - 100.1</td>')
+    self.assertContains(response, '<td>16.5 - 70.1</td>')
 
-  @tag('not-done')
   def test_species_view_valid_post(self):
     request = self.factory.post(reverse('explorer:variation_species'), self.valid_post_data)
     response = views.variation_species(request)
@@ -110,7 +117,8 @@ class SpeciesViewTests(TestCase):
     self.assertContains(response, 'Group 1: Saccharomyces (genus)')
     self.assertContains(response, 'Group 2: Basidiomycota (phylum)')
     self.assertContains(response, 'Group 3: Encephalitozoon (genus)')
-    self.assertContains(response, 'Asn, 46<br />Met, 46')
+    self.assertContains(response, '<td>Met</td>')
+    self.assertContains(response, '<td>30.5 - 80</td>')
 
 @tag('compare')
 class CompareViewTests(TestCase):

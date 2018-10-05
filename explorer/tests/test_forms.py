@@ -107,27 +107,25 @@ class FocusFormSetTests(TestCase):
       'focus-0-isotype': 'All', 'focus-0-position': '', 'focus-0-anticodon': 'All', 'focus-0-score': '16.5 - 109.5',
       'focus-1-isotype': '', 'focus-1-position': '', 'focus-1-anticodon': 'All', 'focus-1-score': '16.5 - 109.5',
       'focus-TOTAL_FORMS': '2', 'focus-MIN_NUM_FORMS': '0', 'focus-MAX_NUM_FORMS': '1000', 'focus-INITIAL_FORMS': '0'
+    }    
+    self.empty_form = {
+      'focus-0-isotype': '', 'focus-0-position': '', 'focus-0-anticodon': '', 'focus-0-score': '',
+      'focus-TOTAL_FORMS': '1', 'focus-MIN_NUM_FORMS': '0', 'focus-MAX_NUM_FORMS': '1000', 'focus-INITIAL_FORMS': '0'
     }
 
-  def test_focus_form_valid_select(self):
+  def test_focus_formset_valid_select(self):
     focus_formset = forms.FocusFormSet(data = self.form_data, prefix = 'focus')
     self.assertTrue(focus_formset.is_valid())
   
-  def test_focus_form_invalid_select(self):
+  def test_focus_formset_invalid_form(self):
     focus_formset = forms.FocusFormSet(data = self.invalid_form_data, prefix = 'focus')
     self.assertFalse(focus_formset.is_valid())
 
-  @tag('not-done')
-  def test_species_form_malformed_form(self):
-    form = forms.SpeciesDistributionForm(data = {'invalid': 'void'})
-    self.assertFalse(form.is_valid())
-
-  @tag('not-done')
-  def test_focus_form_clean_raises_error(self):
-    form = forms.SpeciesDistributionForm(self.empty_focus_form_data)
+  def test_focus_formset_clean_raises_error(self):
+    formset = forms.FocusFormSet(self.empty_form, prefix = 'focus')
     with self.assertRaisesMessage(ValidationError, 'no foci specified'):
-      form.clean()
-    self.assertFalse(form.is_valid())
+      formset.clean()
+    self.assertFalse(formset.is_valid())
 
   def test_get_foci(self):
     formset = forms.FocusFormSet(self.form_data, prefix = 'focus')

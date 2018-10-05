@@ -254,3 +254,8 @@ class SpeciesServicesTests(TestCase):
         with self.subTest(focus = focus, assembly = freqs_dict['assembly']):
           self.assertEqual(len(freqs_dict), 21)
 
+  def test_services_species_not_enough_trnas(self):
+    api_foci = '3:70,Gly,All,160,160.1;3:70,Asn,All,150,151' # no tRNAs exist for either focus
+    json_response = services.species_distribution(self.request, self.api_txids, api_foci)
+    plot_data = json.loads(json_response.content.decode('utf8'))
+    self.assertIn('No tRNAs found.', plot_data['error'])

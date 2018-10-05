@@ -431,5 +431,6 @@ def species_distribution(request, clade_txids, foci):
   except AttributeError:
     return JsonResponse({'error': 'Server error - most likely, tRNAs for your selection do not exist in the tRNAviz database. Try a different selection.'})
   except Exception as e:
-    if e == '': return JsonResponse({'error': e})
+    if str(e) == 'No tRNAs found. Most likely, tRNAs for your selection do not exist in the tRNAviz database (e.g., fMet in eukaryotes). Try a different selection.': 
+      return JsonResponse({'error': str(e)})
     return JsonResponse({'error': 'Unknown server error'})
