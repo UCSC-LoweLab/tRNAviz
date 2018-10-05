@@ -42,10 +42,11 @@ class BaseCladeGroupFormSet(forms.BaseFormSet):
       if i == 0: continue # skip first dummy row
       names = []
       clade_group = form['clade_group'].value()
-      for clade_taxid, clade in choices.CLADES:
-        if clade_taxid in clade_group: 
-          names.append(clade)
-      clade_group_names.append(names)
+      if clade_group is not None and len(clade_group) > 0:
+        for clade_taxid, clade in choices.CLADES:
+          if clade_taxid in clade_group: 
+            names.append(clade)
+        clade_group_names.append(names)
     return clade_group_names
 
   def clean(self):
@@ -157,7 +158,7 @@ class CompareForm(forms.Form):
     }
 
   def _clean_fields(self):
-    # validate fields, but only validation fasta sequence if necessary
+    # validate fields, but only validate fasta sequence if necessary
     # by default, clade and isotype will always be validated. This should not be a problem unless you hack the POST request. And why would you do that?
     for name, field in self.fields.items():
       if name == 'fasta':

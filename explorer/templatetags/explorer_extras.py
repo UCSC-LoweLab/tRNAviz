@@ -57,9 +57,10 @@ def clade_lookup(taxid):
   return ''
 
 @register.filter('haserrors')
-def haserrors(formset):
+def haserrors(formset, formset_type):
   for i, errordict in enumerate(formset.errors):
-    if i < 2: continue
+    if formset_type == 'compare' and i < 2: continue
+    elif i < 1: continue
     if len(errordict) > 0:
       return True
   if len(formset.non_form_errors()) > 0:

@@ -37,8 +37,27 @@ d3.json('{% url "explorer:distribution" clade_txids=clade_groups|clade_groups_to
 
 {% block filter %}
 
-{% if form.errors %}
+{% if clade_formset|haserrors:'' or form.errors %}
 <div class='alert alert-danger'>
+	The following errors were found:<br>
+	{% if clade_formset|haserrors:'' %}
+		{% for error in clade_formset.formset_wide_errors %}
+			<li>{{ error|escape }}</li>
+		{% endfor %}
+		{% for dict in clade_formset.errors %}
+	  {% for errorlist in dict.values %}
+	  	<!-- suppress errors for dummy form -->
+	  	{% if errorlist and forloop.parentloop.counter0 != 0 %}
+	  	<ul>
+	  		{% for error in errorlist %}
+				<li>{{ error|safe }}</li>
+				{% endfor %}
+			</ul>
+			{% endif %}
+	  {% endfor %}
+		{% endfor %}
+	{% endif %}
+
 	{% if form.non_field_errors %}
 		{% for error in form.non_field_errors %}
 			<li>Form error: {{ error|escape }}</li>

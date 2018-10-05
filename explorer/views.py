@@ -52,6 +52,7 @@ def variation_distribution(request):
       clade_groups = clade_formset.get_clade_groups()
       clade_group_names = clade_formset.get_clade_group_names()
 
+  clade_formset.formset_wide_errors = clade_formset._non_form_errors
   return render(request, 'explorer/distribution.html', {
     'form': form,
     'clade_formset': clade_formset,
@@ -80,6 +81,8 @@ def variation_species(request):
     if focus_formset.is_valid():
       foci = focus_formset.get_foci()
 
+  clade_formset.formset_wide_errors = clade_formset._non_form_errors
+  focus_formset.formset_wide_errors = focus_formset._non_form_errors
   return render(request, 'explorer/species.html', {
     'clade_formset': clade_formset,
     'focus_formset': focus_formset,

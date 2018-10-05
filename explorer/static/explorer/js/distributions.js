@@ -30,7 +30,7 @@ var draw_distribution = function(plot_data) {
   var legend_width = 400;
   var x_axis_buffer = 40;
   var y_axis_buffer = 60;
-  var plot_width = y_axis_buffer + (facet_width * isotypes.length) + 20;
+  var plot_width = Math.max(450, y_axis_buffer + (facet_width * isotypes.length) + 20);
   var plot_height = x_axis_buffer + (facet_height * positions.length) + legend_height;
 
   var svg = d3.select('#distribution-area')
@@ -232,7 +232,7 @@ var draw_species_distribution = function(plot_data) {
   var legend_height = 80;
   var legend_width = 400;
   var y_axis_buffer = 140;
-  var plot_width = y_axis_buffer + 15 * assemblies.length + 15 * (groups.length - 1);
+  var plot_width = Math.max(600, y_axis_buffer + 15 * assemblies.length + 15 * (groups.length - 1) + 20);
   var plot_height = legend_height + x_axis_buffer + facet_height * foci.length;
   
   var svg = d3.select('#distribution-area')
@@ -313,7 +313,7 @@ var draw_species_distribution = function(plot_data) {
 
   var assembly_group_scale = d3.scaleBand()
     .domain(Object.values(x_axis_label_ids))
-    .range([10, 15 * x_axis_labels.length])
+    .range([10, Math.max(15 * x_axis_labels.length, 30)])
     .paddingInner(0.1)
 
   var assembly_group_axis = d3.axisBottom(assembly_group_scale)

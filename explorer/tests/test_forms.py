@@ -48,11 +48,13 @@ class CladeGroupFormSetTests(TestCase):
       'clade-TOTAL_FORMS': '3', 'clade-MIN_NUM_FORMS': '0', 'clade-MAX_NUM_FORMS': '1000', 'clade-INITIAL_FORMS': '0',
     }
 
+  @tag('current')
   def test_get_clade_groups(self):
     formset = forms.CladeGroupFormSet(self.form_data, prefix = 'clade')
     clade_groups = formset.get_clade_groups()
     self.assertEqual(clade_groups, self.clade_groups)
 
+  @tag('current')
   def test_get_clade_group_names(self):
     formset = forms.CladeGroupFormSet(self.form_data, prefix = 'clade')
     clade_group_names = formset.get_clade_group_names()

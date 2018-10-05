@@ -190,7 +190,7 @@ d3.json("{% url 'explorer:coords' %}", function(coords) {
 
 {% block filter %}
 
-{% if formset|haserrors %}
+{% if formset|haserrors:'compare' %}
 <div class='alert alert-danger'>
 	The following errors were found:<br>
 	{% for error in formset.formset_wide_errors %}
