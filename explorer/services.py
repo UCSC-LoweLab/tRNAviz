@@ -425,9 +425,11 @@ def species_distribution(request, clade_txids, foci):
     plot_data = defaultdict(dict)
     for focus in freqs.index.levels[0]:
       plot_data[focus] = list(pd.DataFrame(freqs.loc[focus]).to_dict(orient = 'index').values())
+    if len(plot_data) == 0: raise Exception('No tRNAs found. Most likely, tRNAs for your selection do not exist in the tRNAviz database (e.g., fMet in eukaryotes). Try a different selection.')
     return JsonResponse(plot_data, safe = True)
 
   except AttributeError:
-    return JsonResponse({'server_error': 'Server error - most likely, tRNAs for your selection do not exist in the tRNAviz database. Try a different selection.'})
+    return JsonResponse({'error': 'Server error - most likely, tRNAs for your selection do not exist in the tRNAviz database. Try a different selection.'})
   except Exception as e:
-    return JsonResponse({'server_error': 'Unknown server error'})
+    if e == '': return JsonResponse({'error': e})
+    return JsonResponse({'error': 'Unknown server error'})

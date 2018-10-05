@@ -233,20 +233,18 @@ class SpeciesServicesTests(TestCase):
     }
     self.foci = [{'position': '3:70', 'isotype': 'Gly', 'anticodon': 'All', 'score_min': '16.5', 'score_max': '100.1'}, 
       {'position': '3:70', 'isotype': 'Asn', 'anticodon': 'All', 'score_min': '16.5', 'score_max': '70.1'}]
-    # self.isotypes, self.positions = zip(*self.foci)
-    # self.query_positions = ['p{}'.format(position.replace(':', '_')) for position in self.positions] + ['isotype', 'assembly']
-    # self.trnas = services.query_trnas_for_distribution(self.clade_groups, self.clade_info, self.isotypes, self.query_positions)
-    # self.freqs = services.species_convert_trnas_to_freqs_df(self.trnas, self.isotypes, self.positions)
+    self.trnas = services.query_trnas_for_species_distribution(self.clade_groups, self.clade_info, self.foci)
+    self.freqs = services.species_convert_trnas_to_freqs_df(self.trnas, self.foci)
 
   def test_services_species_convert_trnas_to_freqs_df(self):
     self.assertIn('focus', self.freqs.columns)
     self.assertIn('group', self.freqs.columns)
     self.assertIn('assembly', self.freqs.columns)
-    self.assertEqual(len(self.freqs.index.levels), 3)
-    foci = set(['{}-{}'.format(focus[0], focus[1]) for focus in self.foci])
-    self.assertEqual(foci, set(self.freqs.index.levels[0]))
+    self.assertIn('isotype', self.freqs.columns)
+    self.assertIn('anticodon', self.freqs.columns)
+    self.assertIn('score', self.freqs.columns)
+    self.assertEqual(self.freqs.index.names, ['focus', 'group', 'assembly'])
 
-  @tag('current')
   def test_services_species(self):
     json_response = services.species_distribution(self.request, self.api_txids, self.api_foci)
     plot_data = json.loads(json_response.content.decode('utf8'))

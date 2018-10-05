@@ -23,10 +23,77 @@ class SummaryForm(forms.Form):
     choices = choices.ISOTYPES,
     required = True)
 
+
+
+class DummyFormSet(forms.BaseFormSet):
+  def __init__(self, dummy_form_index = 1, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.dummy_form_index = dummy_form_index
+
+  # Need to overload is_valid and full_clean to skip dummy form during validation
+  def is_valid(self):
+    if not self.is_bound:
+      return False
+    forms_valid = True
+    self.errors
+    for i in range(0, self.total_form_count()):
+      if i == self.dummy_form_index: continue
+      form = self.forms[i]
+      if self.can_delete and self._should_delete_form(form):
+        continue
+      forms_valid &= form.is_valid()
+    return forms_valid and not self.non_form_errors()
+
+  def full_clean(self):
+    """
+    Clean all of self.data and populate self._errors and
+    self._non_form_errors.
+    """
+    self._errors = []
+    self._non_form_errors = self.error_class()
+    empty_forms_count = 0
+
+    if not self.is_bound:  # Stop further processing.
+      return
+    for i in range(0, self.total_form_count()):
+      form = self.forms[i]
+      # Empty forms are unchanged forms beyond those with initial data.
+      if not form.has_changed() and i >= self.initial_form_count():
+        empty_forms_count += 1
+      # Accessing errors calls full_clean() if necessary.
+      # _should_delete_form() requires cleaned_data.
+      form_errors = {}
+      if i != self.dummy_form_index: form_errors = form.errors
+      else: form.errors
+      if self.can_delete and self._should_delete_form(form):
+        continue
+      self._errors.append(form_errors)
+    try:
+      if (self.validate_max and self.total_form_count() - len(self.deleted_forms) > self.max_num) or \
+          self.management_form.cleaned_data['TOTAL_FORMS'] > self.absolute_max:
+        raise ValidationError(ngettext(
+          "Please submit %d or fewer forms.",
+          "Please submit %d or fewer forms.", self.max_num) % self.max_num,
+          code='too_many_forms',
+        )
+      if (self.validate_min and self.total_form_count() - len(self.deleted_forms) - empty_forms_count < self.min_num):
+        raise ValidationError(ngettext(
+          "Please submit %d or more forms.",
+          "Please submit %d or more forms.", self.min_num) % self.min_num,
+          code='too_few_forms')
+      # Give self.clean() a chance to do cross-form validation.
+      self.clean()
+    except ValidationError as e:
+        self._non_form_errors = self.error_class(e.error_list)
+
+
 class CladeGroupForm(forms.Form):
   clade_group = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
 
-class BaseCladeGroupFormSet(forms.BaseFormSet):
+class BaseCladeGroupFormSet(DummyFormSet):
+  def __init__(self, *args, **kwargs):
+    super().__init__(0, *args, **kwargs)
+
   def get_clade_groups(self):
     clade_groups = []
     for i, form in enumerate(self.forms):
@@ -71,20 +138,20 @@ class FocusForm(forms.Form):
   position = forms.ChoiceField(
     widget = forms.Select({'class': 'form-control multiselect position-select'}),
     choices = choices.POSITIONS_DISTINCT,
-    required = False)
+    required = True)
   isotype = forms.ChoiceField(
     widget = forms.Select({'class': 'form-control multiselect isotype-select'}), 
     initial = 'All',
     choices = choices.ISOTYPES,
-    required = False)
+    required = True)
   anticodon = forms.ChoiceField(
     widget = forms.Select({'class': 'form-control multiselect anticodon-select'}), 
     initial = 'All',
     choices = choices.ANTICODONS,
-    required = False)
+    required = True)
   score = forms.CharField(
     initial = '{} - {}'.format(models.tRNA.objects.aggregate(Min('score'))['score__min'], models.tRNA.objects.aggregate(Max('score'))['score__max'],
-    required = False)
+    required = True)
   )
 
   def as_dict(self):
@@ -97,9 +164,9 @@ class FocusForm(forms.Form):
       'score_max': score_max
     }
 
-class BaseFocusFormSet(forms.BaseFormSet):
+class BaseFocusFormSet(DummyFormSet):
   def __init__(self, *args, **kwargs):
-    super().__init__(*args, **kwargs)
+    super().__init__(0, *args, **kwargs)
     for form in self.forms:
       form.empty_permitted = False
 
@@ -230,17 +297,15 @@ class CompareForm(forms.Form):
       if not line:
         return True
 
-class BaseCompareFormSet(forms.BaseFormSet):
+
+class BaseCompareFormSet(DummyFormSet):
   def __init__(self, *args, **kwargs):
-    super().__init__(*args, **kwargs)
-    for form in self.forms:
-      form.empty_permitted = False
+    super().__init__(1, *args, **kwargs)
 
   def clean(self):
-    super().clean()
     ref_form = self.forms[0]
     trna_qs = compare.query_trnas(ref_form.cleaned_data)
     if len(trna_qs) < 5:
       raise ValidationError('Not enough sequences in database for reference category. Query a broader set.')
-
+  
 CompareFormSet = formset_factory(CompareForm, formset = BaseCompareFormSet, can_delete = True, extra = 3)

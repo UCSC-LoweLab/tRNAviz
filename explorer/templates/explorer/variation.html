@@ -113,6 +113,20 @@ d3.json("{% url 'explorer:coords' %}", function(coords) {
 });
 </script>
 
+<!-- render plot and handle errors -->
+<script type="text/javascript">
+var render_plot = function(plot_data) {
+  d3.select('#distribution-area .loading-overlay').style('display', 'none');
+  if ("error" in plot_data) d3.select('#distribution-area').text(plot_data['error'])
+	else {
+		draw_distribution(plot_data);
+
+		// intialize download onclicks
+		$('#distribution-download-pdf').click(function() { download_pdf('distribution'); });
+		$('#distribution-download-json').click(function() { download_json(plot_data); });
+	}
+}
+</script>
 {% endblock %}
 
 {% block title %}tRNAviz | Variation{% endblock %}
