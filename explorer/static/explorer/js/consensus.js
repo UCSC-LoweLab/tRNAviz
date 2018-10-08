@@ -133,7 +133,12 @@ var draw_cloverleaf = function(cloverleaf_data) {
       .attr('cy', d => d['y'])
       .attr('r', d => d['radius'])
       .attr('fill', d => feature_scale(d['consensus']))
-      .on('mouseover',  d => d3.select('#cloverleaf').attr('locked') ? '' : highlight(d))
+      .on('mouseover',  function(d) {
+        if (!d3.select('#cloverleaf').attr('locked')) {
+          dehighlight();
+          highlight(d);
+        }
+      })
       .on('mousemove', function(d) {
         if (!d3.select('#cloverleaf').attr('locked')) {
           tooltip.style('left', d3.event.pageX + 'px').style('top', d3.event.pageY + 'px')
