@@ -60,7 +60,7 @@ class tRNA(models.Model):
   domain = models.CharField(max_length = 10, blank = True, null = True)
   taxid = models.CharField(max_length = 10, blank = True, null = True)
 
-  stemGC = models.FloatField()
+  GCcontent = models.FloatField()
   insertions = models.IntegerField()
   deletions = models.IntegerField()
   intron_length = models.IntegerField()
