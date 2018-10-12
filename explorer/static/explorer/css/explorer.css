@@ -155,8 +155,8 @@ div.filter-box {
 }
 
 div.plotbox-row {
-  margin: 0 auto;
   border-bottom: 1px solid #cccccc;
+  overflow: scroll;
 }
 div.plotbox-row:last-of-type {
   border-bottom: 0;
@@ -165,11 +165,6 @@ div.plotbox-row:nth-of-type(odd) {
   background: #eeeeee;
 }
 
-div.plotbox-col {
-  float: left;
-  overflow: scroll;
-  margin: auto;
-}
 div.plotbox-outer, .table-outer {
   border: 1px solid;
   border-color: #aaaaaa;
@@ -177,6 +172,7 @@ div.plotbox-outer, .table-outer {
   display: inline-block;
   vertical-align: top;
   margin: 1em;
+  height: intrinsic;
 }
 
 div.plotbox-inner, .table-inner {
