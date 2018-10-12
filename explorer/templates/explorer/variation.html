@@ -117,20 +117,22 @@ d3.json("{% url 'explorer:coords' %}", function(coords) {
 {% block title %}tRNAviz | Variation{% endblock %}
 
 {% block plots %}
-<div class="plotbox-row">
-	<div class="plotbox-outer">
-		<div class="plotbox-header">
-			<div class="download-box dropdown">
-  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
-  			<div class="dropdown-menu">
-    			<a class="dropdown-item" href="#" id='distribution-download-pdf'>PDF</a>
-    			<a class="dropdown-item" href="#" id='distribution-download-json'>JSON</a>
-  			</div>
-  		</div>
-			<h5>Sequence feature distribution</h5>
-		</div>
-		<div class="plotbox-inner" id="distribution-area">
-			<div class="loading-overlay" style="margin-left: 10em; margin-right: 10em;"></div>
+<div class="plotbox-row row">
+	<div class="plotbox-col">
+		<div class="plotbox-outer">
+			<div class="plotbox-header">
+				<div class="download-box dropdown">
+	  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
+	  			<div class="dropdown-menu">
+	    			<a class="dropdown-item" href="#" id='distribution-download-pdf'>PDF</a>
+	    			<a class="dropdown-item" href="#" id='distribution-download-json'>JSON</a>
+	  			</div>
+	  		</div>
+				<h5>Sequence feature distribution</h5>
+			</div>
+			<div class="plotbox-inner" id="distribution-area">
+				<div class="loading-overlay" style="margin-left: 10em; margin-right: 10em;"></div>
+			</div>
 		</div>
 	</div>
 </div>

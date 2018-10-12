@@ -1,3 +1,16 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+main {
+  flex: 1;
+}
+
 div.tooltip {
   position: absolute;
   padding: 0.1em;
@@ -145,6 +158,9 @@ div.plotbox-row {
   margin: 0 auto;
   border-bottom: 1px solid #cccccc;
 }
+div.plotbox-row:last-of-type {
+  border-bottom: 0;
+}
 div.plotbox-row:nth-of-type(odd) {
   background: #eeeeee;
 }
@@ -152,6 +168,7 @@ div.plotbox-row:nth-of-type(odd) {
 div.plotbox-col {
   float: left;
   overflow: scroll;
+  margin: auto;
 }
 div.plotbox-outer, .table-outer {
   border: 1px solid;
@@ -256,4 +273,15 @@ td.cons-specific {
   margin: 0;
   background-color: transparent;
   text-align: left;
+}
+.footer {
+  margin-top: 10em;
+  background-color: #333333;
+  color: #eeeeee;
+  vertical-align: middle
+}
+.footer-link {
+  color: #eeeeee;
+  font-weight: bold;
+
 }

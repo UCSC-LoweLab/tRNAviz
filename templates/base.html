@@ -36,52 +36,61 @@
 
 	</head>
 	<body>
+		<main>
+			<!-- Navbar -->
+			<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+	  		<div>
+	    		<ul class="navbar-nav">
+	      		<li class="nav-item">
+	        		<a class="nav-link" href="{% url 'explorer:summary' %}">Summary</a>
+	      		</li>
+			      <li class="nav-item dropdown">
+			        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Variation</a>
+			        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+			          <a class="dropdown-item" href="{% url 'explorer:variation_distribution' %}">Distributions</a>
+			          <a class="dropdown-item" href="{% url 'explorer:variation_species' %}">Species</a>
+			        </div>
+			      </li>
+	      		<li class="nav-item">
+	        		<a class="nav-link" href="{% url 'explorer:compare' %}">Compare</a>
+	      		</li>
+	      		<li class="nav-item">
+	        		<a class="nav-link" href="#">Taxonomy</a>
+	      		</li>
+	      		<li class="nav-item">
+	        		<a class="nav-link" href="#">About</a>
+	      		</li>
+	      	</ul>
+	      </div>
+			</nav>
 
-		<!-- Navbar -->
-		<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-  		<div>
-    		<ul class="navbar-nav">
-      		<li class="nav-item">
-        		<a class="nav-link" href="{% url 'explorer:summary' %}">Summary</a>
-      		</li>
-		      <li class="nav-item dropdown">
-		        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Variation</a>
-		        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-		          <a class="dropdown-item" href="{% url 'explorer:variation_distribution' %}">Distributions</a>
-		          <a class="dropdown-item" href="{% url 'explorer:variation_species' %}">Species</a>
-		        </div>
-		      </li>
-      		<li class="nav-item">
-        		<a class="nav-link" href="{% url 'explorer:compare' %}">Compare</a>
-      		</li>
-      		<li class="nav-item">
-        		<a class="nav-link" href="#">Taxonomy</a>
-      		</li>
-      		<li class="nav-item">
-        		<a class="nav-link" href="#">About</a>
-      		</li>
-      	</ul>
+
+			<!-- Banner -->
+			<div class='p-3'>
+				<h1>tRNAviz</h1>
+				<p class='lead'>Explore, filter, and visualize tRNA sequence features.</p>
+			</div>
+
+			<!-- Input / forms -->
+			{% block filter %}{% endblock %}
+
+
+			<!-- Form input information -->
+			<div class='sticky-top'>
+				{% block table %}{% endblock %}
+			</div>
+
+			<!-- Visualizations -->
+			{% block plots %}{% endblock %}
+		</main>
+		<!-- Footer -->
+		<footer class="footer">
+      <div class="container text-center">
+      	<div class="p-4">
+	      	<a href="http://lowelab.ucsc.edu" class="footer-link" target="_blank">The Lowe Lab</a>, Biomolecular Engineering, University of California Santa Cruz
+	      </div>
       </div>
-		</nav>
-
-
-		<!-- Banner -->
-		<div class='p-3'>
-			<h1>tRNAviz</h1>
-			<p class='lead'>Explore, filter, and visualize tRNA sequence features.</p>
-		</div>
-
-		<!-- Input / forms -->
-		{% block filter %}{% endblock %}
-
-
-		<!-- Form input information -->
-		<div class='sticky-top'>
-			{% block table %}{% endblock %}
-		</div>
-
-		<!-- Visualizations -->
-		{% block plots %}{% endblock %}
+    </footer>
 		
 	<script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js' integrity='sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl' crossorigin='anonymous'></script>
 	</body>
