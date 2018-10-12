@@ -142,14 +142,21 @@ div.filter-box {
 }
 
 div.plotbox-row {
-  white-space: nowrap;
-  overflow: auto;
+  margin: 0 auto;
+  border-bottom: 1px solid #cccccc;
+}
+div.plotbox-row:nth-of-type(odd) {
+  background: #eeeeee;
 }
 
+div.plotbox-col {
+  float: left;
+  overflow: scroll;
+}
 div.plotbox-outer, .table-outer {
   border: 1px solid;
-  border-color: #d8d8d8;
-  background: #eeeeee;
+  border-color: #aaaaaa;
+  background: #dddddd;
   display: inline-block;
   vertical-align: top;
   margin: 1em;
@@ -165,6 +172,10 @@ div.plotbox-inner, .table-inner {
 
 div.table-inner {
   max-height: 25em;
+}
+
+div.table-inner > table {
+  table-layout: auto;
 }
 
 div.data-select-table {
