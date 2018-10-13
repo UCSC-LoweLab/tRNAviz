@@ -22,9 +22,9 @@
 		<!-- Highlight current tab in navbar -->
 		<script>
 			$(document).ready(function() {
-				selector = $('a[href$="{{ request.path }}"]')
+				selector = $('.navbar').find('a[href$="{{ request.path }}"]')
 				// Exception for dropdown menu items
-				if (!selector.attr('class').includes('nav-link')) selector = selector.parent().prev();
+				if (selector.attr('class').includes('nav-link')) selector = selector.parent().prev();
 				selector.attr('style', 'color: white');
 			})
 		</script>
@@ -80,7 +80,9 @@
 			</div>
 
 			<!-- Visualizations -->
-			{% block plots %}{% endblock %}
+			<div class='plots'>
+				{% block plots %}{% endblock %}
+			</div>
 		</main>
 		<!-- Footer -->
 		<footer class="footer">

@@ -144,7 +144,21 @@ div.sticky-top {
   background: #ffffff;
   width: 100%;
 }
-
+div.sticky-table, div.summary-sticky-bar {
+  position: sticky;
+  position: -webkit-sticky;
+  position: -moz-sticky;
+  position: -ms-sticky;
+  position: -o-sticky;
+  background: #ffffff;
+  width: 100%;
+}
+div.sticky-table {
+  top: 0;
+}
+div.summary-sticky-bar {
+  top: 87px; 
+}
 div.free-scroll {
   overflow: auto;
 }
@@ -153,20 +167,25 @@ div.filter-box {
   padding-left: 3em;
   padding-right: 3em;
 }
-
+div.plotbox-row-title {
+  padding-top: 1em;
+  padding-bottom: 0.5em;
+  color: white;
+  background: #777777;
+}
 div.plotbox-row {
   padding-top: 2em;
   padding-bottom: 2em;
-  border-bottom: 1px solid #cccccc;
   overflow: scroll;
 }
-div.plotbox-row:last-of-type {
-  border-bottom: 0;
-}
-div.plotbox-row:nth-of-type(odd) {
+
+.plotbox-row:nth-of-type(4n) {
   background: #eeeeee;
 }
 
+.plotbox-row-title:nth-of-type(4n-1) {
+  background: #555555;
+}
 div.plotbox-outer, .table-outer {
   border: 1px solid;
   border-color: #aaaaaa;
@@ -196,6 +215,14 @@ div.table-inner > table {
 div.data-select-table {
   border-bottom: 1px solid;
   border-color: #d8d8d8;
+}
+.summary-table {
+  table-layout: fixed;
+}
+.summary-table > th {
+  width: 50%;
+  padding-left: 2em;
+  padding-right: 2em;
 }
 
 div.plotbox-header {

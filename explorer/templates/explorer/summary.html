@@ -133,17 +133,17 @@ Consensus sequence features and frequency distributions at a glance.
 
 {% block table %}
 <div class="data-select-table">
-	<table class="table sticky-top">
+	<table class="table table-sm table-hover summary-table">
 		<thead>
 			<tr>
-				<th scope="col">Clade</th>
-				<th scope="col">Isotype</th>
+				<th scope="col" class="text-right">Clade</th>
+				<th scope="col" class="text-left">Isotype</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td>{{ clade }}</td>
-				<td>{{ isotype }}</td>
+				<td class="text-right">{{ clade }}</td>
+				<td class="text-left">{{ isotype }}</td>
 			</tr>
 		</tbody>
 	</table>
@@ -153,11 +153,11 @@ Consensus sequence features and frequency distributions at a glance.
 
 {% block plots %}
 
+	<div class="col-12 plotbox-row-title summary-sticky-bar">
+		<h5 class='text-center'>Consensus features</h5>
+	</div>
 
 <div class="plotbox-row d-flex justify-content-lg-center flex-wrap">
-	<div class="col-12">
-		<h3 class='text-center'>Consensus features</h3>
-	</div>
 	<div class="plotbox-outer">
 		<div class="plotbox-header">
 			<div class="download-box dropdown">
@@ -189,10 +189,13 @@ Consensus sequence features and frequency distributions at a glance.
 	</div>
 </div>
 
+
+<div class="col-12 plotbox-row-title summary-sticky-bar">
+	<h5 class='text-center'>Context</h5>
+</div>
+
 <div class="plotbox-row d-flex justify-content-lg-center flex-wrap">
-	<div class="col-12">
-		<h3 class='text-center'>Context</h3>
-	</div>
+
 	<div class="plotbox-outer">
 		<div class="plotbox-header">
 			<h5>Taxonomy summary</h5>
@@ -230,10 +233,11 @@ Consensus sequence features and frequency distributions at a glance.
 	</div>
 </div>
 
+<div class="col-12 plotbox-row-title summary-sticky-bar">
+	<h5 class='text-center'>Isotype-specific consensus features</h5>
+</div>
+
 <div class="plotbox-row d-flex justify-content-xl-center flex-wrap">
-	<div class="col-12">
-		<h3 class='text-center'>Isotype-specific consensus features</h3>
-	</div>
 	<div class="plotbox-outer">
 		<div class="plotbox-header">
 			<div class="download-box dropdown">
