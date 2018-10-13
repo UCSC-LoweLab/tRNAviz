@@ -21,10 +21,12 @@
 
 		<!-- Highlight current tab in navbar -->
 		<script>
+			var adata;
 			$(document).ready(function() {
 				selector = $('.navbar').find('a[href$="{{ request.path }}"]')
+				adata = selector;
 				// Exception for dropdown menu items
-				if (selector.attr('class').includes('nav-link')) selector = selector.parent().prev();
+				if (!selector.attr('class').includes('nav-link')) selector = selector.parent().prev();
 				selector.attr('style', 'color: white');
 			})
 		</script>
