@@ -16,14 +16,14 @@ $(document).ready(function() {
 	$('#id_clade').select2({
 		width: "100%", 
 		allowClear: true, 
-		placeholder: "Select reference clade", 
+		placeholder: "Select a clade (required)", 
 		minimumInputLength: 3,
 	  ajax: {
 	  	url: "{% url 'explorer:search' search_type='clade' %}",
     	dataType: 'json'
   	}
 	});
-	$('#id_isotype').select2({width: "100%", allowClear: true, placeholder: "Select an isotype"});
+	$('#id_isotype').select2({width: "100%", allowClear: true, placeholder: "Select an isotype (required)"});
 })
 </script>
 {% endblock %}
@@ -81,43 +81,52 @@ $(document).ready(function() {
 </script>
 {% endblock %}
 
+{% block banner %}
+tRNAviz | Summary
+{% endblock %}
+
+{% block description %}
+Consensus sequence features and frequency distributions at a glance.
+{% endblock %}
 
 {% block filter %}
 
-{% if form.errors %}
-<div class='alert alert-danger'>
-	{% for field in form %}
-		{% for error in field.errors %}
-			<li>Error in {{ field.name }}: {{ error|escape }}</li>
-		{% endfor %}
-	{% endfor %}
-</div>
-{% endif %}
-
-<div class='p-3'>
-	<div class='row vertical-align select-bar data-select-bar'>
-		<div class='col-md-2 p-3'>
-			<h4>Select tRNAs</h4>
+<div class='d-flex justify-content-center'>
+	<div class="plotbox-outer col-11 col-md-8 col-lg-6 col-xl-4">
+		{% if form.errors %}
+		<div class='m-3'>
+			<div class='alert alert-danger'>
+				{% for field in form %}
+					{% for error in field.errors %}
+						<li>Error in {{ field.name }}: {{ error|escape }}</li>
+					{% endfor %}
+				{% endfor %}
+			</div>
 		</div>
-		<div class='col-md-10 p-3'>
-
-			<form id='data-select-form' action='{% url "explorer:summary" %}' method="POST">
-				{% csrf_token %}
-				<div class='my-2'>
-					<select class='form-control multiselect clade-select' name="clade" id="id_clade">
-						{% if form.clade.value != None %}
-						<option value="{{ form.clade.value }}">{{ form.clade.value|clade_lookup }}</option>
-						{% endif %}
-					</select>
-				</div>
-				<div class='my-2'>
-					{{ form.isotype }}
-				</div>
-				<div class='my-2'>
-					<button class='btn btn-primary' type='submit'>Submit</button>
-				</div>
-			</form>
+		{% endif %}
+		<div class='m-3'>
+			<h4>Select clade/isotype</h4>
 		</div>
+		<form id='data-select-form' action='{% url "explorer:summary" %}' method="POST">
+		{% csrf_token %}
+		<div class='m-3 p-3 data-select-bar'>
+			<div class="col-12">
+				Clade
+				<select class='form-control multiselect clade-select' name="clade" id="id_clade">
+				{% if form.clade.value != None %}
+				<option value="{{ form.clade.value }}">{{ form.clade.value|clade_lookup }}</option>
+				{% endif %}
+				</select>
+			</div>
+			<div class="col-12 pt-3">
+				Isotype
+				{{ form.isotype }}
+			</div>
+			<div class="col-12 pt-3">
+				<button class='btn btn-primary btn-block' type='submit'>Submit</button>
+			</div>
+		</div>
+		</form>
 	</div>
 </div>
 {% endblock %}
@@ -146,6 +155,9 @@ $(document).ready(function() {
 
 
 <div class="plotbox-row d-flex justify-content-lg-center flex-wrap">
+	<div class="col-12">
+		<h3 class='text-center'>Consensus features</h3>
+	</div>
 	<div class="plotbox-outer">
 		<div class="plotbox-header">
 			<div class="download-box dropdown">
@@ -155,7 +167,7 @@ $(document).ready(function() {
     			<a class="dropdown-item" href="#" id='cloverleaf-download-pdf'>PDF</a>
   			</div>
   		</div>
-			<h5>Consensus features</h5>
+			<h5>Cloverleaf</h5>
 		</div>
 		<div class="plotbox-inner" id="cloverleaf-area">
 			<div class="loading-overlay"></div>
@@ -178,6 +190,9 @@ $(document).ready(function() {
 </div>
 
 <div class="plotbox-row d-flex justify-content-lg-center flex-wrap">
+	<div class="col-12">
+		<h3 class='text-center'>Context</h3>
+	</div>
 	<div class="plotbox-outer">
 		<div class="plotbox-header">
 			<h5>Taxonomy summary</h5>
@@ -216,6 +231,9 @@ $(document).ready(function() {
 </div>
 
 <div class="plotbox-row d-flex justify-content-xl-center flex-wrap">
+	<div class="col-12">
+		<h3 class='text-center'>Isotype-specific consensus features</h3>
+	</div>
 	<div class="plotbox-outer">
 		<div class="plotbox-header">
 			<div class="download-box dropdown">
@@ -225,7 +243,7 @@ $(document).ready(function() {
     			<a class="dropdown-item" href="#" id='tilemap-download-png'>PNG</a>
   			</div>
   		</div>
-			<h5>Consensus isotype-specific features</h5>
+			<h5>Tilemap</h5>
 		</div>
 		<div class="plotbox-inner" id="tilemap-area">
 			<div class="loading-overlay" style='margin-left: 20em; margin-right: 20em'></div>

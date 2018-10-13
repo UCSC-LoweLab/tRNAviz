@@ -66,14 +66,13 @@
 
 
 			<!-- Banner -->
-			<div class='p-3'>
-				<h1>tRNAviz</h1>
-				<p class='lead'>Explore, filter, and visualize tRNA sequence features.</p>
+			<div class='pt-5 pb-4'>
+				<h1 class="text-center">{% block banner %}{% endblock %}</h1>
+				<p class="lead text-center">{% block description %}{% endblock %}</p>
 			</div>
 
 			<!-- Input / forms -->
 			{% block filter %}{% endblock %}
-
 
 			<!-- Form input information -->
 			<div class='sticky-top'>
