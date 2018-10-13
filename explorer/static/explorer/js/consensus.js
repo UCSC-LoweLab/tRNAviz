@@ -343,9 +343,9 @@ var draw_base_distro = function(freq_data, plot_type) {
 
 var draw_tilemap = function(tilemap_data) {
   d3.select('#tilemap-area .loading-overlay').style('display', 'none')
-  var tilemap_area_width = 1220,
-      tilemap_area_height = 470,
-      tile_width = 15;
+  var tilemap_area_width = 1150,
+      tilemap_area_height = 425,
+      tile_width = 14;
 
   var isotypes = Array.from(new Set(tilemap_data.map(d => d['isotype']))).sort();
   var positions = ['1:72', '2:71', '3:70', '4:69', '5:68', '6:67', '7:66', '8', '9', '10:25', '11:24', '12:23', '13:22', '14', '15', '16', '17', '17a', '18', '19', '20', '20a', '20b', '21', '26', '27:43', '28:42', '29:41', '30:40', '31:39', '32', '33', '34', '35', '36', '37', '38', '44', '45', 'V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27', 'V1', 'V2', 'V3', 'V4', 'V5', '46', '47', '48', '49:65', '50:64', '51:63', '52:62', '53:61', '54', '55', '56', '57', '58', '59', '60', '73'];
@@ -375,7 +375,7 @@ var draw_tilemap = function(tilemap_data) {
   // build scales and axes
   var position_scale = d3.scaleLinear()
     .domain([0, positions.length - 1])
-    .range([50, 1200]);
+    .range([50, 1120]);
 
   var position_axis = d3.axisBottom(position_scale)
     .ticks(positions.length)
@@ -383,7 +383,7 @@ var draw_tilemap = function(tilemap_data) {
 
   var isotype_scale = d3.scaleLinear()
     .domain([0, isotypes.length - 1])
-    .range([10, 380]);
+    .range([10, 350]);
 
   var isotype_axis = d3.axisLeft(isotype_scale)
     .ticks(isotypes.length)
@@ -391,7 +391,7 @@ var draw_tilemap = function(tilemap_data) {
 
   tilemap.append('g')
     .attr('class', 'xaxis')
-    .attr('transform', 'translate(7, 400)')
+    .attr('transform', 'translate(7, 368)')
     .call(position_axis);
 
   tilemap.append('g')
