@@ -157,7 +157,7 @@ div.sticky-table {
   top: 0;
 }
 div.summary-sticky-bar {
-  top: 80px;
+  top: 85px;
   z-index: 99;
 }
 div.free-scroll {
@@ -214,8 +214,7 @@ div.table-inner > table {
 }
 
 div.data-select-table {
-  padding-top: 5px;
-  padding-bottom: 5px;
+  padding: 10px;
 }
 
 .table {
@@ -300,6 +299,7 @@ td.cons-specific {
   margin: 0;
   background-color: transparent;
   text-align: left;
+  width: 8em;
 }
 .footer {
   margin-top: 10em;
