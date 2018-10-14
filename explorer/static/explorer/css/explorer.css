@@ -157,7 +157,8 @@ div.sticky-table {
   top: 0;
 }
 div.summary-sticky-bar {
-  top: 87px; 
+  top: 80px;
+  z-index: 99;
 }
 div.free-scroll {
   overflow: auto;
@@ -213,14 +214,15 @@ div.table-inner > table {
 }
 
 div.data-select-table {
-  border-bottom: 1px solid;
-  border-color: #d8d8d8;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
-.summary-table {
-  table-layout: fixed;
+
+.table {
+  margin: 0 auto;
+  width: auto;
 }
-.summary-table > th {
-  width: 50%;
+.table-sm td, .table-sm th {
   padding-left: 2em;
   padding-right: 2em;
 }
