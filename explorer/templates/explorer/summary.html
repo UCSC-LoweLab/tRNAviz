@@ -131,21 +131,24 @@ Consensus sequence features and frequency distributions at a glance.
 {% endblock %}
 
 {% block table %}
-<div class="data-select-table">
-	<table class="table table-sm summary-table">
+<div class="data-select-table d-flex justify-content-center p-1">
+	<table class="table table-sm table-responsive clade-group-table mx-1 mx-lg-3">
 		<thead>
-			<tr>
-				<th scope="col" class="text-right">Clade</th>
-				<th scope="col" class="text-left">Isotype</th>
-			</tr>
+			<th scope="col" class="text-lg-center">Clade</th>
 		</thead>
 		<tbody>
-			<tr>
-				<td class="text-right">{{ clade }}</td>
-				<td class="text-left">{{ isotype }}</td>
-			</tr>
+			<tr><td class="text-lg-center text-nowrap">{{ clade }}</td></tr>
 		</tbody>
 	</table>
+	<table class="table table-sm mx-1 mx-lg-3">
+		<thead>
+			<th scope="col" class="text-lg-center">Isotype</th>
+		</thead>
+		<tbody>
+			<tr><td class="text-lg-center">{{ isotype }}</td></tr>
+		</tbody>
+	</table>
+	</div>
 </div>
 {% endblock %}
 

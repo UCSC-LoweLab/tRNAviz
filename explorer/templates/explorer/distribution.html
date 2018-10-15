@@ -105,21 +105,27 @@ d3.json('{% url "explorer:distribution" clade_txids=clade_groups|clade_groups_to
 
 
 {% block table %}
-<div class="data-select-table">
-	<table class="table table-sm">
+<div class="data-select-table d-flex justify-content-center p-1">
+	<table class="table table-sm table-responsive mx-1">
 		<thead>
 			<tr>
+				<th scope="col">#</th>
 				<th scope="col">Clade group{{ clade_groups|pluralize }}</th>
-				<th scope="col">Isotype(s)</th>
-				<th scope="col">Position(s)</th>
+				<th scope="col">Isotype{{ isotypes|pluralize }}</th>
+				<th scope="col">Position{{ positions|pluralize }}</th>
 			</tr>
 		</thead>
 		<tbody>
+			{% for names in clade_group_names %}
 			<tr>
-				<td>{{ clade_group_names|clade_names_to_pretty_string|linebreaksbr }}</td>
+				<td>{{ forloop.counter }}</td>
+				<td>{{ names|clade_names_to_pretty_string }}</td>
+				{% if forloop.counter == 1 %}
 				<td>{{ isotypes|list_to_pretty_string }}</td>
 				<td>{{ positions|list_to_pretty_string }}</td>
+				{% endif %}
 			</tr>
+			{% endfor %}
 		</tbody>
 	</table>
 </div>

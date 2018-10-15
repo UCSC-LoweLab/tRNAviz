@@ -158,7 +158,7 @@ div.sticky-table {
 }
 
 div.summary-sticky-bar {
-  top: 85px;
+  top: 77px;
   z-index: 99;
 }
 div.free-scroll {
@@ -228,19 +228,14 @@ div.data-select-table {
 }
 
 .table-sm td, .table-sm th {
-  padding-left: 2em;
-  padding-right: 2em;
-}
-
-.table-sm.clade-group-table td, .table-sm.clade-group-table th {
-  padding-left: 1em;
-  padding-right: 1em;
-}
-.table-sm.foci-table td, .table-sm.foci-table th {
   padding-left: 1em;
   padding-right: 1em;
 }
 
+.summary-table {
+  table-layout: fixed;
+
+}
 
 div.plotbox-header {
   margin: 1em;
