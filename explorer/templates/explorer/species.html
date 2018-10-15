@@ -181,149 +181,133 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 </script>
 {% endblock %}
 
+{% block description %}
+{{ block.super }}
+
+{% endblock %}
 
 
 {% block filter %}
 
-
-{% if clade_formset|haserrors:'' or focus_formset|haserrors:'' %}
-<div class='alert alert-danger'>
-	The following errors were found:<br>
-	{% if clade_formset|haserrors:'' %}
-		{% for error in clade_formset.non_form_errors %}
-			<li>{{ error|escape }}</li>
-		{% endfor %}
-		{% for dict in clade_formset.errors %}
-	  {% for errorlist in dict.values %}
-	  	<!-- suppress errors for dummy form -->
-	  	{% if errorlist and forloop.parentloop.counter0 != 0 %}
-	  		Clade group {{ forloop.parentloop.counter0 }}:
-	  		{{ dict }}
-			{% endif %}
-	  {% endfor %}
-		{% endfor %}
-	{% endif %}
-
-
-	{% if focus_formset|haserrors:'' %}
-		{% for error in focus_formset.non_form_errors %}
-			<li>{{ error|escape }}</li>
-		{% endfor %}
-		{% for dict in focus_formset.errors %}
-	  {% for errorlist in dict.values %}
-	  	<!-- suppress errors for dummy form -->
-	  	{% if errorlist and forloop.parentloop.counter0 != 0 %}
-	  		Focus {{ forloop.parentloop.counter0 }}:
-	  		{{ dict }}
-			{% endif %}
-	  {% endfor %}
-		{% endfor %}
-	{% endif %}
-</div>
-{% endif %}
-
-
-<div class='p-3'>
-	<form id='data-select-form' action='{% url "explorer:variation_species" %}' method="POST">
-	{% csrf_token %}
-	<div class='row vertical-align clade-select-bar'>
-		<div class='col-md-2 p-3'>
-			<h4>Select Clades</h4>
-		</div>
-
-		<div class='col-md-10 p-3'>
-			{{ clade_formset.management_form }}
-			{% for clade_group_form in clade_formset.forms %}
-			{% if forloop.counter0 == 0 %}
-			<!-- Dummy clade form row -->
-			<div class='clade-form-row-dummy' style='display:none;'>
-			{% else %}
-			<div class='clade-form-row'>
-			{% endif %}
-				<div class="row">
-					<div class="col-11">
-						{% for field in clade_group_form.visible_fields %}
-						<select class='form-control multiselect clade-select' multiple name="clade-{{ forloop.parentloop.counter0 }}-clade_group" id="id_clade-{{ forloop.parentloop.counter0 }}-clade_group" data-select2-id="id_clade-{{ forloop.parentloop.counter0 }}-clade_group">
-							{% for choice in field.value %}
-							<option value="{{ choice }}" selected >{{ choice|clade_lookup }}</option>
-							{% endfor %}
-						</select>
+<div class='container-fluid row d-flex justify-content-center'>
+		<div class="plotbox-outer col-11 col-sm-10 col-md-9 col-lg-8 col-xl-9">
+				{% if clade_formset|haserrors:'' or focus_formset|haserrors:'' %}
+				<div class="mx-0 mt-3 mb-0 alert alert-danger">
+					The following errors were found:<br>
+					{% if clade_formset|haserrors:'' %}
+						{% for error in clade_formset.non_form_errors %}
+							<li>{{ error|escape }}</li>
 						{% endfor %}
+						{% for dict in clade_formset.errors %}
+					  {% for errorlist in dict.values %}
+					  	<!-- suppress errors for dummy form -->
+					  	{% if errorlist and forloop.parentloop.counter0 != 0 %}
+					  		Clade group {{ forloop.parentloop.counter0 }}:
+					  		{{ dict }}
+							{% endif %}
+					  {% endfor %}
+						{% endfor %}
+					{% endif %}
+
+
+					{% if focus_formset|haserrors:'' %}
+						{% for error in focus_formset.non_form_errors %}
+							<li>{{ error|escape }}</li>
+						{% endfor %}
+						{% for dict in focus_formset.errors %}
+					  {% for errorlist in dict.values %}
+					  	<!-- suppress errors for dummy form -->
+					  	{% if errorlist and forloop.parentloop.counter0 != 0 %}
+					  		Focus {{ forloop.parentloop.counter0 }}:
+					  		{{ dict }}
+							{% endif %}
+					  {% endfor %}
+						{% endfor %}
+					{% endif %}
+				</div>
+				{% endif %}
+			
+				<form id='data-select-form' action='{% url "explorer:variation_species" %}' method="POST">
+				{% csrf_token %}
+				<div class="row px-3 d-flex justify-content-center">
+					<div class='col-12 px-0 my-3 col-xl-4 mx-xl-0'>
+						<div class='data-select-bar p-3 mr-xl-3'>
+							{% include "explorer/clade_group_filter.html" %}
+						</div>
 					</div>
-					<div class="col-1">
-				  	{% if forloop.counter0 != 1 %}
-						<button class="btn btn-sm btn-danger remove-clade-group">Delete</button>
-				  	{% endif %}
+					<div class='col-12 px-0 mb-3 col-xl-8 my-xl-3'>
+						<div class='data-select-bar p-3'>
+							{{ focus_formset.management_form }}
+							<div class='m-3'>
+								<h5>Select foci</h5>
+							</div>
+							<div class="col-12">
+								{% for focus_form in focus_formset.forms %}
+								{% if forloop.counter0 == 0 %}
+								<!-- Dummy focus form row -->
+								<div class='focus-form-row-dummy' style='display:none;'>
+								{% else %}
+								<div class='focus-form-row'>
+								{% endif %}
+									<div class="row">
+										<div class='col-4 col-sm-5'>
+										{% for field in focus_form.visible_fields %}
+										{% if field.name == 'score' %}
+										</div>
+										<div class="col-7 col-sm-6">
+											Score
+											<div class="focus-score">
+												<input type="text" id="id_focus-{{ forloop.parentloop.counter0 }}-score" name="{{ field.html_name }}" readonly class="score-slider" value="{{ field.value }}" score-range="{% score_range %}"><div id="{{ field.html_name }}-slider" class="pl-2"></div>
+											</div>
+										</div>
+										{% else %}
+											{% if field.name == 'anticodon' %}
+											<div class='focus-anticodon pb-2'>
+												Anticodon
+												{{ field }}
+											</div>
+											{% else %}
+											<div class='focus-{{ field.name }} pb-2'>
+												{{ field.name|title }}
+												{{ field }}
+											</div>
+											{% endif %}
+										{% endif %}
+										{% endfor %}
+										{% if forloop.counter0 != 1 %}
+										<div class="col-1">
+									  	<button type="button" class="close remove-focus" aria-label="Remove focus"><span aria-hidden="true">&times;</span></button>
+									  </div>
+									  {% endif %}
+									</div>
+									<hr class="col-10">
+								</div>
+								{% endfor %}
+								<div class='my-2'>
+									<a class="add-focus" href='#'>Add focus</a>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-12 m-3 p-0">
+						<button class='btn btn-primary btn-block' type='submit'>Submit</button>
 					</div>
 				</div>
-			</div>
-			{% endfor %}
-		</div>
 
-	</div>
-
-	<div class='row vertical-align select-bar data-select-bar'>
-		<div class='col-md-2 p-3'>
-			<h4>Select Foci</h4>
-		</div>
-
-		<div class='col-md-10 p-3'>
-			{{ focus_formset.management_form }}
-			{% for focus_form in focus_formset.forms %}
-			{% if forloop.counter0 == 0 %}
-			<!-- Dummy focus form row -->
-			<div class='focus-form-row-dummy' style='display:none;'>
-			{% else %}
-			<div class='focus-form-row'>
-			{% endif %}
-				<div class='row vertical-align'>
-					{% for field in focus_form.visible_fields %}
-					{% if field.name == 'score' %}
-					<div class="col-5 focus-score">
-						Score (bits): <input type="text" id="id_focus-{{ forloop.parentloop.counter0 }}-score" name="{{ field.html_name }}" readonly class="score-slider" value="{{ field.value }}" score-range="{% score_range %}">
-				  	<div id="{{ field.html_name }}-slider"></div>
-					</div>
-					{% else %}
-					{% if field.name == 'anticodon' %}
-					<div class='col-2 focus-anticodon'>
-						{{ field }}
-					</div>
-					{% else %}
-					<div class='col-2 focus-{{ field.name }}'>
-						{{ field }}
-					</div>
-					{% endif %}
-					{% endif %}
-					{% endfor %}
-					{% if forloop.counter0 != 1 %}
-				  <div class="col-1">
-						<button class="btn btn-sm btn-danger remove-focus">Delete</button>
-				  </div>
-				  {% endif %}
-				</div>
-				<hr class="col-md-10">
+		 		</form>
 			</div>
-			{% endfor %}
-			<div class='my-2'>
-				<button class="btn btn-success add-clade-group">Add clade group</button>
-		    <button class="btn btn-success add-focus">Add focus</button>
-				<button class='btn btn-primary' type='submit'>Submit</button>
-			</div>
-		</div>
-	</div>
-  </form>
+		</form>
+
 </div>
 {% endblock %}
 
 {% block table %}
 <div class="data-select-table">
-	<table class="table sticky-top">
+	<table class="table table-sm">
 		<tr>
-			<th scope="row">Clade groups</th>
-			<td colspan="5">{{ clade_group_names|clade_names_to_pretty_string|linebreaks }}</td>
-		</tr>
-		<tr>
-			<th scope="col" rowspan="5">Foci</th>
+			<th scope="row" colspan="5">Clade groups</th>
+			<th scope="col" rowspan="{{ foci|length|add:'1' }}">Foci</th>
 			<th scope="col">Position</th>
 			<th scope="col">Isotype</th>
 			<th scope="col">Anticodon</th>
@@ -331,6 +315,9 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 		</tr>
 		{% for focus in foci %}
 		<tr>
+			{% if forloop.counter == 1 %}
+			<td colspan="5" rowspan="{{ foci|length }}">{{ clade_group_names|clade_names_to_pretty_string|linebreaks }}</td>
+			{% endif %}
 			<td>{{ focus|focus_value:'position' }}</td>
 			<td>{{ focus|focus_value:'isotype' }}</td>
 			<td>{{ focus|focus_value:'anticodon' }}</td>

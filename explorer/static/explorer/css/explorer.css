@@ -292,14 +292,14 @@ td.cons-specific {
 
 .ui-slider {
   width: 99%;
+  left: 10px;
 }
 
 .score-slider {
   border: 0;
   margin: 0;
   background-color: transparent;
-  text-align: left;
-  width: 8em;
+  width: auto;
 }
 .footer {
   margin-top: 10em;
