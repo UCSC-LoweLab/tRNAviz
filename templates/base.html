@@ -26,8 +26,8 @@
 				selector = $('.navbar').find('a[href$="{{ request.path }}"]')
 				adata = selector;
 				// Exception for dropdown menu items
-				if (!selector.attr('class').includes('nav-link')) selector = selector.parent().prev();
-				selector.attr('style', 'color: white');
+				if (selector.attr('class').includes('nav-link')) selector.attr('class', 'nav-link active');
+				else selector.parent().prev().attr('class', 'nav-link dropdown-toggle active')
 			})
 		</script>
 
@@ -40,9 +40,14 @@
 	<body>
 		<main>
 			<!-- Navbar -->
-			<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-	  		<div>
-	    		<ul class="navbar-nav">
+			<nav class="navbar navbar-expand-sm navbar-dark bg-dark sticky-top">
+				<a class="navbar-brand" href="#">tRNAviz</a>
+			  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			  	<span class="navbar-toggler-icon"></span>
+  			</button>
+
+		  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+		    <ul class="navbar-nav mr-auto">
 	      		<li class="nav-item">
 	        		<a class="nav-link" href="{% url 'explorer:summary' %}">Summary</a>
 	      		</li>
