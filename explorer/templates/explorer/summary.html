@@ -91,7 +91,7 @@ Consensus sequence features and frequency distributions at a glance.
 
 {% block filter %}
 
-<div class='d-flex justify-content-center'>
+<div class='container-fluid d-flex justify-content-center px-0'>
 	<div class="plotbox-outer col-11 col-md-8 col-lg-6 col-xl-4">
 		{% if form.errors %}
 		<div class='m-3 alert alert-danger'>
@@ -104,26 +104,30 @@ Consensus sequence features and frequency distributions at a glance.
 		{% endif %}
 		<form id='data-select-form' action='{% url "explorer:summary" %}' method="POST">
 		{% csrf_token %}
-		<div class='m-3 p-3 data-select-bar'>
+		<div class="row px-3 d-flex justify-content-center">
+			<div class="col-12 px-0 my-3">
+				<div class='data-select-bar p-3'>
 
-			<div class='m-3'>
-				<h5>Select clade/isotype</h5>
+					<div class='m-3'>
+						<h5>Select clade/isotype</h5>
+					</div>
+					<div class="col-12">
+						Clade
+						<select class='form-control multiselect clade-select' name="clade" id="id_clade">
+						{% if form.clade.value != None %}
+						<option value="{{ form.clade.value }}">{{ form.clade.value|clade_lookup }}</option>
+						{% endif %}
+						</select>
+					</div>
+					<div class="col-12 pt-3 pb-3">
+						Isotype
+						{{ form.isotype }}
+					</div>
+				</div>
 			</div>
-			<div class="col-12">
-				Clade
-				<select class='form-control multiselect clade-select' name="clade" id="id_clade">
-				{% if form.clade.value != None %}
-				<option value="{{ form.clade.value }}">{{ form.clade.value|clade_lookup }}</option>
-				{% endif %}
-				</select>
+			<div class="col-12 mb-3 px-0">
+				<button class='btn btn-primary btn-block' type='submit'>Submit</button>
 			</div>
-			<div class="col-12 pt-3 pb-3">
-				Isotype
-				{{ form.isotype }}
-			</div>
-		</div>
-		<div class="col-12 pb-3">
-			<button class='btn btn-primary btn-block' type='submit'>Submit</button>
 		</div>
 		</form>
 	</div>
@@ -155,82 +159,92 @@ Consensus sequence features and frequency distributions at a glance.
 
 {% block plots %}
 
-	<div class="col-12 plotbox-row-title summary-sticky-bar">
-		<h5 class='text-center'>Consensus features</h5>
-	</div>
+<div class="col-12 plotbox-row-title summary-sticky-bar">
+	<h5 class='text-center'>Consensus features</h5>
+</div>
 
-<div class="plotbox-row d-flex justify-content-lg-center flex-wrap">
-	<div class="plotbox-outer">
-		<div class="plotbox-header">
-			<div class="download-box dropdown">
-  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
-  			<div class="dropdown-menu">
-    			<a class="dropdown-item" href="#" id='cloverleaf-download-png'>PNG</a>
-    			<a class="dropdown-item" href="#" id='cloverleaf-download-pdf'>PDF</a>
-  			</div>
-  		</div>
-			<h5>Cloverleaf</h5>
-		</div>
-		<div class="plotbox-inner" id="cloverleaf-area">
-			<div class="loading-overlay"></div>
+<div class="plotbox-row d-flex justify-content-center flex-wrap">
+	<div class="col-12 col-sm-auto">
+		<div class="plotbox-outer">
+			<div class="plotbox-header">
+				<div class="download-box dropdown">
+	  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
+	  			<div class="dropdown-menu">
+	    			<a class="dropdown-item" href="#" id='cloverleaf-download-png'>PNG</a>
+	    			<a class="dropdown-item" href="#" id='cloverleaf-download-pdf'>PDF</a>
+	  			</div>
+	  		</div>
+				<h5>Cloverleaf</h5>
+			</div>
+			<div class="plotbox-inner" id="cloverleaf-area">
+				<div class="loading-overlay"></div>
+			</div>
 		</div>
 	</div>
-	<div class="plotbox-outer">
-		<div class="plotbox-header">
-			<div class="download-box dropdown">
-  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
-  			<div class="dropdown-menu">
-    			<a class="dropdown-item" href="#" id='cloverleaf-base-distro-download-pdf'>PDF</a>
-  			</div>
-  		</div>
-			<h5>Nucleotide distribution by position</h5>
-		</div>
-		<div class="plotbox-inner" id="cloverleaf-base-distro-area">
-			<div class="loading-overlay" style='margin-left: 14em; margin-right: 14em'></div>
+	<div class="col-12 col-lg-auto">
+		<div class="plotbox-outer">
+			<div class="plotbox-header">
+				<div class="download-box dropdown">
+	  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
+	  			<div class="dropdown-menu">
+	    			<a class="dropdown-item" href="#" id='cloverleaf-base-distro-download-pdf'>PDF</a>
+	  			</div>
+	  		</div>
+				<h5>Nucleotide distribution by position</h5>
+			</div>
+			<div class="plotbox-inner" id="cloverleaf-base-distro-area">
+				<div class="loading-overlay" style='margin-left: 14em; margin-right: 14em'></div>
+			</div>
 		</div>
 	</div>
 </div>
-
 
 <div class="col-12 plotbox-row-title summary-sticky-bar">
 	<h5 class='text-center'>Context</h5>
 </div>
 
-<div class="plotbox-row d-flex justify-content-lg-center flex-wrap">
-
-	<div class="plotbox-outer">
-		<div class="plotbox-header">
-			<h5>Taxonomy summary</h5>
-		</div>
-		<div class="table-inner" id="taxonomy-summary-area">
-			<div class="loading-overlay"></div>
-		</div>
-	</div>
-
-	<div class="plotbox-outer">
-		<div class="plotbox-header">
-			<h5>Domain-specific consensus features</h5>
-		</div>
-		<div class="table-inner" id="domain-features-area">
-			<div class="loading-overlay"></div>
+<div class="plotbox-row d-flex justify-content-center flex-wrap">
+	<div class="col-12 col-sm-auto">
+		<div class="plotbox-outer">
+			<div class="plotbox-header">
+				<h5>Taxonomy summary</h5>
+			</div>
+			<div class="table-inner" id="taxonomy-summary-area">
+				<div class="loading-overlay"></div>
+			</div>
 		</div>
 	</div>
 
-	<div class="plotbox-outer">
-		<div class="plotbox-header">
-			<h5>Anticodon counts</h5>
-		</div>
-		<div class="table-inner" id="anticodon-counts-area">
-			<div class="loading-overlay"></div>
+	<div class="col-12 col-sm-auto">
+		<div class="plotbox-outer">
+			<div class="plotbox-header">
+				<h5>Domain-specific consensus features</h5>
+			</div>
+			<div class="table-inner" id="domain-features-area">
+				<div class="loading-overlay"></div>
+			</div>
 		</div>
 	</div>
 
-	<div class="plotbox-outer">
-		<div class="plotbox-header">
-			<h5>Isotype discrepancies</h5>
+	<div class="col-12 col-sm-auto">
+		<div class="plotbox-outer">
+			<div class="plotbox-header">
+				<h5>Anticodon counts</h5>
+			</div>
+			<div class="table-inner" id="anticodon-counts-area">
+				<div class="loading-overlay"></div>
+			</div>
 		</div>
-		<div class="table-inner" id="isotype-discrepancies-area">
-			<div class="loading-overlay"></div>
+	</div>
+
+	<div class="col-12">
+		<div class="plotbox-outer">
+			<div class="plotbox-header">
+				<h5>Isotype discrepancies</h5>
+			</div>
+			<div class="table-inner" id="isotype-discrepancies-area">
+				<div class="loading-overlay"></div>
+			</div>
 		</div>
 	</div>
 </div>
@@ -239,38 +253,40 @@ Consensus sequence features and frequency distributions at a glance.
 	<h5 class='text-center'>Isotype-specific consensus features</h5>
 </div>
 
-<div class="plotbox-row d-flex justify-content-xl-center flex-wrap">
-	<div class="plotbox-outer">
-		<div class="plotbox-header">
-			<div class="download-box dropdown">
-  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
-  			<div class="dropdown-menu">
-    			<a class="dropdown-item" href="#" id='tilemap-download-pdf'>PDF</a>
-    			<a class="dropdown-item" href="#" id='tilemap-download-png'>PNG</a>
-  			</div>
-  		</div>
-			<h5>Tilemap</h5>
-		</div>
-		<div class="plotbox-inner" id="tilemap-area">
-			<div class="loading-overlay" style='margin-left: 20em; margin-right: 20em'></div>
+<div class="plotbox-row d-flex justify-content-center flex-wrap">
+	<div class="col-12 col-xl-auto">
+		<div class="plotbox-outer">
+			<div class="plotbox-header">
+				<div class="download-box dropdown">
+	  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
+	  			<div class="dropdown-menu">
+	    			<a class="dropdown-item" href="#" id='tilemap-download-pdf'>PDF</a>
+	    			<a class="dropdown-item" href="#" id='tilemap-download-png'>PNG</a>
+	  			</div>
+	  		</div>
+				<h5>Tilemap</h5>
+			</div>
+			<div class="plotbox-inner" id="tilemap-area">
+				<div class="loading-overlay" style='margin-left: 20em; margin-right: 20em'></div>
+			</div>
 		</div>
 	</div>
-
-	<div class="plotbox-outer">
-		<div class="plotbox-header">
-			<div class="download-box dropdown">
-  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
-  			<div class="dropdown-menu">
-    			<a class="dropdown-item" href="#" id='tilemap-base-distro-download-pdf'>PDF</a>
-  			</div>
-  		</div>
-			<h5>Nucleotide distribution by position / isotype</h5>
-		</div>
-		<div class="plotbox-inner" id="tilemap-base-distro-area">
-			<div class="loading-overlay" style='margin-left: 14em; margin-right: 14em'></div>
+	<div class="col-12 col-lg-auto">
+		<div class="plotbox-outer">
+			<div class="plotbox-header">
+				<div class="download-box dropdown">
+	  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
+	  			<div class="dropdown-menu">
+	    			<a class="dropdown-item" href="#" id='tilemap-base-distro-download-pdf'>PDF</a>
+	  			</div>
+	  		</div>
+				<h5>Nucleotide distribution by position / isotype</h5>
+			</div>
+			<div class="plotbox-inner" id="tilemap-base-distro-area">
+				<div class="loading-overlay" style='margin-left: 14em; margin-right: 14em'></div>
+			</div>
 		</div>
 	</div>
 </div>
-
 
 {% endblock %}

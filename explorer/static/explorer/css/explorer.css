@@ -129,7 +129,7 @@ div.form-row {
 }
 
 textarea.fasta-input {
-  height: 64px;
+  height: 49px;
 }
 
 span.btn-default {
@@ -175,9 +175,16 @@ div.plotbox-row-title {
   color: white;
   background: #777777;
 }
+
+div.flex-margin {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 div.plotbox-row {
   padding-top: 2em;
   padding-bottom: 2em;
+  padding-left: 1em;
   overflow: scroll;
 }
 
@@ -194,8 +201,8 @@ div.plotbox-outer, .table-outer {
   background: #dddddd;
   display: inline-block;
   vertical-align: top;
-  margin: 1em;
   height: intrinsic;
+  margin: 1em;
 }
 
 div.plotbox-inner, .table-inner {

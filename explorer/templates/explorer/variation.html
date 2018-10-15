@@ -124,60 +124,23 @@ tRNAviz | Variation
 Explore and visualize tRNA sequence variation through <a href="{% url 'explorer:variation_distribution' %}">aggregated</a> or <a href="{% url 'explorer:variation_species' %}">species-specific</a> distributions. 
 {% endblock %}
 
-{% block clade_group_filter %}
-
-			<div class='col-6 m-3 p-3 data-select-bar'>
-				{{ clade_formset.management_form }}
-				<div class='m-3'>
-					<h5>Select clade groups</h5>
-				</div>
-				<div class="col-12">
-
-					{% for clade_group_form in clade_formset.forms %}
-					{% if forloop.counter0 == 0 %}
-					<!-- Dummy clade form row -->
-					<div class='clade-form-row-dummy' style='display:none;'>
-					{% else %}
-					<div class='clade-form-row'>
-					{% endif %}
-						<div class="row">
-							<div class="col-11 pb-1">
-								{% for field in clade_group_form.visible_fields %}
-								<select class='form-control multiselect clade-select' multiple name="clade-{{ forloop.parentloop.counter0 }}-clade_group" id="id_clade-{{ forloop.parentloop.counter0 }}-clade_group" data-select2-id="id_clade-{{ forloop.parentloop.counter0 }}-clade_group">
-									{% for choice in field.value %}
-									<option value="{{ choice }}" selected >{{ choice|clade_lookup }}</option>
-									{% endfor %}
-								</select>
-								{% endfor %}
-							</div>
-					  	{% if forloop.counter0 != 1 %}
-					  	<button type="button" class="close remove-clade-group" aria-label="Remove clade group"><span aria-hidden="true">&times;</span></button>
-					  	{% endif %}
-						</div>
-					</div>
-					{% endfor %}
-					<div class='my-2'>
-						<a class="add-clade-group" href='#'>Add clade group</a>
-					</div>
-				</div>
-			</div>
-{% endblock %}
-
 {% block plots %}
-<div class="plotbox-row d-flex justify-content-lg-center flex-wrap">
-	<div class="plotbox-outer">
-		<div class="plotbox-header">
-			<div class="download-box dropdown">
-  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
-  			<div class="dropdown-menu">
-    			<a class="dropdown-item" href="#" id='distribution-download-pdf'>PDF</a>
-    			<a class="dropdown-item" href="#" id='distribution-download-json'>JSON</a>
-  			</div>
-  		</div>
-			<h5>Sequence feature distribution</h5>
-		</div>
-		<div class="plotbox-inner" id="distribution-area">
-			<div class="loading-overlay" style="margin-left: 10em; margin-right: 10em;"></div>
+<div class="plotbox-row d-flex justify-content-center flex-wrap">
+	<div class="col-12 col-lg-auto">
+		<div class="plotbox-outer">
+			<div class="plotbox-header">
+				<div class="download-box dropdown">
+	  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
+	  			<div class="dropdown-menu">
+	    			<a class="dropdown-item" href="#" id='distribution-download-pdf'>PDF</a>
+	    			<a class="dropdown-item" href="#" id='distribution-download-json'>JSON</a>
+	  			</div>
+	  		</div>
+				<h5>Sequence feature distribution</h5>
+			</div>
+			<div class="plotbox-inner" id="distribution-area">
+				<div class="loading-overlay" style="margin-left: 10em; margin-right: 10em;"></div>
+			</div>
 		</div>
 	</div>
 </div>
