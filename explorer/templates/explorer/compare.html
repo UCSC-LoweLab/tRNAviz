@@ -15,6 +15,14 @@
 
 {% block title %}tRNAviz | Compare{% endblock %}
 
+{% block banner %}
+tRNAviz | Compare
+{% endblock %}
+
+{% block description %}
+Calculate position-specific conservation between groups of tRNAs.
+{% endblock %}
+
 {% block filterjs %}
 <script type='text/javascript'>
 $(document).ready(function() {
@@ -189,136 +197,149 @@ d3.json("{% url 'explorer:coords' %}", function(coords) {
 {% endblock %}
 
 {% block filter %}
+<div class='container-fluid d-flex justify-content-center px-0'>
+	<div class="plotbox-outer col-11 col-xl-9">
 
-{% if formset|haserrors:'compare' %}
-<div class='alert alert-danger'>
-	The following errors were found:<br>
-	{% for error in formset.formset_wide_errors %}
-		<li>{{ error|escape }}</li>
-	{% endfor %}
-	{% for dict in formset.errors %}
-  {% for errorlist in dict.values %}
-  	<!-- suppress errors for reference + dummy forms -->
-  	{% if errorlist and forloop.parentloop.counter0 != 1 %}
-  	{% if forloop.parentloop.counter0 == 0 %}
-  	Reference:
-  	{% else %}
-  	Selection {{ forloop.parentloop.counter|minus2 }}:
-  	{% endif %}
-  	<ul>
-  		{% for error in errorlist %}
-			<li>{{ error|safe }}</li>
+		{% if formset|haserrors:'compare' %}
+		<div class='mx-0 mt-3 mb-0 alert alert-danger'>
+			The following errors were found:<br>
+			{% for error in formset.formset_wide_errors %}
+				<li>{{ error|escape }}</li>
 			{% endfor %}
-		</ul>
+			{% for dict in formset.errors %}
+		  {% for errorlist in dict.values %}
+		  	<!-- suppress errors for reference + dummy forms -->
+		  	{% if errorlist and forloop.parentloop.counter0 != 1 %}
+		  	{% if forloop.parentloop.counter0 == 0 %}
+		  	Reference:
+		  	{% else %}
+		  	Selection {{ forloop.parentloop.counter|minus2 }}:
+		  	{% endif %}
+		  	<ul>
+		  		{% for error in errorlist %}
+					<li>{{ error|safe }}</li>
+					{% endfor %}
+				</ul>
+				{% endif %}
+		  {% endfor %}
+			{% endfor %}
+		</div>
 		{% endif %}
-  {% endfor %}
-	{% endfor %}
-</div>
-{% endif %}
 
-<div class='p-3'>
-	<form id='data-select-form' action='' method="POST">
+
+		<form id='data-select-form' action='' method="POST">
 		{% csrf_token %}
 		{{ formset.management_form }}
-		{% for form in formset.forms %}
-		{% if forloop.counter == 1 %}
-		<div class='row vertical-align select-bar reference-select-bar'>
-			<div class='col-md-2 p-3'>
-				<h4>Reference</h4>
-			</div>
-			<div class='col-md-10 p-3'>
-		{% elif forloop.counter == 2 %}
-		<div class='row vertical-align select-bar data-select-bar'>
-			<div class='col-md-2 p-3'>
-				<h4>Selections</h4>
-			</div>
-			<div class='col-md-10 p-3'>
-		{% endif %}
-				{% if forloop.counter == 1 %}
-				<div>
-				{% elif forloop.counter == 2 %}
-				<div class='form-row-dummy' style="display: none;">
-				{% elif forloop.counter > 2 %}
-				<div class='form-row' style='display: block;'>
-				{% endif %}
-				{% if forloop.counter == 2 or forloop.counter > 3 %}
-					<hr class="col-md-10">
-				{% endif %}
-				{% if forloop.counter > 1 %}
-					<div class='my-2'>
-						{{ form.name }}
+		<div class="row px-3 d-flex justify-content-center">
+			{% for form in formset.forms %}
+			{% if forloop.counter == 1 %}
+			<div class='col-12 px-0 my-3 col-lg-4 mx-lg-0'>
+				<div class='data-select-bar p-3 mr-lg-3'>
+					<div class='m-3'>
+						<h5>Reference clade / isotype</h5>
 					</div>
-				{% endif %}
-					<div class='my-2 db-select' style="display: {{ form.use_fasta.value|yesno:'none,block' }};">
-						<select class='form-control multiselect clade-select' name="{{ form.clade.html_name }}" id="clade-select-{{ forloop.counter0 }}">
-							<option></option>
-							{% if form.clade.value == None and forloop.counter < 3 %}
-							<option value="2759" selected>Eukaryota (domain)</option>
-							{% elif form.clade.value != None %}
-							<option value="{{ form.clade.value }}" selected >{{ form.clade.value|clade_lookup }}</option>
-							{% endif %}
-						</select>
-					</div>
-					<div class='my-2 db-select'  style="display: {{ form.use_fasta.value|yesno:'none,block' }};">
-						{{ form.isotype }}
-					</div>
-					{% if forloop.counter > 1 %}
-					<div class='my-2 fasta-input' style="display: {{ form.use_fasta.value|yesno:'block,none' }};">
-						{{ form.fasta }}
-					</div>
-					{{ form.use_fasta }}
-					<div class="domain-select" style="display: {{ form.use_fasta.value|yesno:'inline-block,none' }};">
-						<div class="btn-group btn-group-toggle" data-toggle="buttons">
-							<label class="btn btn-sm btn-secondary spoof-button">Select alignment model</label>
-						</div>
-
-						<div class="btn-group btn-group-toggle" data-toggle="buttons">
-							{% for radio in form.domain %}
-							{% if radio.data.value == form.domain.value %}
-							<label class="btn btn-sm btn-outline-secondary active" for="{{ radio.id_for_label }}">
-							{% else %}
-							<label class="btn btn-sm btn-outline-secondary" for="{{ radio.id_for_label }}">
-							{% endif %}{{ radio.tag }}{{ radio.choice_label }}
-							</label>
-							{% endfor %}
+					<div class="col-12">
+						<div class="reference-row">
+							<div class="row">
+								<div class='col-12 pb-1 db-select'>
+									Clade
+									<select class='form-control multiselect clade-select' name="{{ form.clade.html_name }}" id="clade-select-{{ forloop.counter0 }}">
+										<option></option>
+										{% if form.clade.value != None %}
+										<option value="{{ form.clade.value }}" selected >{{ form.clade.value|clade_lookup }}</option>
+										{% endif %}
+									</select>
+								</div>
+								<div class='col-12 pb-1 db-select'>
+									Isotype
+									{{ form.isotype }}
+								</div>
+							</div>
 						</div>
 					</div>
-					{% endif %}
-					{% if forloop.counter > 1 and forloop.counter != 3 %}
-					<button class="btn btn-sm btn-danger remove-form-row">Delete row</button>
-					{% endif %}
-					<!-- prevent form from returning None because of lack of fields -->
-					{% if forloop.counter == 1 %}
-					<div class='my-2 fasta-input' style="display: none">
-						{{ form.fasta }}
-						{{ form.name }}
-						{{ form.use_fasta }}
-					</div>
-					{% endif %}
+				</div>
+			</div>
 
-				<!-- tag closing for IDE support -->
-				{% if forloop.counter > 2 %}
-				</div>
-				{% elif forloop.counter == 2 %}
-				</div>
-				{% elif forloop.counter == 1 %}			
-				</div>
+			<div class='col-12 px-0 mb-3 col-lg-8 my-lg-3'>
+				<div class='data-select-bar p-3'>
+					<div class='m-3'>
+						<h5>Query selections</h5>
+					</div>
+					<div class="col-12">
+			{% else %}
+				{% if forloop.counter == 2 %}
+						<div class='form-row-dummy' style='display:none;'>
+				{% else %}
+						<div class='form-row'>
 				{% endif %}
-		{% if forloop.last %}
-				<hr class="col-md-10">
-				<div class='my-2'>
-          <button class="btn btn-success add-form-row">Add row</button>
-					<button class='btn btn-primary' type='submit'>Submit</button>
-        </div>
+							<div class="row">
+								<div class='col-11 pb-1'>
+									Group
+									{{ form.name }}
+								</div>
+								{% if forloop.counter != 1 and forloop.counter != 3 %}
+								<div class="col-1">
+							  	<button type="button" class="close remove-form-row" aria-label="Delete row"><span aria-hidden="true">&times;</span></button>
+							  </div>
+							  {% endif %}
+								<div class='col-11 pb-1 db-select'>
+									Clade
+									<select class='form-control multiselect clade-select' name="{{ form.clade.html_name }}" id="clade-select-{{ forloop.counter0 }}">
+										<option></option>
+										{% if form.clade.value != None %}
+										<option value="{{ form.clade.value }}" selected >{{ form.clade.value|clade_lookup }}</option>
+										{% endif %}
+									</select>
+								</div>
+								<div class='col-11 pb-1 db-select'>
+									Isotype
+									{{ form.isotype }}
+								</div>
+								<div class='col-11 pb-1 fasta-input' style="display: {{ form.use_fasta.value|yesno:'block,none' }};">
+									Input tRNAs
+									{{ form.fasta }}
+								</div>
+								<div class='col-12 pb-1 domain-select' style="display: {{ form.use_fasta.value|yesno:'inline-block,none' }};">
+									<div class="btn-group btn-group-toggle d-none d-sm-inline-block" data-toggle="buttons">
+											<label class="btn btn-sm btn-secondary spoof-button">Select domain</label>
+									</div>
+
+										<div class="btn-group btn-group-toggle" data-toggle="buttons">
+											{% for radio in form.domain %}
+											{% if radio.data.value == form.domain.value %}
+											<label class="btn btn-sm btn-outline-secondary active" for="{{ radio.id_for_label }}">
+											{% else %}
+											<label class="btn btn-sm btn-outline-secondary" for="{{ radio.id_for_label }}">
+											{% endif %}{{ radio.tag }}{{ radio.choice_label }}
+											</label>
+											{% endfor %}
+										</div>
+								</div>
+								<div class='col-11'>
+									{{ form.use_fasta }}
+								</div>
+								{% if forloop.counter >= 2 %}
+								<hr class="col-md-10">
+								{% endif %}
+							</div> <!-- row -->
+						</div> <!-- form-row -->
+			{% endif %}
+			{% endfor %}
+
+						<div class='my-2'>
+							<a class="add-form-row" href='#'>Add row</a>
+						</div>
+					</div> <!-- col-12 -->
+				</div> <!-- data-select-bar -->
+			</div>
+			<div class="col-12 mb-3 px-0">
+				<button class='btn btn-primary btn-block' type='submit'>Submit</button>
 			</div>
 		</div>
-		{% elif forloop.counter == 1 %}
-			</div>
-		</div>
-		{% endif %}
-		{% endfor %}
-	</form>
+		</form>
+	</div>
 </div>
+
 {% endblock %}
 
 {% block table %}
@@ -352,7 +373,7 @@ d3.json("{% url 'explorer:coords' %}", function(coords) {
 
 {% block plots %}
 {% if valid_form and formset_json != 'none' %}
-<div class="plotbox-row d-flex justify-content-lg-center flex-wrap">
+<div class="plotbox-row d-flex flex-wrap">
 	<div class="plotbox-outer">
 		<div class="plotbox-header">
 			<div class="download-box dropdown">
