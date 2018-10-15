@@ -20,11 +20,8 @@ def index(List, i):
     return None
 
 @register.filter('clade_names_to_pretty_string')
-def clade_names_to_pretty_string(clade_group_names):
-  groups_str = []
-  for i, names in enumerate(clade_group_names):
-    groups_str.append('Group {}: {}'.format(i + 1, ', '.join(names)))
-  return '\n'.join(groups_str)
+def clade_names_to_pretty_string(names):
+  return ', '.join(names)
 
 @register.filter('list_to_url_string')
 def list_to_url_string(mylist):

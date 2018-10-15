@@ -156,6 +156,7 @@ div.sticky-table, div.summary-sticky-bar {
 div.sticky-table {
   top: 0;
 }
+
 div.summary-sticky-bar {
   top: 85px;
   z-index: 99;
@@ -221,10 +222,25 @@ div.data-select-table {
   margin: 0 auto;
   width: auto;
 }
+
+.table > thead > tr > th {
+  border-top: 0;
+}
+
 .table-sm td, .table-sm th {
   padding-left: 2em;
   padding-right: 2em;
 }
+
+.table-sm.clade-group-table td, .table-sm.clade-group-table th {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+.table-sm.foci-table td, .table-sm.foci-table th {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
 
 div.plotbox-header {
   margin: 1em;

@@ -189,7 +189,7 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 
 {% block filter %}
 
-<div class='container-fluid row d-flex justify-content-center'>
+<div class='container-fluid d-flex justify-content-center'>
 		<div class="plotbox-outer col-11 col-sm-10 col-md-9 col-lg-8 col-xl-9">
 				{% if clade_formset|haserrors:'' or focus_formset|haserrors:'' %}
 				<div class="mx-0 mt-3 mb-0 alert alert-danger">
@@ -303,27 +303,45 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 {% endblock %}
 
 {% block table %}
-<div class="data-select-table">
-	<table class="table table-sm">
-		<tr>
-			<th scope="row" colspan="5">Clade groups</th>
-			<th scope="col" rowspan="{{ foci|length|add:'1' }}">Foci</th>
-			<th scope="col">Position</th>
-			<th scope="col">Isotype</th>
-			<th scope="col">Anticodon</th>
-			<th scope="col">Score range</th>
-		</tr>
-		{% for focus in foci %}
-		<tr>
-			{% if forloop.counter == 1 %}
-			<td colspan="5" rowspan="{{ foci|length }}">{{ clade_group_names|clade_names_to_pretty_string|linebreaks }}</td>
-			{% endif %}
-			<td>{{ focus|focus_value:'position' }}</td>
-			<td>{{ focus|focus_value:'isotype' }}</td>
-			<td>{{ focus|focus_value:'anticodon' }}</td>
-			<td>{{ focus|focus_value:'score' }}</td>
-		</tr>
-		{% endfor %}
+<div class="data-select-table d-flex justify-content-center p-1">
+	<table class="table table-sm table-responsive clade-group-table mx-1 mx-lg-3">
+		<thead>
+			<th colspan="2" class="text-lg-center">Clade groups</th>
+		</thead>
+		<tbody>
+			<tr>
+				<th scope="col">#</th>
+				<th scope="col">Name / rank</th>
+			</tr>
+			{% for names in clade_group_names %}
+			<tr>
+				<td>{{ forloop.counter }}</td>
+				<td class="text-nowrap">{{ names|clade_names_to_pretty_string }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+	<table class="table table-sm table-responsive foci-table mx-1 mx-lg-3">
+		<thead>
+			<th colspan="4" class="text-lg-center">Foci</th>
+		</thead>
+		<tbody>
+			<tr>
+				<th scope="col">Position</th>
+				<th scope="col">Isotype</th>
+				<th scope="col">Anticodon</th>
+				<th scope="col" class="text-nowrap">Score range</th>
+			</tr>
+			{% for focus in foci %}
+			<tr>
+				<td>{{ focus|focus_value:'position' }}</td>
+				<td>{{ focus|focus_value:'isotype' }}</td>
+				<td>{{ focus|focus_value:'anticodon' }}</td>
+				<td>{{ focus|focus_value:'score' }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
 	</table>
 </div>
 {% endblock %}
