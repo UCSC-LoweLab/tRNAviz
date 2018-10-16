@@ -164,7 +164,7 @@ var draw_cloverleaf = function(cloverleaf_data) {
     d3.select('.tooltip-consensus').html(d['consensus'])
     d3.select('.tooltip-cloverleaf').transition()
       .duration(100)
-      .style('opacity', .9)
+      .style('opacity', .95)
       .style('left', d3.event.pageX + 'px')
       .style('top', d3.event.pageY + 'px');
     d3.select('#circle' + d['position'])

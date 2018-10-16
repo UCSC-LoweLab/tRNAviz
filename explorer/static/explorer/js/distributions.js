@@ -163,7 +163,7 @@ var draw_distribution = function(plot_data) {
         tooltip_freq.html(Math.round((d[1] - d[0]) * 100) / 100)
         tooltip_count.html(plot_data[isotype][position].filter(x => x['group'] == d.data.group)[0][d3.select('#tooltip-feature').html()]);
         $('.tooltip-distribution').css({
-          opacity: 0.9,
+          opacity: 0.95,
         }).position({
           my: "left top",
           of: d3.event,
@@ -179,7 +179,7 @@ var draw_distribution = function(plot_data) {
         tooltip_freq.html(Math.round((d[1] - d[0]) * 100) / 100)
         tooltip_count.html(plot_data[isotype][position].filter(x => x['group'] == d.data.group)[0][d3.select('#tooltip-feature').html()]);
         $('.tooltip-distribution').css({
-          opacity: 0.9,
+          opacity: 0.95,
         }).position({
           my: "left top",
           of: d3.event,

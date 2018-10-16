@@ -102,7 +102,7 @@ var draw_bitchart = function(plot_data) {
       tooltip_feature.html(d['label']);
       tooltip_freq.html(d['total']);
       $('.tooltip-compare').css({
-        opacity: 0.9,
+        opacity: 0.95,
       }).position({
         my: "left top",
         of: d3.event,
@@ -117,7 +117,7 @@ var draw_bitchart = function(plot_data) {
     })
     .on('mousemove', function(d, i) {
       $('.tooltip-compare').css({
-        opacity: 0.9,
+        opacity: 0.95,
       }).position({
         my: "left top",
         of: d3.event,
