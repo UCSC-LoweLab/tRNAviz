@@ -228,7 +228,7 @@ var draw_species_distribution = function(plot_data) {
     .values())
   
   var facet_height = 100 - 10 * foci.length;
-  var x_axis_buffer = 7 * assemblies.reduce(function (a, b) { return a.length > b.length ? a : b; }).length;
+  var x_axis_buffer = 30 + 6 * assemblies.reduce(function (a, b) { return a.length > b.length ? a : b; }).length;
   var legend_height = 80;
   var legend_width = 400;
   var y_axis_buffer = 140;
