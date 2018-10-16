@@ -177,8 +177,7 @@ div.plotbox-row-title {
 }
 
 div.flex-margin {
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
 }
 
 div.plotbox-row {
