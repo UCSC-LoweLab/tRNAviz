@@ -86,10 +86,10 @@ var draw_legend = function() {
 	</div>
 
 	<div class="about-row row bg-light d-flex">
-		<h2 class='col-12 text-center text-lg-left' id='Data'>Data</h2>
-		<h5 class='col-12 text-center text-lg-left mt-3' id='tRNA-annotation'>tRNA annotation</h5>
+		<h2 class='col-12 text-center text-lg-left hotlink mb-3' id='Data'>Data</h2>
+		<h4 class='col-12 text-center text-lg-left hotlink' id='tRNA-annotation'>tRNA annotation</h4>
 		<div class="col-lg-6">
-			<p>We ran <a href="http://lowelab.ucsc.edu/tRNAscan-SE/">tRNAscan-SE</a> on hundreds of assemblies. Many tRNAs were filtered out or marked as duplicate using a combination of the following criteria:</p>
+			<p>We ran <a href="http://lowelab.ucsc.edu/tRNAscan-SE/" target="_blank">tRNAscan-SE</a> on hundreds of assemblies. Many tRNAs were filtered out or marked as duplicate using a combination of the following criteria:</p>
 
 			<ul>
 				<li>Low scoring tRNAs</li>
@@ -108,7 +108,7 @@ var draw_legend = function() {
 		<div class="col-lg-6 mb-5 d-flex justify-content-center">
 			<div class="plotbox-outer">
 				<div class="plotbox-header text-center">
-					<h5 class="text-center">Current snapshot of tRNAviz data</h5>
+					<h4 class="text-center">Current snapshot of tRNAviz data</h4>
 				</div>
 				<div class="table-inner" id="genome-summary-area">
 					<div class="loading-overlay"></div>
@@ -116,7 +116,7 @@ var draw_legend = function() {
 			</div>
 		</div>
 
-		<h5 class='col-12 text-center text-lg-left mt-3' id='Consensus-features'>Consensus features</h5>
+		<h4 class='col-12 text-center text-lg-left hotlink' id='Consensus-features'>Consensus features</h4>
 		<div class="col-lg-6 d-flex content-with-footnote">
 			<p>Within a group of tRNAs, each position and base pair was classified into a set of nucleotide ambiguity codes. The classification algorithm iterates over ranked feature combinations<sup><a>1</a></sup> to determine the consensus feature.</p>
 			
@@ -133,7 +133,7 @@ var draw_legend = function() {
 		<div class="col-lg-6 mb-5 d-flex justify-content-center">
 			<div class="plotbox-outer">
 				<div class="plotbox-header text-center">
-					<h5>Feature colors</h5>
+					<h4>Feature colors</h4>
 				</div>
 				<div class="table-inner" id="feature-colors-area">
 					<div class="loading-overlay"></div>
@@ -143,16 +143,16 @@ var draw_legend = function() {
 	</div>
 
 	<div class="about-row row bg-dark d-flex">
-		<h2 class='col-12 text-center text-lg-left text-white' id='Visualizations'>Visualizations</h2>
-		<div class="col-lg-6 d-flex content-with-footnote text-lightgray">
-			<h5 class="text-center text-lg-left text-white mt-3" id='Distributions'>Distributions</h5>
-			<p>The <a href="{% url 'explorer:variation_distribution' %}" class="text-light">Variation</a> pages facilitate a deeper look at conservation patterns.</p>
+		<h2 class='col-12 text-center text-lg-left text-white hotlink' id='Visualizations'>Visualizations</h2>
+		<div class="col-lg-6 d-flex content-with-footnote text-lightgray mt-3">
+			<h4 class='text-center text-lg-left text-white hotlink' id='Distributions'>Distributions</h4>
+			<p>The <a href="{% url 'explorer:variation_distribution' %}" class="text-light" target="_blank">Variation</a> pages facilitate a deeper look at conservation patterns.</p>
 
 			<p><u><i>Clade groups</i></u> are arbitrary combinations of clades - any set of unique clades and species can be combined into a clade group. Clade groups can be used to visualize outgroup distributions<sup><a>3</a></sup>, but can also be used outside of taxonomic groups<sup><a>4</a></sup>. Both Variation pages use clade group queries.</p>
 
 			<p>A <u><i>focus</i></u> is a selection of tRNAs based on individual tRNA annotations. Currently, selecting a focus by position, isotype, anticodon, and domain-specific score range are supported.</p>
 
-			<p>In general, scores above 50 bits are likely to be real tRNAs. However, score ranges vary by clade<sup><a>5</a></sup>. Consult the <a href='#'>Taxonomy</a> page for your clade, or visit <a href="http://gtrnadb.ucsc.edu">GtRNAdb</a> for more detailed individual tRNA gene annotations.
+			<p>In general, scores above 50 bits are likely to be real tRNAs. However, score ranges vary by clade<sup><a>5</a></sup>. Consult the <a href='#' target="_blank">Taxonomy</a> page for your clade, or visit <a href="http://gtrnadb.ucsc.edu" target="_blank">GtRNAdb</a> for more detailed individual tRNA gene annotations.
 
 
 			<div class="footnotes">
@@ -164,9 +164,9 @@ var draw_legend = function() {
 			</div>
 		</div>
 		
-		<div class="col-lg-6 d-flex text-lightgray content-with-footnote">
-			<h5 class="text-center text-lg-left text-white mt-3" id='Bitcharts'>Bitcharts</h5>
-			<p>The <a href="{% url 'explorer:compare' %}" class="text-light">Compare</a> pages facilitate a deeper look at conservation patterns. Its primary focus is to examine position-specific deviation from expected features in custom sets of tRNAs<sup><a>6</a></sup>. Input FASTA sequence is supported<sup><a>7</a></sup>.</p>
+		<div class="col-lg-6 d-flex text-lightgray content-with-footnote mt-3">
+			<h4 class='text-center text-lg-left text-white hotlink' id='Bitcharts'>Bitcharts</h4>
+			<p>The <a href="{% url 'explorer:compare' %}" class="text-light" target="_blank">Compare</a> pages facilitate a deeper look at conservation patterns. Its primary focus is to examine position-specific deviation from expected features in custom sets of tRNAs<sup><a>6</a></sup>. Input FASTA sequence is supported<sup><a>7</a></sup>.</p>
 
 			<p>Under the hood, tRNAviz undergoes a three step process:</p>
 			<ol>
@@ -176,7 +176,7 @@ var draw_legend = function() {
 			</ol>
 
 			<p>This process is computationally intensive. With smaller queries, bitcharts are generated in less than a minute, but with extremely large queries, it may take up to ten minutes.</p>
-			
+
 			<p>Position-specific scores for each query selection are normalized by subtracting the expected score for the highest probability feature<sup><a>8</a></sup>. These are derived by aligning the reference model against the tRNAs used to build the reference model. Thus, normalized position-specific scores have a maximum of 0.</p>
 
 			<div class="footnotes">
@@ -188,16 +188,21 @@ var draw_legend = function() {
 	</div>
 
 	<div class="about-row row d-flex">
-		<h2 class='col-12 text-center text-lg-left' id='About'>About</h2>
-		<div class="col-lg-6">
-			<h5 class="text-center text-lg-left mt-3" id='Citation'>Citation</h5>
-			<p>If you use tRNAviz, please cite us via the <a href='#'>bioRxiv submission</a>.</p>
+		<h2 class='col-12 text-center text-lg-left hotlink' id='About'>About</h2>
+		<div class="col-lg-6 my-3">
+			<h5 class='text-center text-lg-left hotlink' id='Citation'>Citation</h5>
+			<p>If you use tRNAviz or its visualizations, please cite us via the <a href='#' target="_blank">bioRxiv submission</a>.</p>
 		</div>
 
 
-		<div class="col-lg-6">
-			<h5 class="text-center text-lg-left mt-3" id='Contact'>Contact</h5>
-			<p>For bug reports, issues, comments, or suggestions, send an email to <a href='#'>bylin@ucsc.edu</a>.</p>
+		<div class="col-lg-6 my-3">
+			<h5 class='text-center text-lg-left hotlink' id='Contact'>Contact</h5>
+			<p>For bug reports, issues, comments, or suggestions, send an email to <a href='#' target="_blank">bylin@ucsc.edu</a>.</p>
+		</div>
+
+		<div class="col-lg-6 my-3">
+			<h5 class='text-center text-lg-left hotlink' id='Code'>Code</h5>
+			<p>tRNAviz and all associated code are open source. The <a href='https://github.com/bylin/tRNAviz-data' target="_blank">data processing pipeline</a> and <a href='https://github.com/bylin/tRNAviz'>web application</a> is available on Github.</p>
 		</div>
 	</div>
 

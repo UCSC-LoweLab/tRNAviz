@@ -359,3 +359,7 @@ div.footnotes {
 .cloverleaf-about {
   overflow: hidden;
 }
+.hotlink {
+  padding-top: 72px;
+  margin-top: -72px;
+}
