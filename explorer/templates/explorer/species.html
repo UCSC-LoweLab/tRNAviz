@@ -189,7 +189,7 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 
 {% block filter %}
 <div class='container-fluid d-flex justify-content-center px-0'>
-	<div class="plotbox-outer col-11 col-sm-10 col-md-9 col-lg-8 col-xl-9">
+	<div class="plotbox-outer col-11 col-sm-10 col-md-9 col-lg-8 col-xl-10">
 		{% if clade_formset|haserrors:'' or focus_formset|haserrors:'' %}
 		<div class="mx-0 mt-3 mb-0 alert alert-danger">
 			The following errors were found:<br>
@@ -229,12 +229,12 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 		<form id='data-select-form' action='{% url "explorer:variation_species" %}' method="POST">
 		{% csrf_token %}
 		<div class="row px-3 d-flex justify-content-center">
-			<div class='col-12 px-0 my-3 col-xl-4 mx-xl-0'>
+			<div class='col-12 px-0 my-3 col-xl-5 mx-xl-0'>
 				<div class='data-select-bar p-3 mr-xl-3'>
 					{% include "explorer/clade_group_filter.html" %}
 				</div>
 			</div>
-			<div class='col-12 px-0 mb-3 col-xl-8 my-xl-3'>
+			<div class='col-12 px-0 mb-3 col-xl-7 my-xl-3'>
 				<div class='data-select-bar p-3'>
 					{{ focus_formset.management_form }}
 					<div class='m-3'>
