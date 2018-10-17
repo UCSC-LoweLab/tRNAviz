@@ -434,3 +434,23 @@ def species_distribution(request, clade_txids, foci):
     if str(e) == 'No tRNAs found. Most likely, tRNAs for your selection do not exist in the tRNAviz database (e.g., fMet in eukaryotes). Try a different selection.': 
       return JsonResponse({'error': str(e)})
     return JsonResponse({'error': 'Unknown server error'})
+
+
+def genome_summary(request):
+  try:
+    species_qs = models.Taxonomy.objects.filter(rank = 'species').values('domain').annotate(nspecies = Count('domain')).order_by('domain')
+    species_df = read_frame(species_qs)
+    species_df['domain'] = ['Archaea', 'Bacteria', 'Eukaryota']
+    clade_qs = models.Taxonomy.objects.exclude(rank__in = ['species', 'assembly']).values('domain').annotate(nclades = Count('domain')).order_by('domain')
+    clade_df = read_frame(clade_qs)
+    clade_df['domain'] = ['Archaea', 'Bacteria', 'Eukaryota']
+    trna_qs = models.tRNA.objects.values('domain').annotate(ntrnas = Count('domain')).order_by('domain')
+    trna_df = read_frame(trna_qs)
+    trna_df['domain'] = ['Archaea', 'Bacteria', 'Eukaryota']
+    
+    counts = clade_df.set_index('domain').join(species_df.set_index('domain')).join(trna_df.set_index('domain'))
+    counts.columns = ['No. Clades', 'No. Species', 'No. tRNAs']
+    return HttpResponse(counts.to_html(classes = 'table', border = 0, bold_rows = False, na_rep = '0', sparsify = True))
+  
+  except:
+    return HttpResponse('Unknown server error')

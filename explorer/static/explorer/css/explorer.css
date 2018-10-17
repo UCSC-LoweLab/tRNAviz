@@ -6,6 +6,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  counter-reset: footnotecounter;
 }
 main {
   flex: 1;
@@ -328,4 +329,33 @@ td.cons-specific {
   color: #eeeeee;
   font-weight: bold;
 
+}
+.about-row {
+  padding: 2em;
+  margin: 0;
+}
+
+.text-lightgray {
+  color: #d7d7d7;
+}
+
+span.footnote:before {
+  counter-increment: footnotecounter;
+  content: counter(footnotecounter);
+  position: relative;
+  top: -0.4em;
+}
+div.footnotes {
+  margin-top: auto;
+  font-size: 8pt;
+  color: gray;
+}
+
+.content-with-footnote {
+  flex-direction: column;
+  margin-bottom: 3em;
+}
+
+.cloverleaf-about {
+  overflow: hidden;
 }

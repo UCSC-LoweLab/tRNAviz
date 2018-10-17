@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% load static from staticfiles %}
+{% load explorer_extras %}
+
+{% block static %}
+<link rel="stylesheet" href="{% static 'explorer/css/explorer.css' %}">
+{% endblock %}
+
+{% block title %}tRNAviz | About{% endblock %}
+
+
+{% block plotjs %}
+<script type = "text/javascript">
+$(document).ready(function() {
+	$.get('{% url "explorer:genome_summary" %}')
+	  .done(function(response) { $('#genome-summary-area').html(response); });
+
+	draw_legend();
+});
+
+var draw_legend = function() {
+	d3.select('#feature-colors-area .loading-overlay').style('display', 'none');
+
+  var feature_legend_scale = d3.scaleOrdinal()
+	  .domain(['A', 'C', 'G', 'U', 
+			'Purine', 'Pyrimidine', 'Weak (A/U)', 'Strong (C/G)', 'Amino (A/C)', 'Keto (G/U)', 'B (C/G/U)', 'D (A/G/U)', 'H (A/C/U)', 'V (A/C/G)',
+	    'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'A:G', 'G:A', 'C:U', 'U:C', 'A:C', 'C:A', 'A:A', 'C:C', 'G:G', 'U:U', 
+	    'Paired', 'High mismatch rate', 'Absent (- or -:-)', 'Malformed (N:- or -:N)'])
+	  .range(['#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', 
+	  	'#ff8300', '#66c2a5', '#b3de69', '#fb72b2', '#c1764a', '#b26cbd', '#e5c494','#ccebd5', '#ffa79d', '#a6cdea',
+	    '#17b3cf', '#9ed0e5', '#ff7f0e', '#ffbb78', '#a067bc', '#ceafd5', '#2fc69e', '#8be4cf', '#e377c2', '#f7b6d2', '#c47b70', '#f0a994', '#e7cb94', '#cedb9c', '#e7969c', '#9ca8de',
+	    '#ffffcc', '#b3b3b3', '#7f7f7f', '#333333'])
+
+  var svg = d3.select('#feature-colors-area')
+  	.append('svg')
+  	.attr('id', 'feature-colors')
+  	.attr('width', 310)
+  	.attr('height', 300)
+
+	var legend = svg.append('g')
+    .attr('id', 'legend')
+  
+  legend.selectAll('rect')
+    .data(feature_legend_scale.domain())
+    .enter()
+    .append('rect')
+    .attr('class', 'legend-rect')
+    .attr('x', (d, i) => i < 28 ? 100 * Math.floor(i / 14) : 160)
+    .attr('y', (d, i) => (18 * i) % 252 + 2 * (i % 14))
+    .attr("width", 18)
+    .attr("height", 18)
+    .style('fill', d => feature_legend_scale(d));
+  
+  legend.selectAll('text')
+    .data(feature_legend_scale.domain())
+    .enter()
+    .append('text')
+    .attr('class', 'legend-label')
+    .attr('x', (d, i) => i < 28 ? 100 * Math.floor(i / 14) + 22 : 182)
+    .attr('y', (d, i) => (18 * i) % 252 + 2 * (i % 14) + 13)
+    .text(d => d);
+}
+
+</script>
+{% endblock %}
+
+{% block banner %}tRNAviz{% endblock %}
+{% block description %}Explore and visualize tRNA sequence features across the tree of life.{% endblock %}
+
+{% block plots %}
+
+<div class="container">
+	<div class="about-row row">
+		<div class="col-lg-6 d-flex flex-column justify-content-center">
+			<h2 class="text-center text-lg-left">Introduction</h2>
+			<p>tRNAviz empowers users to perform comparative genomics analyses on tRNA sequence features. </p>
+
+			<p>Although many, many tRNAs have been sequenced or predicted in genomes, aggregation of tRNA features is limited to those fluent in "big-data" bioinformatics methods.</p>
+
+			<p>To address this, tRNAviz provides a point-and-click toolset of customizable and powerful visualizations.</p>
+		</div>
+
+		<div class="col-lg-6 d-none d-lg-block">
+			<img src="{% static 'img/cloverleaf-about.png' %}" width="100%">
+		</div>
+	</div>
+
+	<div class="about-row row bg-light d-flex">
+		<h2 class='col-12 text-center text-lg-left' id='Data'>Data</h2>
+		<h5 class='col-12 text-center text-lg-left mt-3' id='tRNA-annotation'>tRNA annotation</h5>
+		<div class="col-lg-6">
+			<p>We ran <a href="http://lowelab.ucsc.edu/tRNAscan-SE/">tRNAscan-SE</a> on hundreds of assemblies. Many tRNAs were filtered out or marked as duplicate using a combination of the following criteria:</p>
+
+			<ul>
+				<li>Low scoring tRNAs</li>
+				<li>tRNAscan-SE's high confidence annotation</li>
+				<li>Identical copies of tRNA isodecoders</li>
+				<li>tRNA<sup>SeC</sup></li>
+				<li>Mitochondrial tRNAs</li>
+				<li><i>numts</i></li>
+			</ul>
+
+			<p>tRNAs were carefully filtered to remove obvious tRNA pseudogenes without removing tRNAs with potential for function. For example, high-scoring tRNAs with isotype prediction discrepancies based on their isotype-specific scores may still be used in translation or have regulatory roles.</p>
+
+			<p>All tRNAs are tagged with its source assembly, clade, isotype, anticodon, score, best-scoring isotype-specific model and score, isotype-specific score from the anticodon model, intron length, G/C content, number of indels, and loop sizes.</p>
+		</div>
+
+		<div class="col-lg-6 mb-5 d-flex justify-content-center">
+			<div class="plotbox-outer">
+				<div class="plotbox-header text-center">
+					<h5 class="text-center">Current snapshot of tRNAviz data</h5>
+				</div>
+				<div class="table-inner" id="genome-summary-area">
+					<div class="loading-overlay"></div>
+				</div>
+			</div>
+		</div>
+
+		<h5 class='col-12 text-center text-lg-left mt-3' id='Consensus-features'>Consensus features</h5>
+		<div class="col-lg-6 d-flex content-with-footnote">
+			<p>Within a group of tRNAs, each position and base pair was classified into a set of nucleotide ambiguity codes. The classification algorithm iterates over ranked feature combinations<sup><a>1</a></sup> to determine the consensus feature.</p>
+			
+			<p>To determine a consensus feature for a group of tRNAs, within each major clade and isotype combination of the group of tRNAs, 90% of the tRNAs must contain the feature. Each species also must contain at least one tRNA with that feature. Each possible base or base pair was required to exist in at least 5% of the tRNA isodecoders in question<sup><a>2</a></sup>. </p>
+
+
+			<div class="footnotes">
+				<p><span class="footnote">E.g., purine is consisted of A or G and is ranked lower than A, C, G, and U.</span></p>
+				<p><span class="footnote">This prevents rare features from making a disproportionate impact.</span></p>
+			</div>
+		</div>
+
+
+		<div class="col-lg-6 mb-5 d-flex justify-content-center">
+			<div class="plotbox-outer">
+				<div class="plotbox-header text-center">
+					<h5>Feature colors</h5>
+				</div>
+				<div class="table-inner" id="feature-colors-area">
+					<div class="loading-overlay"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="about-row row bg-dark d-flex">
+		<h2 class='col-12 text-center text-lg-left text-white' id='Visualizations'>Visualizations</h2>
+		<div class="col-lg-6 d-flex content-with-footnote text-lightgray">
+			<h5 class="text-center text-lg-left text-white mt-3" id='Distributions'>Distributions</h5>
+			<p>The <a href="{% url 'explorer:variation_distribution' %}" class="text-light">Variation</a> pages facilitate a deeper look at conservation patterns.</p>
+
+			<p><u><i>Clade groups</i></u> are arbitrary combinations of clades - any set of unique clades and species can be combined into a clade group. Clade groups can be used to visualize outgroup distributions<sup><a>3</a></sup>, but can also be used outside of taxonomic groups<sup><a>4</a></sup>. Both Variation pages use clade group queries.</p>
+
+			<p>A <u><i>focus</i></u> is a selection of tRNAs based on individual tRNA annotations. Currently, selecting a focus by position, isotype, anticodon, and domain-specific score range are supported.</p>
+
+			<p>In general, scores above 50 bits are likely to be real tRNAs. However, score ranges vary by clade<sup><a>5</a></sup>. Consult the <a href='#'>Taxonomy</a> page for your clade, or visit <a href="http://gtrnadb.ucsc.edu">GtRNAdb</a> for more detailed individual tRNA gene annotations.
+
+
+			<div class="footnotes">
+				<p><span class="footnote">For example, a user can choose to combine Ascomycota with Basidiomycota in one clade group, and compare their sequence feature distribution with Microsporidia in another clade group.</span></p>
+
+				<p><span class="footnote">For example, to see if there is a shared tRNA sequence feature signature among pathogenic bacteria, a user may choose to combine all known pathogenic bacteria in one clade group, opportunistically pathogenic bacteria in a second group, and non-pathogenic bacteria in a third group.</span></p>
+
+				<p><span class="footnote"><i>Schizosaccharomyces pombe</i>'s tRNA<sup>Met</sup> has an average score of 57 bits, while in human, the average tRNA<sup>Met</sup> score is 78 bits.
+			</div>
+		</div>
+		
+		<div class="col-lg-6 d-flex text-lightgray content-with-footnote">
+			<h5 class="text-center text-lg-left text-white mt-3" id='Bitcharts'>Bitcharts</h5>
+			<p>The <a href="{% url 'explorer:compare' %}" class="text-light">Compare</a> pages facilitate a deeper look at conservation patterns. Its primary focus is to examine position-specific deviation from expected features in custom sets of tRNAs<sup><a>6</a></sup>. Input FASTA sequence is supported<sup><a>7</a></sup>.</p>
+
+			<p>Under the hood, tRNAviz undergoes a three step process:</p>
+			<ol>
+				<li>Use reference selection to build a covariance model</li>
+				<li>Align each group of query selections to the model</li>
+				<li>Extract and normalize position-specific scores</li>
+			</ol>
+
+			<p>This process is computationally intensive. With smaller queries, bitcharts are generated in less than a minute, but with extremely large queries, it may take up to ten minutes.</p>
+			
+			<p>Position-specific scores for each query selection are normalized by subtracting the expected score for the highest probability feature<sup><a>8</a></sup>. These are derived by aligning the reference model against the tRNAs used to build the reference model. Thus, normalized position-specific scores have a maximum of 0.</p>
+
+			<div class="footnotes">
+				<p><span class="footnote">This approach can be easily used to find closely related tRNAs, summarize distributions, and ranking isotypes and clades similar to a given tRNA. However, we recommend that you use the most appropriate tool for the job - for example, use BLAST to find closely related tRNAs.</span></p>
+				<p><span class="footnote">Must be accompanied by choice of domain-specific numbering model. The universal model is used by default.</span></p>
+				<p><span class="footnote">Each tRNA yields a <i>parsetree</i>. Position-specific scores for query selections with a single tRNA are directly extracted from the single parsetree, while for multiple tRNAs, all scores are extracted, then averaged by position.</span></p>
+			</div>
+		</div>
+	</div>
+
+	<div class="about-row row d-flex">
+		<h2 class='col-12 text-center text-lg-left' id='About'>About</h2>
+		<div class="col-lg-6">
+			<h5 class="text-center text-lg-left mt-3" id='Citation'>Citation</h5>
+			<p>If you use tRNAviz, please cite us via the <a href='#'>bioRxiv submission</a>.</p>
+		</div>
+
+
+		<div class="col-lg-6">
+			<h5 class="text-center text-lg-left mt-3" id='Contact'>Contact</h5>
+			<p>For bug reports, issues, comments, or suggestions, send an email to <a href='#'>bylin@ucsc.edu</a>.</p>
+		</div>
+	</div>
+
+</div>
+
+{% endblock %}

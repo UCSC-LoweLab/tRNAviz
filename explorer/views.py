@@ -117,3 +117,6 @@ def compare(request):
     'valid_form': valid_form,
     'formset_json': formset_json_fh.name
   })
+
+def about(request):
+  return render(request, 'explorer/about.html')

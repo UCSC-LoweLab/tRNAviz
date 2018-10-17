@@ -7,14 +7,18 @@
 		<!-- Javascript libraries -->
 		{% include "static.html" %}
 
-		<!-- Highlight current tab in navbar -->
 		<script>
-			$(document).ready(function() {
+			$(function () {
+
+				// Highlight current tab in navbar
 				selector = $('.navbar').find('a[href$="{{ request.path }}"]')
 				// Exception for dropdown menu items
 				if (selector.attr('class').includes('nav-link')) selector.attr('class', 'nav-link active');
 				else selector.parent().prev().attr('class', 'nav-link dropdown-toggle active')
-			})
+
+				// Initialize all tooltips
+  			$('[data-toggle="tooltip"]').tooltip()
+			});
 		</script>
 
 

@@ -55,9 +55,8 @@ var feature_scale = d3.scaleOrdinal()
     '#b3de69', '#fb72b2', '#c1764a', '#b26cbd', '#e5c494', '#ccebd5', '#ffa79d', '#a6cdea',
     '#17b3cf', '#9ed0e5', '#ff7f0e', '#ffbb78', '#a067bc', '#ceafd5', '#2fc69e', '#8be4cf', '#e377c2', '#f7b6d2', '#c47b70', '#f0a994', '#e7cb94', '#cedb9c', '#e7969c', '#9ca8de',
     '#333333', '#333333', '#333333', '#333333', '#333333', '#333333', '#333333', '#333333', '#333333']);
-var adata;
+
 var draw_cloverleaf = function(cloverleaf_data) {
-  adata = cloverleaf_data;
   var cloverleaf_area_width = 525,
       cloverleaf_area_height = 550;
 
