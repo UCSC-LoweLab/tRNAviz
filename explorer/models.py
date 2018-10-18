@@ -27,10 +27,21 @@ ISOTYPES = (
 )
 
 class Taxonomy(models.Model):
-  name = models.CharField(max_length = 200)
+  name = models.CharField(max_length = 150)
   rank = models.CharField(max_length = 20)
   taxid = models.CharField(max_length = 10)
-  domain = models.CharField(max_length = 4)
+  domain = models.CharField(max_length = 20)
+  kingdom = models.CharField(max_length = 10, blank = True, null = True)
+  subkingdom = models.CharField(max_length = 10, blank = True, null = True)
+  phylum = models.CharField(max_length = 10, blank = True, null = True)
+  subphylum = models.CharField(max_length = 10, blank = True, null = True)
+  taxclass = models.CharField('class', db_column = 'class', max_length = 10, blank = True, null = True)
+  subclass = models.CharField(max_length = 10, blank = True, null = True)
+  order = models.CharField(max_length = 10, blank = True, null = True)
+  family = models.CharField(max_length = 10, blank = True, null = True)
+  genus = models.CharField(max_length = 10, blank = True, null = True)
+  species = models.CharField(max_length = 10, blank = True, null = True)
+  assembly = models.CharField(max_length = 10, blank = True, null = True)
 
   def __str__(self):
     return '{} ({})'.format(self.name, self.rank)
@@ -46,19 +57,18 @@ class tRNA(models.Model):
   isoscore = models.FloatField()
   isoscore_ac = models.FloatField()
   dbname = models.CharField(max_length = 150)
-  assembly = models.CharField(max_length = 150)
-  species = models.CharField(max_length = 100, blank = True, null = True)
-  genus = models.CharField(max_length = 50, blank = True, null = True)
-  family = models.CharField(max_length = 50, blank = True, null = True)
-  order = models.CharField(max_length = 50, blank = True, null = True)
-  subclass = models.CharField(max_length = 50, blank = True, null = True)
-  taxclass = models.CharField('class', db_column = 'class', max_length = 50, blank = True, null = True)
-  subphylum = models.CharField(max_length = 50, blank = True, null = True)
-  phylum = models.CharField(max_length = 50, blank = True, null = True)
-  subkingdom = models.CharField(max_length = 50, blank = True, null = True)
-  kingdom = models.CharField(max_length = 50, blank = True, null = True)
-  domain = models.CharField(max_length = 10, blank = True, null = True)
-  taxid = models.CharField(max_length = 10, blank = True, null = True)
+  domain = models.CharField(max_length = 20)
+  kingdom = models.CharField(max_length = 10, blank = True, null = True)
+  subkingdom = models.CharField(max_length = 10, blank = True, null = True)
+  phylum = models.CharField(max_length = 10, blank = True, null = True)
+  subphylum = models.CharField(max_length = 10, blank = True, null = True)
+  taxclass = models.CharField('class', db_column = 'class', max_length = 10, blank = True, null = True)
+  subclass = models.CharField(max_length = 10, blank = True, null = True)
+  order = models.CharField(max_length = 10, blank = True, null = True)
+  family = models.CharField(max_length = 10, blank = True, null = True)
+  genus = models.CharField(max_length = 10, blank = True, null = True)
+  species = models.CharField(max_length = 10, blank = True, null = True)
+  assembly = models.CharField(max_length = 10, blank = True, null = True)
 
   GCcontent = models.FloatField()
   insertions = models.IntegerField()
@@ -214,7 +224,6 @@ class tRNA(models.Model):
 
 class Consensus(models.Model):
   taxid = models.CharField(max_length = 10)
-  rank = models.CharField(max_length = 20)
   isotype = models.CharField(max_length = 5)
 
   p1_72 = models.CharField('1:72', default = '', max_length = 20, blank = True, null = True)
@@ -351,12 +360,11 @@ class Consensus(models.Model):
   p73 = models.CharField('73', default = '', max_length = 20, blank = True, null = True)
   
   def __str__(self):
-    return 'Consensus for {} ({}) - {}'.format(self.taxid, self.rank, self.isotype)
+    return 'Consensus for {} - {}'.format(self.taxid, self.isotype)
 
 
 class Freq(models.Model):
   taxid = models.CharField(max_length = 10)
-  rank = models.CharField(max_length = 20)
   isotype = models.CharField(max_length = 5)
   position = models.CharField(max_length = 10)
   total = models.IntegerField(default = 0)
@@ -392,7 +400,7 @@ class Freq(models.Model):
   MU = models.IntegerField('-:U', db_column = '-:U', default = 0)
   
   def __str__(self):
-    return 'Freqs for {} ({}) - {}}'.format(self.taxid, self.rank, self.position)
+    return 'Freqs for {} - {}'.format(self.taxid, self.position)
 
 class Coord(models.Model):
   position = models.CharField(primary_key = True, max_length = 5)
