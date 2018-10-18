@@ -16,7 +16,7 @@ $(document).ready(function() {
 	$('#id_clade').select2({
 		width: "100%", 
 		allowClear: true, 
-		placeholder: "Select a clade (required)", 
+		placeholder: "Enter a clade (required)", 
 		minimumInputLength: 3,
 	  ajax: {
 	  	url: "{% url 'explorer:search' search_type='clade' %}",
@@ -38,7 +38,7 @@ $(document).ready(function() {
 		d3.select('#cloverleaf-base-distro-area .loading-overlay').style('display', 'none');
 	  if ("server_error" in plot_data) d3.select('#cloverleaf-area').text(plot_data['server_error']);
 		else {
-			draw_cloverleaf(plot_data);
+			draw_cloverleaf(plot_data, "{{ isotype }}");
 			draw_base_distro(plot_data, 'cloverleaf');
 		}
 	});
@@ -94,7 +94,7 @@ Consensus sequence features and frequency distributions at a glance. <sup><small
 <div class='container-fluid d-flex justify-content-center px-0'>
 	<div class="plotbox-outer col-11 col-md-8 col-lg-6 col-xl-4">
 		{% if form.errors %}
-		<div class='m-3 alert alert-danger'>
+		<div class='mb-0 mt-3 alert alert-danger'>
 			{% for field in form %}
 				{% for error in field.errors %}
 					<li>Error in {{ field.name }}: {{ error|escape }}</li>
@@ -116,6 +116,8 @@ Consensus sequence features and frequency distributions at a glance. <sup><small
 						<select class='form-control multiselect clade-select' name="clade" id="id_clade">
 						{% if form.clade.value != None %}
 						<option value="{{ form.clade.value }}">{{ form.clade.value|clade_lookup }}</option>
+						{% else %}
+						<option></option>
 						{% endif %}
 						</select>
 					</div>

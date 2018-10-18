@@ -50,13 +50,13 @@ var feature_scale = d3.scaleOrdinal()
   .domain(['', 'A', 'C', 'G', 'U', '-', 'absent', 'Purine', 'Pyrimidine', 'Weak', 'Strong', 'Amino', 'Keto', 'B', 'D', 'H', 'V', 'N', 'Absent', 'Mismatched', 'Paired', 'High mismatch rate',
     'A / U', 'G / C', 'A / C', 'G / U', 'C / G / U', 'A / G / U', 'A / C / U', 'A / C / G',
     'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'A:G', 'G:A', 'C:U', 'U:C', 'A:C', 'C:A', 'A:A', 'C:C', 'G:G', 'U:U', 
-    'Missing', 'A:-', '-:A', 'C:-', '-:C', 'G:-', '-:G', 'U:-', '-:U'])
+    'Malformed', 'A:-', '-:A', 'C:-', '-:C', 'G:-', '-:G', 'U:-', '-:U'])
   .range(['#ffffff', '#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#7f7f7f', '#7f7f7f', '#ff8300','#66c2a5','#b3de69','#fb72b2','#c1764a','#b26cbd', '#e5c494','#ccebd5','#ffa79d','#a6cdea','#ffffff', '#7f7f7f','#333333','#ffffcc','#b3b3b3',
     '#b3de69', '#fb72b2', '#c1764a', '#b26cbd', '#e5c494', '#ccebd5', '#ffa79d', '#a6cdea',
     '#17b3cf', '#9ed0e5', '#ff7f0e', '#ffbb78', '#a067bc', '#ceafd5', '#2fc69e', '#8be4cf', '#e377c2', '#f7b6d2', '#c47b70', '#f0a994', '#e7cb94', '#cedb9c', '#e7969c', '#9ca8de',
     '#333333', '#333333', '#333333', '#333333', '#333333', '#333333', '#333333', '#333333', '#333333']);
 
-var draw_cloverleaf = function(cloverleaf_data) {
+var draw_cloverleaf = function(cloverleaf_data, isotype) {
   var cloverleaf_area_width = 525,
       cloverleaf_area_height = 550;
 
@@ -171,7 +171,7 @@ var draw_cloverleaf = function(cloverleaf_data) {
       .transition()
       .duration(100)
       .attr('class', 'cloverleaf-highlight');
-    update_base_distro(d, 'cloverleaf', '');
+    update_base_distro(d, 'cloverleaf', isotype);
   }
   function dehighlight() { 
     d3.select('.tooltip-cloverleaf').transition()    
@@ -221,6 +221,7 @@ var draw_base_distro = function(freq_data, plot_type) {
 
   // initialize x and y axes (for initial UI)
   if (plot_type == 'cloverleaf') {
+
     var max_freq = d3.max(Object.values(freq_data).map(d => d3.sum(Object.values(d['freqs']))));
     var base_freq_scale = d3.scaleLinear()
       .domain([0, max_freq])
@@ -298,11 +299,15 @@ var draw_base_distro = function(freq_data, plot_type) {
         .range([base_distro_height, 0]);
       var base_freq_axis = d3.axisLeft(isotype_base_freq_scale);
     } else {
-      var max_freq = d3.sum(d3.nest()
-        .key(d => d['isotype'])
-        .rollup(d => d3.max(Object.values(d).map(value => d3.max(Object.values(value['freqs'])))))
-        .entries(freq_data)
-        .map(d => d['value']))
+      if (isotype == 'All') {
+        var max_freq = d3.sum(Object.values(coord['freqs']));
+      }
+      else {
+        var max_freq = d3.max(freq_data
+          .filter(d => d['isotype'] == isotype)
+          .map(d => d3.sum(Object.values(d['freqs'])))
+        );
+      }
       var base_freq_scale = d3.scaleLinear()
         .domain([0, max_freq])
         .range([base_distro_height, 0]);
