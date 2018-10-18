@@ -5,7 +5,7 @@ from explorer import models
 from explorer import services
 from explorer import views
 
-@tag('api', 'search')
+@tag('api', 'search', 'current')
 class SearchTests(TestCase):
   def setUp(self):
     self.client = Client()
@@ -150,7 +150,7 @@ class SummaryServicesTests(TestCase):
     self.assertIn('Isotype', http)
     self.assertIn('Anticodon', http)
 
-  @tag('isotype-discrepancies', 'current')
+  @tag('isotype-discrepancies')
   def test_isotype_discrepancies(self):
     response = services.isotype_discrepancies(self.request, self.clade_txid, self.isotype)
     http = response.content.decode('utf8')

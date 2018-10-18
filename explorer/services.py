@@ -52,12 +52,7 @@ def search(request, search_type):
   query = request.GET.get('term')
   taxonomy_qs = models.Taxonomy.objects.filter(name__icontains = query)
   if search_type == 'clade': taxonomy_qs = taxonomy_qs.exclude(rank = 'assembly')
-  data = {'results': [{'id': tax.taxid, 'text': str(tax)} for tax in taxonomy_qs] , 'more': False}
-  return JsonResponse(data, safe = False)
-
-def taxonomy_search(request):
-  query = request.GET.get('term')
-  taxonomy_qs = models.Taxonomy.objects.filter(name__icontains = query).exclude(rank = 'assembly')
+  taxonomy_qs = sorted(taxonomy_qs, key = lambda tax: -['assembly', 'species', 'genus', 'family', 'order', 'subclass', 'class', 'subphylum', 'phylum', 'subkingdom', 'kingdom', 'domain'].index(tax.rank))
   data = {'results': [{'id': tax.taxid, 'text': str(tax)} for tax in taxonomy_qs] , 'more': False}
   return JsonResponse(data, safe = False)
 
@@ -315,8 +310,7 @@ def query_trnas_for_distribution(clade_groups, clade_info, isotypes, positions):
     for taxid in clade_info:
       if taxid not in clade_group: continue
       name, rank = clade_info[taxid]
-      if rank == 'class': rank = 'taxclass'
-      q_list.append(Q(**{str(rank): name}))
+      q_list.append(Q(**{rank if rank != 'class' else 'taxclass': taxid}))
     query_filter_args = Q()
     for q in q_list:
       query_filter_args = query_filter_args | q

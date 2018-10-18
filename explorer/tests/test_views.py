@@ -158,6 +158,7 @@ class CompareViewTests(TestCase):
     response = views.compare(request)
     self.assertNotContains(response, 'The following errors were found:')
 
+  @tag('current')
   def test_compare_view_valid_post(self):
     request = self.factory.post(reverse('explorer:compare'), self.valid_post_data)
     response = views.compare(request)
