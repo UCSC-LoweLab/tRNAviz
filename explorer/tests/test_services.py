@@ -34,7 +34,7 @@ class SearchTests(TestCase):
       with self.subTest(clade = clade):
         self.assertFalse('assembly' in clade)
 
-@tag('api', 'summary')
+@tag('summary')
 class SummaryServicesTests(TestCase):
   def setUp(self):
     self.client = Client()
@@ -111,6 +111,10 @@ class SummaryServicesTests(TestCase):
     plot_data = json.loads(json_response.content.decode('utf8'))
     self.assertEqual(len(plot_data), 1995) # 21 isotypes * 95 positions
 
+    json_response = services.tilemap(self.request, '5204')
+    plot_data = json.loads(json_response.content.decode('utf8'))
+    self.assertEqual(len(plot_data), 1995) # 21 isotypes * 95 positions
+
   @tag('taxonomy-summary')
   def test_taxonomy_summary(self):
     json_response = services.taxonomy_summary(self.request, self.clade_txid, self.isotype)
@@ -131,7 +135,7 @@ class SummaryServicesTests(TestCase):
 
   @tag('domain-features')
   def test_domain_features_same_clade(self):
-    json_response = services.domain_features(self.request, '2', self.isotype)
+    json_response = services.domain_features(self.request, '2759', self.isotype)
     cons = json.loads(json_response.content.decode('utf8'))
     self.assertIn('position', cons[0])
     self.assertIn('clade', cons[0])
@@ -146,8 +150,7 @@ class SummaryServicesTests(TestCase):
     self.assertIn('Isotype', http)
     self.assertIn('Anticodon', http)
 
-
-  @tag('isotype-discrepancies')
+  @tag('isotype-discrepancies', 'current')
   def test_isotype_discrepancies(self):
     response = services.isotype_discrepancies(self.request, self.clade_txid, self.isotype)
     http = response.content.decode('utf8')

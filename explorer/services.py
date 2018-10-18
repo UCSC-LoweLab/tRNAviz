@@ -25,13 +25,13 @@ PAIRED_FEATURES = {
 }
 
 LABELS = {
-  'A': 'A', 'G': 'G', 'C': 'C', 'U': 'U', 'Absent': '-', '': '',  'Purine': 'Purine', 'Pyrimidine': 'Pyrimidine',
+  'A': 'A', 'G': 'G', 'C': 'C', 'U': 'U', 'Absent': 'Absent', '': '',  'Purine': 'Purine', 'Pyrimidine': 'Pyrimidine',
   'Amino': 'A / C', 'Keto': 'G / U', 'Weak': 'A / U', 'Strong': 'C / G', 'Wobble': 'G / U',
   'B': 'C / G / U', 'H': 'A / C / U', 'D': 'A / G / U', 'V': 'A / C / G', 'N': 'N',
   'AU': 'A:U', 'UA': 'U:A', 'CG': 'C:G', 'GC': 'G:C', 'GU': 'G:U', 'UG': 'U:G',
   'PurinePyrimidine': 'Purine:Pyrimidine', 'PyrimidinePurine': 'Pyrimidine:Purine',
   'WobblePair': 'G:U / U:G', 'StrongPair': 'C:G / G:C', 'WeakPair': 'A:U / U:A', 'AminoKeto': 'A:U / C:G', 'KetoAmino': 'G:C / U:A', 
-  'Paired': 'Paired', 'Bulge': '-:N / N:-', 'Mismatched': 'Mismatched', 'NN': 'N:N', None: ''
+  'Paired': 'Paired', 'Malformed': '-:N / N:-', 'Mismatched': 'Mismatched', 'NN': 'N:N', None: ''
 }
 LABELS.update(PAIRED_FEATURES)
 
@@ -39,7 +39,8 @@ CONSENSUS_PAIRED_LABELS = {
   'GC': ('G', 'C'), 'AU': ('A', 'U'), 'UA': ('U', 'A'), 'CG': ('C', 'G'), 'GU': ('G', 'U'), 'UG': ('U', 'G'),
   'PurinePyrimidine': ('Purine', 'Pyrimidine'), 'PyrimidinePurine': ('Pyrimidine', 'Purine'), 'WobblePair': ('G / U', 'G / U'),
   'StrongPair': ('G / C', 'G / C'), 'WeakPair': ('A / U', 'A / U'), 'AminoKeto': ('A / C', 'G / U'), 'KetoAmino': ('G / U', 'A / C'),
-  'Paired': ('Paired', 'Paired'), 'Bulge': ('Bulge', 'Bulge'), 'Mismatched': ('Mismatched', 'Mismatched'), 'NN': ('N', 'N'), None: ('', '')
+  'Paired': ('Paired', 'Paired'), 'Absent': ('-', '-'), 'High mismatch rate': ('High mismatch rate', 'High mismatch rate'), 
+  'Mismatched': ('Mismatched', 'Mismatched'), 'Malformed': ('Malformed', 'Malformed'), 'NN': ('N', 'N'), None: ('', '')
 }
 
 def get_coords(request):
@@ -115,29 +116,19 @@ def cloverleaf(request, clade_txid, isotype):
 
 def taxonomy_summary(request, clade_txid, isotype):
   try:
-    tax_qs = models.Taxonomy.objects.filter(taxid = clade_txid).values('name', 'rank')[0]
-    name = tax_qs['name']
-    rank = tax_qs['rank']
-    if rank == 'class': rank = 'taxclass'
-    query_filter = Q(**{str(rank): name})
-    cols = ['assembly', 'species', 'genus', 'family', 'order', 'subclass', 'taxclass', 'subphylum', 'phylum', 'subkingdom', 'kingdom', 'domain']  
-
-    trna_qs = models.tRNA.objects
-    if isotype != 'All':
-      trna_qs = trna_qs.filter(isotype = isotype)
-    taxonomy_extra = trna_qs.filter(*(query_filter,)).values(*cols)[0]
-
-    lower_rank = True
+    tax_qs = models.Taxonomy.objects.filter(taxid = clade_txid)
+    if len(tax_qs) > 1: tax_qs = tax_qs.exclude(rank = 'assembly')
+    tax = tax_qs.values()[0]
+    
     counts = []
-    for col in cols:
-      if col == rank:
-        lower_rank = False
-      if lower_rank or taxonomy_extra[col] is None:
-        continue
-      query_filter = Q(**{str(col): taxonomy_extra[col]})
-      count = models.tRNA.objects.filter(*(query_filter,)).count()
-
-      counts.append({'rank': col if col != 'taxclass' else 'class', 'clade': taxonomy_extra[col], 'count': count})
+    for rank in ['species', 'genus', 'family', 'order', 'subclass', 'taxclass', 'subphylum', 'phylum', 'subkingdom', 'kingdom', 'domain']:
+      if tax[rank] is None: continue
+      query_filter = Q(**{rank: tax[rank]})
+      name = models.Taxonomy.objects.filter(rank = rank if rank != 'taxclass' else 'class', taxid = tax[rank]).get().name
+      trna_qs = models.tRNA.objects.filter(*(query_filter,))
+      if isotype != 'All': trna_qs = trna_qs.filter(isotype = isotype)
+      count = trna_qs.count()
+      counts.append({'rank': rank if rank != 'taxclass' else 'class', 'clade': name, 'count': count})
 
     return JsonResponse(counts, safe = False)
 
@@ -146,26 +137,25 @@ def taxonomy_summary(request, clade_txid, isotype):
 
 def domain_features(request, clade_txid, isotype):
   try:
-    tax_qs = models.Taxonomy.objects.filter(taxid = clade_txid).values('domain', 'name')[0]
-    domain = tax_qs['domain']
-    clade_name = tax_qs['name']
-    domain_name = {'euk': 'Eukaryota', 'bact': 'Bacteria', 'arch': 'Archaea'}[domain]
-    domain_txid = models.Taxonomy.objects.filter(name = domain_name).values('taxid')[0]['taxid']
+    tax_qs = models.Taxonomy.objects.filter(taxid = clade_txid)
+    if len(tax_qs) > 1: tax_qs = tax_qs.exclude(rank = 'assembly')
+    tax = tax_qs.get()
+    domain = models.Taxonomy.objects.filter(taxid = tax.domain).get()
     cols = ['taxid'] + ['p{}'.format(position.replace(':', '_')) for position in SINGLE_POSITIONS + PAIRED_POSITIONS]
-    cons_qs = models.Consensus.objects.filter(taxid__in = [clade_txid, domain_txid], isotype = isotype).values(*cols)
+    cons_qs = models.Consensus.objects.filter(taxid__in = [clade_txid, domain.taxid], isotype = isotype).values(*cols)
     df = read_frame(cons_qs)
     df = df.set_index('taxid')
     df.columns = [col[1:].replace('_', ':') for col in df.columns]
-    if df.index[0] != domain_txid: df.iloc[::-1]
-    df.loc[domain_txid] = [LABELS[feature] for feature in df.loc[domain_txid]]
+    if df.index[0] != domain.taxid: df.iloc[::-1]
+    df.loc[domain.taxid] = [LABELS[feature] for feature in df.loc[domain.taxid]]
     df = df[sorted(df.columns, key = position_sort_key)]
     # If user selected a domain, continue as if it were a different clade
-    if domain_txid == clade_txid:
-      df['clade'] = domain_name
+    if domain.taxid == clade_txid:
+      df['clade'] = domain.name
       table_data = [{'position': col, 'domain': df[col][0], 'clade': df[col][0]} for col in df.columns]  
     else:
       df.loc[clade_txid] = [LABELS[feature] for feature in df.loc[clade_txid]]  
-      df['clade'] = [domain_name, clade_name]
+      df['clade'] = [domain.name, tax.name]
       table_data = [{'position': col, 'domain': df[col][0], 'clade': df[col][1]} for col in df.columns]
 
     return JsonResponse(table_data, safe = False)
@@ -175,19 +165,19 @@ def domain_features(request, clade_txid, isotype):
 
 def anticodon_counts(request, clade_txid, isotype):
   try:
-    tax_qs = models.Taxonomy.objects.filter(taxid = clade_txid).values('name', 'rank', 'domain')[0]
-    name = tax_qs['name']
-    rank = tax_qs['rank']
-    if rank == 'class': rank = 'taxclass'
-    trna_qs = models.tRNA.objects.filter(Q(**{str(rank): name}))
+    tax_qs = models.Taxonomy.objects.filter(taxid = clade_txid).values('name', 'rank', 'taxid', 'domain')
+    if len(tax_qs) > 1: tax_qs = tax_qs.exclude(rank = 'assembly')
+    tax = tax_qs.get()
+    if tax['rank'] == 'class': tax['rank'] = 'taxclass'
+    trna_qs = models.tRNA.objects.filter(Q(**{tax['rank']: tax['taxid']}))
     if isotype != 'All':
       trna_qs = trna_qs.filter(isotype = isotype)
     trna_qs = trna_qs.values('anticodon', 'isotype').annotate(clade = Count('anticodon'))
     clade_counts = read_frame(trna_qs)
     clade_counts = clade_counts.set_index(['isotype', 'anticodon'])
 
-    domain_name = {'euk': 'Eukaryota', 'bact': 'Bacteria', 'arch': 'Archaea'}[tax_qs['domain']]
-    trna_qs = models.tRNA.objects.filter(domain = domain_name)
+    domain_name = models.Taxonomy.objects.filter(taxid = tax['domain']).get().name
+    trna_qs = models.tRNA.objects.filter(domain = tax['domain'])
     if isotype != 'All':
       trna_qs = trna_qs.filter(isotype = isotype)
     trna_qs = trna_qs.values('anticodon', 'isotype').annotate(domain = Count('anticodon'))
@@ -195,7 +185,7 @@ def anticodon_counts(request, clade_txid, isotype):
     domain_counts = domain_counts.set_index(['isotype', 'anticodon'])
 
     counts = clade_counts.join(domain_counts).sort_index().reset_index()
-    counts.columns = ['Isotype', 'Anticodon', name, domain_name]
+    counts.columns = ['Isotype', 'Anticodon', tax['name'], domain_name]
     counts = counts.set_index(['Isotype', 'Anticodon'])
     return HttpResponse(counts.to_html(classes = 'table', border = 0, bold_rows = False, na_rep = '0', sparsify = True))
   
@@ -204,17 +194,18 @@ def anticodon_counts(request, clade_txid, isotype):
 
 def isotype_discrepancies(request, clade_txid, isotype):
   try:
-    tax_qs = models.Taxonomy.objects.filter(taxid = clade_txid).values('name', 'rank', 'domain')[0]
-    name = tax_qs['name']
-    rank = tax_qs['rank']
-    if rank == 'class': rank = 'taxclass'
-    trna_qs = models.tRNA.objects.filter(Q(**{str(rank): name}))
+    tax_qs = models.Taxonomy.objects.filter(taxid = clade_txid).values('name', 'rank', 'taxid', 'domain')
+    if len(tax_qs) > 1: tax_qs = tax_qs.exclude(rank = 'assembly')
+    tax = tax_qs.get()
+    trna_qs = models.tRNA.objects.filter(Q(**{tax['rank']: tax['taxid']}))
     if isotype != 'All':
       trna_qs = trna_qs.filter(isotype = isotype)
     trna_qs = trna_qs.exclude(isotype = F('best_model')).values('species', 'seqname', 'score', 'anticodon', 'isotype', 'isoscore_ac', 'best_model', 'isoscore')
     trna_qs = trna_qs.order_by(F('score') * (F('isoscore_ac') - F('isoscore')))
     ipds = read_frame(trna_qs)
-    ipds.columns = ['Species', 'tRNAscan-SE ID', 'Domain-specific score', 'Anticodon', 'Anticodon isotype', 'Anticodon isotype model score', 'Best isotype model', 'Best isotype model score']
+    ipds.columns = ['Species', 'tRNAscan-SE ID', 'Score', 'Anticodon', 'Anticodon isotype', 'Anticodon model score', 'Best model', 'Best model score']
+    species_names = read_frame(models.Taxonomy.objects.filter(taxid__in = ipds['Species']).values('name', 'taxid')).set_index('taxid').to_dict()['name']
+    ipds['Species'] = [species_names[taxid] for taxid in ipds['Species']]
     return HttpResponse(ipds.to_html(classes = 'table', border = 0, bold_rows = False, na_rep = '', index = False))
   
   except:

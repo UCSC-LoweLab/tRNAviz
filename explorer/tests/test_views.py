@@ -19,9 +19,9 @@ class SummaryViewTests(TestCase):
     request = self.factory.get(reverse('explorer:summary'))
     response = views.summary(request)
     self.assertEqual(response.status_code, 200)
-    self.assertContains(response, '<td>{}</td>'.format(self.default_clade))
-    self.assertContains(response, '<td>{}</td>'.format(self.default_isotype))
-
+    self.assertContains(response, '{}'.format(self.default_clade))
+    self.assertContains(response, '{}'.format(self.default_isotype))
+  
   def test_summary_view_valid_post(self):
     request = self.factory.post(reverse('explorer:summary'), {
       'clade': self.clade_txid,
@@ -29,8 +29,8 @@ class SummaryViewTests(TestCase):
     })
     response = views.summary(request)
     self.assertEqual(response.status_code, 200)
-    self.assertContains(response, '<td>{}</td>'.format(self.clade))
-    self.assertContains(response, '<td>{}</td>'.format(self.isotype))
+    self.assertContains(response, '{}'.format(self.clade))
+    self.assertContains(response, '{}'.format(self.isotype))
   
   def test_summary_view_invalid_post(self):
     request = self.factory.post(reverse('explorer:summary'), {
