@@ -182,6 +182,8 @@ def anticodon_counts(request, clade_txid, isotype):
     counts = clade_counts.join(domain_counts).sort_index().reset_index()
     counts.columns = ['Isotype', 'Anticodon', tax['name'], domain_name]
     counts = counts.set_index(['Isotype', 'Anticodon'])
+    counts.index.names = [None, None]
+
     return HttpResponse(counts.to_html(classes = 'table', border = 0, bold_rows = False, na_rep = '0', sparsify = True))
   
   except:
@@ -434,7 +436,8 @@ def genome_summary(request):
     trna_df['domain'] = ['Archaea', 'Bacteria', 'Eukaryota']
     
     counts = clade_df.set_index('domain').join(species_df.set_index('domain')).join(trna_df.set_index('domain'))
-    counts.columns = ['No. Clades', 'No. Species', 'No. tRNAs']
+    counts.columns = ['Clades', 'Species', 'tRNAs']
+    counts.index.name = None
     return HttpResponse(counts.to_html(classes = 'table', border = 0, bold_rows = False, na_rep = '0', sparsify = True))
   
   except:

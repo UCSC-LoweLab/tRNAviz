@@ -1,30 +1,4 @@
 from django.db import models
-import numpy
-
-ISOTYPES = (
-  ('Ala', 'Ala'),
-  ('Arg', 'Arg'),
-  ('Asn', 'Asn'),
-  ('Asp', 'Asp'),
-  ('Cys', 'Cys'),
-  ('Gln', 'Gln'),
-  ('Glu', 'Glu'),
-  ('Gly', 'Gly'),
-  ('His', 'His'),
-  ('Ile', 'Ile'),
-  ('iMet', 'iMet'),
-  ('Leu', 'Leu'),
-  ('Lys', 'Lys'),
-  ('Met', 'Met'),
-  ('Phe', 'Phe'),
-  ('Pro', 'Pro'),
-  ('Ser', 'Ser'),
-  ('SeC', 'SeC'),
-  ('Thr', 'Thr'),
-  ('Trp', 'Trp'),
-  ('Tyr', 'Tyr'),
-  ('Val', 'Val')
-)
 
 class Taxonomy(models.Model):
   name = models.CharField(max_length = 150)
@@ -46,14 +20,13 @@ class Taxonomy(models.Model):
   def __str__(self):
     return '{} ({})'.format(self.name, self.rank)
 
-
 class tRNA(models.Model):
   seqname = models.CharField(primary_key = True, max_length = 200)
-  isotype = models.CharField(max_length = 5, choices = ISOTYPES)
+  isotype = models.CharField(max_length = 5)
   anticodon = models.CharField(max_length = 3)
   score = models.FloatField()
   primary = models.BooleanField()
-  best_model = models.CharField(max_length = 5, choices = ISOTYPES)
+  best_model = models.CharField(max_length = 5)
   isoscore = models.FloatField()
   isoscore_ac = models.FloatField()
   dbname = models.CharField(max_length = 150)
@@ -220,7 +193,6 @@ class tRNA(models.Model):
 
   class Meta:
     verbose_name = 'tRNA'
-
 
 class Consensus(models.Model):
   taxid = models.CharField(max_length = 10)

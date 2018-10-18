@@ -120,3 +120,6 @@ def compare(request):
 
 def about(request):
   return render(request, 'explorer/about.html')
+
+def taxonomy(request):
+  return render(request, 'explorer/taxonomy.html')
