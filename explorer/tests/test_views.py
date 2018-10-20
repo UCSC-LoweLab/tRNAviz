@@ -158,7 +158,6 @@ class CompareViewTests(TestCase):
     response = views.compare(request)
     self.assertNotContains(response, 'The following errors were found:')
 
-  @tag('current')
   def test_compare_view_valid_post(self):
     request = self.factory.post(reverse('explorer:compare'), self.valid_post_data)
     response = views.compare(request)
@@ -174,3 +173,14 @@ class CompareViewTests(TestCase):
     response = views.compare(request)
     self.assertContains(response, 'The following errors were found:')
     self.assertContains(response, 'Not enough sequences in database for reference')
+
+
+class TaxonomyServicesTests(TestCase):
+  def setUp(self):
+    self.factory = RequestFactory() 
+
+  @tag('current')
+  def test_taxonomy_get(self):
+    request = self.factory.get(reverse('explorer:taxonomy'))
+    response = views.taxonomy(request)
+    self.assertEqual(response.status_code, 200)

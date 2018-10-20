@@ -19,11 +19,87 @@ $(document).ready(function() {
 {% block banner %}tRNAviz | Taxonomy{% endblock %}
 {% block description %}Reference clade-specific aggregated tRNA annotations across taxonomic ranks.{% endblock %}
 
-{% block plots %}
+{% block filter %}
 
 <div class="container">
-	<div class="row">
+	<div class="col-12">
+		{% for x in tree %}
+			{% if x.start_nodes %}
+			<div class="accordion" id='node-{{ x.data.tax.taxid }}'>
+			{% endif %}
+				{% if x.start_node %}
+				<div class="card tax-card">
+			    <div class="card-header" id="{{ x.data.tax.taxid }}">
+			    	<button class="btn btn-link tax-button" type="button" data-toggle="collapse" data-target="#{{ x.data.tax.taxid }}-children" aria-expanded="false" aria-controls="{{ x.data.tax.taxid }}-children">
+			    		{{ x.data.tax }}
+			    	</button>
+			    </div>
+			    <div id="{{ x.data.tax.taxid }}-children" class="collapse" aria-labelledby="{{ x.data.tax.taxid }}" data-parent="#node-{{ x.data.parent.tax.taxid }}">
+			    	<div class="card-body">
+			{% endif %}
+			{% if x.end_node %}
+						</div>
+					</div>
+				</div>
+			{% endif %}
+			{% if x.end_nodes %}
+			</div>
+			{% endif %}
+		{% endfor %}
 	</div>
 </div>
 
+{% endblock %}
+
+{% block plots %}
+<div class="container">
+	<div class="col-12">
+		<div class="plotbox-row d-flex justify-content-center flex-wrap">
+			<div class="col-12 col-sm-auto">
+				<div class="plotbox-outer">
+					<div class="plotbox-header">
+						<h5>Taxonomy summary</h5>
+					</div>
+					<div class="table-inner" id="taxonomy-summary-area">
+						<div class="loading-overlay"></div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-12 col-sm-auto">
+				<div class="plotbox-outer">
+					<div class="plotbox-header">
+						<h5>Domain-specific consensus features</h5>
+					</div>
+					<div class="table-inner" id="domain-features-area">
+						<div class="loading-overlay"></div>
+					</div>
+				</div>
+			</div>
+
+
+			<div class="col-12 col-sm-auto">
+				<div class="plotbox-outer">
+					<div class="plotbox-header">
+						<h5>Domain-specific consensus features</h5>
+					</div>
+					<div class="table-inner" id="domain-features-area">
+						<div class="loading-overlay"></div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-12 col-sm-auto">
+				<div class="plotbox-outer">
+					<div class="plotbox-header">
+						<h5>Domain-specific consensus features</h5>
+					</div>
+					<div class="table-inner" id="domain-features-area">
+						<div class="loading-overlay"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 {% endblock %}

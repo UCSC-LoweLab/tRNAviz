@@ -20,6 +20,12 @@ class Taxonomy(models.Model):
   def __str__(self):
     return '{} ({})'.format(self.name, self.rank)
 
+  def __eq__(self, other):
+    return self.taxid == other.taxid
+
+  def __ne__(self, other):
+    return self.taxid != other.taxid
+
 class tRNA(models.Model):
   seqname = models.CharField(primary_key = True, max_length = 200)
   isotype = models.CharField(max_length = 5)

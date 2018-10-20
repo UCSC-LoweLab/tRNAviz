@@ -427,17 +427,20 @@ def genome_summary(request):
   try:
     species_qs = models.Taxonomy.objects.filter(rank = 'species').values('domain').annotate(nspecies = Count('domain')).order_by('domain')
     species_df = read_frame(species_qs)
-    species_df['domain'] = ['Archaea', 'Bacteria', 'Eukaryota']
+    species_df['domain'] = ['Bacteria', 'Archaea', 'Eukaryota']
     clade_qs = models.Taxonomy.objects.exclude(rank__in = ['species', 'assembly']).values('domain').annotate(nclades = Count('domain')).order_by('domain')
     clade_df = read_frame(clade_qs)
-    clade_df['domain'] = ['Archaea', 'Bacteria', 'Eukaryota']
+    clade_df['domain'] = ['Bacteria', 'Archaea', 'Eukaryota']
     trna_qs = models.tRNA.objects.values('domain').annotate(ntrnas = Count('domain')).order_by('domain')
     trna_df = read_frame(trna_qs)
-    trna_df['domain'] = ['Archaea', 'Bacteria', 'Eukaryota']
+    trna_df['domain'] = ['Bacteria', 'Archaea', 'Eukaryota']
     
     counts = clade_df.set_index('domain').join(species_df.set_index('domain')).join(trna_df.set_index('domain'))
     counts.columns = ['Clades', 'Species', 'tRNAs']
     counts.index.name = None
+    counts['Clades'] = counts.apply(lambda x: '{:,}'.format(x['Clades']), axis = 1)
+    counts['Species'] = counts.apply(lambda x: '{:,}'.format(x['Species']), axis = 1)
+    counts['tRNAs'] = counts.apply(lambda x: '{:,}'.format(x['tRNAs']), axis = 1)
     return HttpResponse(counts.to_html(classes = 'table', border = 0, bold_rows = False, na_rep = '0', sparsify = True))
   
   except:

@@ -363,3 +363,17 @@ div.footnotes {
   padding-top: 72px;
   margin-top: -72px;
 }
+
+.card-body {
+  padding: 0;
+  margin-left: 1em;
+  border-bottom: 0px;
+}
+
+.card-header {
+  padding: 0em;
+}
+.tax-button {
+  white-space: normal;
+  text-align: left;
+}
