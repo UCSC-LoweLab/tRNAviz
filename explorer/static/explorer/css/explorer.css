@@ -366,7 +366,6 @@ div.footnotes {
 
 .card-body {
   padding: 0;
-  margin-left: 1em;
   border-bottom: 0px;
 }
 
@@ -376,4 +375,10 @@ div.footnotes {
 .tax-button {
   white-space: normal;
   text-align: left;
+  cursor: pointer;
+}
+
+.tax-card {
+  margin-right: -1px;
+  margin-bottom: -1px;
 }

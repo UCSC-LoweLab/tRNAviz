@@ -25,19 +25,25 @@ $(document).ready(function() {
 	<div class="col-12">
 		{% for x in tree %}
 			{% if x.start_nodes %}
-			<div class="accordion" id='node-{{ x.data.tax.taxid }}'>
+			<div class="accordion tax-accordion" id='node-{{ x.data.tax.id }}'>
 			{% endif %}
 				{% if x.start_node %}
-				<div class="card tax-card">
-			    <div class="card-header" id="{{ x.data.tax.taxid }}">
-			    	<button class="btn btn-link tax-button" type="button" data-toggle="collapse" data-target="#{{ x.data.tax.taxid }}-children" aria-expanded="false" aria-controls="{{ x.data.tax.taxid }}-children">
-			    		{{ x.data.tax }}
-			    	</button>
-			    </div>
-			    <div id="{{ x.data.tax.taxid }}-children" class="collapse" aria-labelledby="{{ x.data.tax.taxid }}" data-parent="#node-{{ x.data.parent.tax.taxid }}">
-			    	<div class="card-body">
+				<div class="card tax-card d-flex justify-content-between">
+		    	<div class="row tax-button" data-toggle="collapse" data-target="#{{ x.data.tax.id }}-children" aria-expanded="false" aria-controls="{{ x.data.tax.id }}-children">
+		    		<div class="col-11 d-flex justify-content-start pt-2 pl-4">
+		    			{{ x.data.tax }}
+		    		</div>
+			    	<div class="col-1 d-flex justify-content-end">
+			    		<button class="btn btn-link tax-display-button" type="button" id="#{{ x.data.tax.id }}-display">&rarr;</button>
+			    	</div>
+		    	</div>
+			    <div id="{{ x.data.tax.id }}-children" class="collapse" aria-labelledby="{{ x.data.tax.id }}" data-parent="#node-{{ x.data.parent.tax.id }}">
+			    	<div class="row">
+			    		<div class="col-auto"></div>
+			    		<div class="col">
 			{% endif %}
 			{% if x.end_node %}
+							</div>
 						</div>
 					</div>
 				</div>
