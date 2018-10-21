@@ -10,6 +10,7 @@ from shutil import copy
 from . import models
 from . import forms
 from . import choices
+from . import tree
 
 def summary(request):
   clade = 'Saccharomyces (genus)'
@@ -121,14 +122,8 @@ def compare(request):
 def about(request):
   return render(request, 'explorer/about.html')
 
-
-# compile taxonomy tree now, so we don't have to calculate it for every /taxonomy/ request
-from . import tree
-full_tree = tree.Tree().root
-
 def taxonomy(request):
-  # domains = [domain.makeIterable() for domain in full_tree.children]
-  phylogeny = full_tree.makeIterable()
+  phylogeny = tree.full_tree.root.makeIterable()
   return render(request, 'explorer/taxonomy.html', {
     'tree': phylogeny
   })

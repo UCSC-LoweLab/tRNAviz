@@ -48,7 +48,19 @@ class DAGNode(object):
         yield {'end_node': True}
       yield {'end_nodes': True}
 
+  def dfs(self, taxid):
+    ''' Return node matching the taxid '''
+    if self.tax != 'root' and self.tax.taxid == taxid: return self
+    for child in self.children:
+      result = child.dfs(taxid)
+      if result is not False:
+        return result
+    return False
+
+
+
 class Tree(object):
+
   ''' Convert Taxonomy model into a tree '''
   def __init__(self):
     self.root = DAGNode('root', 'root')
@@ -65,3 +77,7 @@ class Tree(object):
         else:
           parent.addChild(current_node)
           parent = current_node
+
+
+# compile taxonomy tree now, so we don't have to calculate it for every /taxonomy/ request
+full_tree = Tree()
