@@ -125,7 +125,7 @@ class SummaryServicesTests(TestCase):
     counts = json.loads(json_response.content.decode('utf8'))
     self.assertEqual(len(counts), 7)
 
-  @tag('domain-features')
+  @tag('domain-features', 'current')
   def test_domain_features(self):
     json_response = services.domain_features(self.request, self.clade_txid, self.isotype)
     cons = json.loads(json_response.content.decode('utf8'))
@@ -263,7 +263,7 @@ class SpeciesServicesTests(TestCase):
     plot_data = json.loads(json_response.content.decode('utf8'))
     self.assertIn('No tRNAs found.', plot_data['error'])
 
-@tag('taxonomy', 'current')
+@tag('taxonomy')
 class TaxonomyServicesTests(TestCase):
   def setUp(self):
     self.client = Client()

@@ -34,34 +34,40 @@ $(document).ready(function() {
 var coords_path = "{% url 'explorer:coords' %}"
 $(document).ready(function() {
 	d3.json('{% url "explorer:cloverleaf" clade_txid=clade_txid isotype=isotype %}', function(plot_data) {
-	  d3.select('#cloverleaf-area .loading-overlay').style('display', 'none');
-		d3.select('#cloverleaf-base-distro-area .loading-overlay').style('display', 'none');
-	  if ("server_error" in plot_data) d3.select('#cloverleaf-area').text(plot_data['server_error']);
+	  if ("server_error" in plot_data) d3.select('#cloverleaf-area').html(plot_data['server_error']);
 		else {
+		  d3.select('#cloverleaf-area .loading-overlay').style('display', 'none');
+			d3.select('#cloverleaf-base-distro-area .loading-overlay').style('display', 'none');
 			draw_cloverleaf(plot_data, "{{ isotype }}");
 			draw_base_distro(plot_data, 'cloverleaf');
+		  $('#cloverleaf-download-pdf').click(function() { download_pdf('cloverleaf'); });
+		  $('#cloverleaf-download-png').click(function() { download_png('cloverleaf'); });
+		  $('#cloverleaf-base-distro-download-pdf').click(function() { download_pdf('cloverleaf-base-distro'); });
 		}
 	});
 	d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', function(plot_data) {
-	  d3.select('#tilemap-area .loading-overlay').style('display', 'none');
-		d3.select('#tilemap-base-distro-area .loading-overlay').style('display', 'none');
-	  if ("server_error" in plot_data) d3.select('#tilemap-area').text(plot_data['server_error']);
+	  if ("server_error" in plot_data) d3.select('#tilemap-area').html(plot_data['server_error']);
 		else {
+		  d3.select('#tilemap-area .loading-overlay').style('display', 'none');
+			d3.select('#tilemap-base-distro-area .loading-overlay').style('display', 'none');
 			draw_tilemap(plot_data);
 			draw_base_distro(plot_data, 'tilemap');
+		  $('#tilemap-download-pdf').click(function() { download_pdf('tilemap'); });
+		  $('#tilemap-download-png').click(function() { download_png('tilemap'); });
+		  $('#tilemap-base-distro-download-pdf').click(function() { download_pdf('tilemap-base-distro'); });
 		}
 	});
 	d3.json('{% url "explorer:taxonomy_summary" clade_txid=clade_txid isotype=isotype %}', function(table_data) {
-	  d3.select('#taxonomy-summary-area .loading-overlay').style('display', 'none');
-	  if ("server_error" in table_data) d3.select('#taxonomy-summary-area').text(table_data['server_error']);
+	  if ("server_error" in table_data) d3.select('#taxonomy-summary-area').html(table_data['server_error']);
 		else {
+		  d3.select('#taxonomy-summary-area .loading-overlay').style('display', 'none');
 			$('#taxonomy-summary-area').html(tax_json_to_table(table_data))
 		}
 	});
 	d3.json('{% url "explorer:domain_features" clade_txid=clade_txid isotype=isotype %}', function(table_data) {
-	  d3.select('#domain-features-area .loading-overlay').style('display', 'none');
-	  if ("server_error" in table_data) d3.select('#domain-features-area').text(table_data['server_error']);
+	  if ("server_error" in table_data) d3.select('#domain-features-area').html(table_data['server_error']);
 		else {
+		  d3.select('#domain-features-area .loading-overlay').style('display', 'none');
 			$('#domain-features-area').html(cons_json_to_table(table_data))
 		}
 	});
@@ -71,12 +77,6 @@ $(document).ready(function() {
 	$.get('{% url "explorer:isotype_discrepancies" clade_txid=clade_txid isotype=isotype %}')
 	  .done(function(response) { $('#isotype-discrepancies-area').html(response); });
 
-  $('#cloverleaf-download-pdf').click(function() { download_pdf('cloverleaf'); });
-  $('#cloverleaf-download-png').click(function() { download_png('cloverleaf'); });
-  $('#cloverleaf-base-distro-download-pdf').click(function() { download_pdf('cloverleaf-base-distro'); });
-  $('#tilemap-download-pdf').click(function() { download_pdf('tilemap'); });
-  $('#tilemap-download-png').click(function() { download_png('tilemap'); });
-  $('#tilemap-base-distro-download-pdf').click(function() { download_pdf('tilemap-base-distro'); });
 });
 </script>
 {% endblock %}

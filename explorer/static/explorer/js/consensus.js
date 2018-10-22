@@ -41,11 +41,11 @@ var provenance = {'A': ['A'], 'C': ['C'], 'G': ['G'], 'U': ['U'],
   'A / C / U': ['A', 'C', 'U', 'A / C', 'Pyrimidine', 'A / U'], 
   'A / G / U': ['A', 'G', 'U', 'Purine', 'A / U', 'G / U'], 
   'A / C / G': ['A', 'C', 'G', 'A / C', 'Purine', 'C / G'], 
-  'Paired': ['C:G', 'G:C', 'A:U', 'U:A', 'G:U', 'U:G', 'G:U / U:G', 'G:C / C:G', 'A:U / U:A', 'A:U / C:G', 'G:C / U:A', 'Purine:Pyrimidine', 'Pyrimidine:Purine', 'N:N', 'Paired'], 
+  'Paired': ['C:G', 'G:C', 'A:U', 'U:A', 'G:U', 'U:G', 'G:U / U:G', 'C:G / G:C', 'A:U / U:A', 'A:U / C:G', 'G:C / U:A', 'Purine:Pyrimidine', 'Pyrimidine:Purine', 'N:N', 'Paired'], 
   'Absent': ['-', '-:-'], 'Mismatched': ['Mismatched', 'A:G', 'G:A', 'C:U', 'U:C', 'A:C', 'C:A', 'A:A', 'C:C', 'G:G', 'U:U'], '': [''], 
   'Malformed': ['A:-', '-:A', 'C:-', '-:C', 'G:-', '-:G', 'U:-', '-:U'],
   'A:U': ['A:U'], 'U:A': ['U:A'], 'G:C': ['G:C'], 'C:G': ['C:G'], 'G:U': ['G:U'], 'U:G': ['U:G'], 
-  'Purine:Pyrimidine': ['G:C', 'A:U', 'Purine:Pyrimidine'], 'Pyrimidine:Purine': ['C:G', 'U:A', 'Pyrimidine:Purine'], 'G:U / U:G': ['G:U', 'U:G'], 'G:C / C:G': ['G:C', 'C:G'], 'A:U / U:A': ['A:U', 'U:A'], 'A:U / C:G': ['A:U', 'C:G'], 'G:C / U:A': ['G:C', 'U:A']}
+  'Purine:Pyrimidine': ['G:C', 'A:U', 'Purine:Pyrimidine'], 'Pyrimidine:Purine': ['C:G', 'U:A', 'Pyrimidine:Purine'], 'G:U / U:G': ['G:U', 'U:G'], 'C:G / G:C': ['G:C', 'C:G'], 'A:U / U:A': ['A:U', 'U:A'], 'A:U / C:G': ['A:U', 'C:G'], 'G:C / U:A': ['G:C', 'U:A']}
 
 var feature_scale = d3.scaleOrdinal()
   .domain(['', 'A', 'C', 'G', 'U', '-', 'absent', 'Purine', 'Pyrimidine', 'Weak', 'Strong', 'Amino', 'Keto', 'B', 'D', 'H', 'V', 'N', 'Absent', 'Mismatched', 'Paired', 'High mismatch rate',
