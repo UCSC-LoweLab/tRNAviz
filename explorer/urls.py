@@ -33,7 +33,10 @@ urlpatterns = [
   re_path('api/bitchart/(?P<formset_json>.+)', compare.bitchart, name = 'bitchart'),
 
   path('about/', views.about, name = 'about'),
-  path('api/genome_summary/', services.genome_summary, name = 'genome_summary'),
+  path('api/genome_summary/', services.genome_summary, name = 'genome_summary_dynamic'),
+  path('api/genome_summary/<str:taxonomy_id>', services.genome_summary, name = 'genome_summary'),
+  path('api/score_summary/', services.score_summary, name = 'score_summary_dynamic'),
+  path('api/score_summary/<str:taxonomy_id>', services.score_summary, name = 'score_summary'),
 
   path('taxonomy/', views.taxonomy, name = 'taxonomy'),
 ]

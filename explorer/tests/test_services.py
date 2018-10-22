@@ -5,7 +5,7 @@ from explorer import models
 from explorer import services
 from explorer import views
 
-@tag('api', 'search', 'current')
+@tag('api', 'search')
 class SearchTests(TestCase):
   def setUp(self):
     self.client = Client()
@@ -262,3 +262,40 @@ class SpeciesServicesTests(TestCase):
     json_response = services.species_distribution(self.request, self.api_txids, api_foci)
     plot_data = json.loads(json_response.content.decode('utf8'))
     self.assertIn('No tRNAs found.', plot_data['error'])
+
+@tag('taxonomy', 'current')
+class TaxonomyServicesTests(TestCase):
+  def setUp(self):
+    self.client = Client()
+    self.factory = RequestFactory()
+    self.request = self.factory.get('')
+    self.taxonomy_id = '8668' # Thermoplasmata
+
+  @tag('about')
+  def test_genome_summary(self):
+    response = services.genome_summary(self.request, 'root')
+    http = response.content.decode('utf8')
+    self.assertIn('Bacteria', http)
+    self.assertIn('Archaea', http)
+    self.assertIn('Eukaryota', http)
+
+    response = services.genome_summary(self.request, self.taxonomy_id)
+    http = response.content.decode('utf8')
+    self.assertIn('Thermoplasmata', http)
+    self.assertIn('Picrophilaceae', http)
+    self.assertIn('Thermoplasmatales archaeon BRNA1', http)
+    
+  def test_genome_summary(self):
+    response = services.score_summary(self.request, 'root')
+    http = response.content.decode('utf8')
+    self.assertIn('Bacteria', http)
+    self.assertIn('Archaea', http)
+    self.assertIn('Eukaryota', http)
+
+    response = services.score_summary(self.request, self.taxonomy_id)
+    http = response.content.decode('utf8')
+    self.assertIn('Thermoplasmata', http)
+    self.assertIn('Picrophilaceae', http)
+    self.assertIn('Thermoplasmatales archaeon BRNA1', http)
+    
+  

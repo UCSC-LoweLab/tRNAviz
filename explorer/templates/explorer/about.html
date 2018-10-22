@@ -12,7 +12,7 @@
 {% block plotjs %}
 <script type = "text/javascript">
 $(document).ready(function() {
-	$.get('{% url "explorer:genome_summary" %}')
+	$.get('{% url "explorer:genome_summary" taxonomy_id="root" %}')
 	  .done(function(response) { $('#genome-summary-area').html(response); });
 
 	draw_legend();

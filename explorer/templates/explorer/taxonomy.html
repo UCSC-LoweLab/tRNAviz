@@ -12,6 +12,23 @@
 {% block plotjs %}
 <script type = "text/javascript">
 $(document).ready(function() {
+
+	$.get('{% url "explorer:genome_summary" taxonomy_id="root" %}')
+	  .done(function(response) { $('#genome-summary-area').html(response); });
+
+	$('.tax-display-button').click(function() {
+		event.cancelBubble = true;
+		if (event.stopPropagation) event.stopPropagation();
+
+		$('#genome-summary-area').html('<div class="loading-overlay"></div>');
+		$.get('{% url "explorer:genome_summary_dynamic" %}' + this.id.split('-')[0])
+		  .done(function(response) { $('#genome-summary-area').html(response); });
+
+		$('#score-summary-area').html('<div class="loading-overlay"></div>');
+		$.get('{% url "explorer:score_summary_dynamic" %}' + this.id.split('-')[0])
+		  .done(function(response) { $('#score-summary-area').html(response); });
+		  
+	})
 })
 </script>
 {% endblock %}
@@ -28,13 +45,15 @@ $(document).ready(function() {
 			<div class="accordion tax-accordion" id='node-{{ x.data.tax.id }}'>
 			{% endif %}
 				{% if x.start_node %}
-				<div class="card tax-card d-flex justify-content-between">
+				<div class="card tax-card d-flex justify-content-between" id="card-{{ x.data.tax.id }}">
 		    	<div class="row tax-button" data-toggle="collapse" data-target="#{{ x.data.tax.id }}-children" aria-expanded="false" aria-controls="{{ x.data.tax.id }}-children">
 		    		<div class="col-11 d-flex justify-content-start pt-2 pl-4">
 		    			{{ x.data.tax }}
 		    		</div>
 			    	<div class="col-1 d-flex justify-content-end">
-			    		<button class="btn btn-link tax-display-button" type="button" id="#{{ x.data.tax.id }}-display">&rarr;</button>
+			    		{% if x.data.tax.rank != 'assembly' %}
+			    		<button class="btn btn-link tax-display-button" type="button" id="{{ x.data.tax.id }}-display">&rarr;</button>
+			    		{% endif %}
 			    	</div>
 		    	</div>
 			    <div id="{{ x.data.tax.id }}-children" class="collapse" aria-labelledby="{{ x.data.tax.id }}" data-parent="#node-{{ x.data.parent.tax.id }}">
@@ -64,9 +83,9 @@ $(document).ready(function() {
 			<div class="col-12 col-sm-auto">
 				<div class="plotbox-outer">
 					<div class="plotbox-header">
-						<h5>Taxonomy summary</h5>
+						<h5>tRNA counts by subclade</h5>
 					</div>
-					<div class="table-inner" id="taxonomy-summary-area">
+					<div class="table-inner" id="genome-summary-area">
 						<div class="loading-overlay"></div>
 					</div>
 				</div>
@@ -77,7 +96,7 @@ $(document).ready(function() {
 					<div class="plotbox-header">
 						<h5>Domain-specific consensus features</h5>
 					</div>
-					<div class="table-inner" id="domain-features-area">
+					<div class="table-inner" id="score-summary-area">
 						<div class="loading-overlay"></div>
 					</div>
 				</div>

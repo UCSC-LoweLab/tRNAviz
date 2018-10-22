@@ -1,6 +1,7 @@
 from . import models
 from . import serializers
 from . import choices
+from . import tree
 from django.http import JsonResponse, HttpResponse
 import json
 from collections import defaultdict
@@ -42,6 +43,8 @@ CONSENSUS_PAIRED_LABELS = {
   'Paired': ('Paired', 'Paired'), 'Absent': ('-', '-'), 'High mismatch rate': ('High mismatch rate', 'High mismatch rate'), 
   'Mismatched': ('Mismatched', 'Mismatched'), 'Malformed': ('Malformed', 'Malformed'), 'NN': ('N', 'N'), None: ('', '')
 }
+
+RANKS = ['assembly', 'species', 'genus', 'family', 'order', 'subclass', 'taxclass', 'subphylum', 'phylum', 'subkingdom', 'kingdom', 'domain']
 
 def get_coords(request):
   data = models.Coord.objects.all()
@@ -423,25 +426,75 @@ def species_distribution(request, clade_txids, foci):
     return JsonResponse({'error': 'Unknown server error'})
 
 
-def genome_summary(request):
+def genome_summary(request, taxonomy_id):
   try:
-    species_qs = models.Taxonomy.objects.filter(rank = 'species').values('domain').annotate(nspecies = Count('domain')).order_by('domain')
-    species_df = read_frame(species_qs)
-    species_df['domain'] = ['Bacteria', 'Archaea', 'Eukaryota']
-    clade_qs = models.Taxonomy.objects.exclude(rank__in = ['species', 'assembly']).values('domain').annotate(nclades = Count('domain')).order_by('domain')
-    clade_df = read_frame(clade_qs)
-    clade_df['domain'] = ['Bacteria', 'Archaea', 'Eukaryota']
-    trna_qs = models.tRNA.objects.values('domain').annotate(ntrnas = Count('domain')).order_by('domain')
-    trna_df = read_frame(trna_qs)
-    trna_df['domain'] = ['Bacteria', 'Archaea', 'Eukaryota']
-    
-    counts = clade_df.set_index('domain').join(species_df.set_index('domain')).join(trna_df.set_index('domain'))
-    counts.columns = ['Clades', 'Species', 'tRNAs']
+    if taxonomy_id == 'root':
+      subtaxes = models.Taxonomy.objects.filter(name__in = ['Archaea', 'Eukaryota', 'Bacteria'])
+    else:
+      tax = models.Taxonomy.objects.get(id = taxonomy_id)
+      subtaxes = [node.tax for node in tree.full_tree.root.dfs(tax.taxid).children]
+    counts = []
+    for subtax in subtaxes:
+      rank = subtax.rank if subtax.rank != 'class' else 'taxclass'
+      tax_qs = models.Taxonomy.objects.filter(**{rank: subtax.taxid})
+      counts.append({
+        'name': subtax.name, 
+        'Subclades': '{:,}'.format(tax_qs.exclude(rank__in = ['species', 'assembly']).count()), 
+        'Species': '{:,}'.format(tax_qs.filter(rank = 'species').count()),
+        'Assemblies': '{:,}'.format(tax_qs.filter(rank = 'assembly').count()),
+        'tRNAs': '{:,}'.format(models.tRNA.objects.filter(Q(**{rank: subtax.taxid})).count())
+      })
+    counts = pd.DataFrame(counts)
+    counts = counts.append({
+      'name': 'Total',
+      'Subclades': '{:,}'.format(counts.Subclades.apply(lambda x: int(x.replace(',', ''))).sum()),
+      'Species': '{:,}'.format(counts.Species.apply(lambda x: int(x.replace(',', ''))).sum()),
+      'Assemblies': '{:,}'.format(counts.Assemblies.apply(lambda x: int(x.replace(',', ''))).sum()),
+      'tRNAs': '{:,}'.format(counts.tRNAs.apply(lambda x: int(x.replace(',', ''))).sum())
+      }, ignore_index = True)
+    counts = counts.set_index('name')
     counts.index.name = None
-    counts['Clades'] = counts.apply(lambda x: '{:,}'.format(x['Clades']), axis = 1)
-    counts['Species'] = counts.apply(lambda x: '{:,}'.format(x['Species']), axis = 1)
-    counts['tRNAs'] = counts.apply(lambda x: '{:,}'.format(x['tRNAs']), axis = 1)
-    return HttpResponse(counts.to_html(classes = 'table', border = 0, bold_rows = False, na_rep = '0', sparsify = True))
+    if taxonomy_id != 'root': 
+      counts.index.name = str(tax)
+      counts = counts.reset_index()
+
+    if taxonomy_id == 'root':
+      counts = counts[['Subclades', 'Species', 'tRNAs']]
+      return HttpResponse(counts.to_html(classes = 'table', border = 0, bold_rows = False, na_rep = '0', sparsify = True))
+    elif tax.rank == 'genus':
+      counts = counts[[str(tax), 'Species', 'Assemblies', 'tRNAs']]
+    elif tax.rank == 'species':
+      counts = counts[[str(tax), 'Assemblies', 'tRNAs']]
+    else:
+      counts = counts[[str(tax), 'Subclades', 'Species', 'tRNAs']]
+    return HttpResponse(counts.to_html(classes = 'table', border = 0, bold_rows = False, index = False, na_rep = '0', sparsify = True))
   
+  except:
+    return HttpResponse('Unknown server error')
+
+def score_summary(request, taxonomy_id):
+  try:
+    if taxonomy_id == 'root':
+      subtaxes = models.Taxonomy.objects.filter(name__in = ['Archaea', 'Eukaryota', 'Bacteria'])
+    else:
+      tax = models.Taxonomy.objects.get(id = taxonomy_id)
+      subtaxes = [node.tax for node in tree.full_tree.root.dfs(tax.taxid).children]
+    scores = []
+    import pdb
+    pdb.set_trace()
+    for subtax in subtaxes:
+      rank = subtax.rank if subtax.rank != 'class' else 'taxclass'
+      trna_qs = models.tRNA.objects.filter(**{rank: subtax.taxid})
+      counts.append({
+        'name': subtax.name, 
+        'Subclades': '{:,}'.format(tax_qs.exclude(rank__in = ['species', 'assembly']).count()), 
+        'Species': '{:,}'.format(tax_qs.filter(rank = 'species').count()),
+        'Assemblies': '{:,}'.format(tax_qs.filter(rank = 'assembly').count()),
+        'tRNAs': '{:,}'.format(models.tRNA.objects.filter(Q(**{rank: subtax.taxid})).count())
+      })
+    counts = pd.DataFrame(counts)
+
+    return HttpResponse(scores.to_html(classes = 'table', border = 0, bold_rows = False, na_rep = '0', sparsify = True))
+
   except:
     return HttpResponse('Unknown server error')

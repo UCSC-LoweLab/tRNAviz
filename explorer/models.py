@@ -21,9 +21,11 @@ class Taxonomy(models.Model):
     return '{} ({})'.format(self.name, self.rank)
 
   def __eq__(self, other):
+    if type(other) == str: return False
     return self.taxid == other.taxid
 
   def __ne__(self, other):
+    if type(other) == str: return True
     return self.taxid != other.taxid
 
 class tRNA(models.Model):
