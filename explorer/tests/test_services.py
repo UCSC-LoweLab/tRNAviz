@@ -285,17 +285,21 @@ class TaxonomyServicesTests(TestCase):
     self.assertIn('Picrophilaceae', http)
     self.assertIn('Thermoplasmatales archaeon BRNA1', http)
     
-  def test_genome_summary(self):
-    response = services.score_summary(self.request, 'root')
+  def test_score_summary_taxonomy(self):
+    response = services.score_summary_taxonomy(self.request, 'root')
     http = response.content.decode('utf8')
     self.assertIn('Bacteria', http)
     self.assertIn('Archaea', http)
     self.assertIn('Eukaryota', http)
 
-    response = services.score_summary(self.request, self.taxonomy_id)
+    response = services.score_summary_taxonomy(self.request, self.taxonomy_id)
     http = response.content.decode('utf8')
     self.assertIn('Thermoplasmata', http)
     self.assertIn('Picrophilaceae', http)
     self.assertIn('Thermoplasmatales archaeon BRNA1', http)
     
-  
+  def test_score_summary_isotype(self):
+    response = services.score_summary_isotype(self.request, 'root')
+    http = response.content.decode('utf8')
+    self.assertIn('Bacteria', http)
+    self.assertIn('Total', http)

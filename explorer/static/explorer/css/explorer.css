@@ -366,7 +366,6 @@ div.footnotes {
 
 .card-body {
   padding: 0;
-  border-bottom: 0px;
 }
 
 .card-header {
@@ -380,5 +379,4 @@ div.footnotes {
 
 .tax-card {
   margin-right: -1px;
-  margin-bottom: -1px;
 }

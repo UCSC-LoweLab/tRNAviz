@@ -35,8 +35,11 @@ urlpatterns = [
   path('about/', views.about, name = 'about'),
   path('api/genome_summary/', services.genome_summary, name = 'genome_summary_dynamic'),
   path('api/genome_summary/<str:taxonomy_id>', services.genome_summary, name = 'genome_summary'),
-  path('api/score_summary/', services.score_summary, name = 'score_summary_dynamic'),
-  path('api/score_summary/<str:taxonomy_id>', services.score_summary, name = 'score_summary'),
+  path('api/score_summary_taxonomy/', services.score_summary_taxonomy, name = 'score_summary_taxonomy_dynamic'),
+  path('api/score_summary_taxonomy/<str:taxonomy_id>', services.score_summary_taxonomy, name = 'score_summary_taxonomy'),
+  path('api/score_summary_isotype/', services.score_summary_isotype, name = 'score_summary_isotype_dynamic'),
+  path('api/score_summary_isotype/<str:taxonomy_id>', services.score_summary_isotype, name = 'score_summary_isotype'),
+
 
   path('taxonomy/', views.taxonomy, name = 'taxonomy'),
 ]

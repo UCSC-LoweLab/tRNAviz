@@ -9,6 +9,7 @@ from django.db.models import Q, Count, F
 import warnings
 warnings.filterwarnings('ignore')
 import pandas as pd
+from numpy import median, mean
 from django_pandas.io import read_frame
 
 SINGLE_POSITIONS = ['8', '9', '14', '15', '16', '17', '17a', '18', '19', '20', '20a', '20b', '21', '26', 
@@ -187,7 +188,7 @@ def anticodon_counts(request, clade_txid, isotype):
     counts = counts.set_index(['Isotype', 'Anticodon'])
     counts.index.names = [None, None]
 
-    return HttpResponse(counts.to_html(classes = 'table', border = 0, bold_rows = False, na_rep = '0', sparsify = True))
+    return HttpResponse(counts.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, na_rep = '0', sparsify = True))
   
   except:
     return HttpResponse('Unknown server error')
@@ -206,7 +207,7 @@ def isotype_discrepancies(request, clade_txid, isotype):
     ipds.columns = ['Species', 'tRNAscan-SE ID', 'Score', 'Anticodon', 'Anticodon isotype', 'Anticodon model score', 'Best model', 'Best model score']
     species_names = read_frame(models.Taxonomy.objects.filter(taxid__in = ipds['Species']).values('name', 'taxid')).set_index('taxid').to_dict()['name']
     ipds['Species'] = [species_names[taxid] for taxid in ipds['Species']]
-    return HttpResponse(ipds.to_html(classes = 'table', border = 0, bold_rows = False, na_rep = '', index = False))
+    return HttpResponse(ipds.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, na_rep = '', index = False))
   
   except:
     return HttpResponse('Unknown server error')
@@ -460,41 +461,90 @@ def genome_summary(request, taxonomy_id):
 
     if taxonomy_id == 'root':
       counts = counts[['Subclades', 'Species', 'tRNAs']]
-      return HttpResponse(counts.to_html(classes = 'table', border = 0, bold_rows = False, na_rep = '0', sparsify = True))
+      return HttpResponse(counts.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, na_rep = '0', sparsify = True))
     elif tax.rank == 'genus':
       counts = counts[[str(tax), 'Species', 'Assemblies', 'tRNAs']]
     elif tax.rank == 'species':
       counts = counts[[str(tax), 'Assemblies', 'tRNAs']]
     else:
       counts = counts[[str(tax), 'Subclades', 'Species', 'tRNAs']]
-    return HttpResponse(counts.to_html(classes = 'table', border = 0, bold_rows = False, index = False, na_rep = '0', sparsify = True))
+    return HttpResponse(counts.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, index = False, na_rep = '0', sparsify = True))
   
   except:
     return HttpResponse('Unknown server error')
 
-def score_summary(request, taxonomy_id):
+
+def get_score_summary_taxonomy_dict(name, trna_qs):
+  df = read_frame(trna_qs.values('score', 'GCcontent', 'intron_length', 'insertions', 'deletions'))
+  scores = {
+    'name': name,
+    'Score (median)': '{:.2f}'.format(median(df.score)), 
+    'G/C content (median)': '{:.2f}'.format(median(df.GCcontent)),
+    'Intron length (mean)': '{:.2f}'.format(mean(df.intron_length)),
+    'Indels (mean)': '{:.2f}'.format(mean(df.insertions + df.deletions))
+  }
+  return scores
+
+def score_summary_taxonomy(request, taxonomy_id):
   try:
+    # prep individual subclade queries
     if taxonomy_id == 'root':
       subtaxes = models.Taxonomy.objects.filter(name__in = ['Archaea', 'Eukaryota', 'Bacteria'])
     else:
       tax = models.Taxonomy.objects.get(id = taxonomy_id)
-      subtaxes = [node.tax for node in tree.full_tree.root.dfs(tax.taxid).children]
+      subtaxes = [node.tax for node in tree.full_tree.root.dfs(tax.taxid).children] + [tax]
+    
+    # Get annotations
     scores = []
-    import pdb
-    pdb.set_trace()
     for subtax in subtaxes:
       rank = subtax.rank if subtax.rank != 'class' else 'taxclass'
       trna_qs = models.tRNA.objects.filter(**{rank: subtax.taxid})
-      counts.append({
-        'name': subtax.name, 
-        'Subclades': '{:,}'.format(tax_qs.exclude(rank__in = ['species', 'assembly']).count()), 
-        'Species': '{:,}'.format(tax_qs.filter(rank = 'species').count()),
-        'Assemblies': '{:,}'.format(tax_qs.filter(rank = 'assembly').count()),
-        'tRNAs': '{:,}'.format(models.tRNA.objects.filter(Q(**{rank: subtax.taxid})).count())
-      })
-    counts = pd.DataFrame(counts)
+      scores.append(get_score_summary_taxonomy_dict(subtax.name, trna_qs))
+    
+    # Add "total" row
+    if taxonomy_id == 'root': trna_qs = models.tRNA.objects.all()
+    else: trna_qs = models.tRNA.objects.filter(**{tax.rank if tax.rank != 'class' else 'taxclass': tax.taxid})
+    scores.append(get_score_summary_taxonomy_dict('Total', trna_qs))
+    scores = pd.DataFrame(scores)
 
-    return HttpResponse(scores.to_html(classes = 'table', border = 0, bold_rows = False, na_rep = '0', sparsify = True))
+    scores = scores.set_index('name')
+    scores.index.name = None
+    if taxonomy_id != 'root': 
+      scores.index.name = str(tax)
+      scores = scores.reset_index()
+
+    if taxonomy_id != 'root':
+      return HttpResponse(scores.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, index = False, na_rep = '0', sparsify = True))
+    return HttpResponse(scores.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, na_rep = '0', sparsify = True))
+
+  except:
+    return HttpResponse('Unknown server error')
+
+
+def score_summary_isotype(request, taxonomy_id):
+  try:
+    if taxonomy_id == 'root':
+      trna_qs = models.tRNA.objects.all()
+    else:
+      tax = models.Taxonomy.objects.get(id = taxonomy_id)
+      trna_qs = models.tRNA.objects.filter(**{tax.rank if tax.rank != 'class' else 'taxclass': tax.taxid})
+    trnas = read_frame(trna_qs.values('score', 'isotype', 'anticodon', 'isoscore'))
+    scores = trnas.groupby(['isotype', 'anticodon']).agg({'score': ['median', 'count'], 'isoscore': ['median']})
+    
+    # Add totals for each isotype
+    isotype_totals = trnas.groupby(['isotype']).agg({'score': ['median', 'count'], 'isoscore': ['median']})
+    isotype_totals['anticodon'] = 'Total'
+    isotype_totals = isotype_totals.reset_index().set_index(['isotype', 'anticodon'])
+
+    scores = scores.append(isotype_totals).sort_index()
+    scores.columns = ['Isotype model score', 'Score', '# tRNAs']
+    scores['# tRNAs'] = scores['# tRNAs'].apply(lambda x: '{:,}'.format(x))
+    scores['Score'] = scores['Score'].apply(lambda x: '{:.2f}'.format(x))
+    scores['Isotype model score'] = scores['Isotype model score'].apply(lambda x: '{:.2f}'.format(x))
+    scores.index.names = [None, None]
+    scores = scores[['Score', 'Isotype model score', '# tRNAs']]
+
+    return HttpResponse(scores.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, na_rep = '0', sparsify = True))
 
   except:
     return HttpResponse('Unknown server error')

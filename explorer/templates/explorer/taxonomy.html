@@ -15,20 +15,29 @@ $(document).ready(function() {
 
 	$.get('{% url "explorer:genome_summary" taxonomy_id="root" %}')
 	  .done(function(response) { $('#genome-summary-area').html(response); });
+	$.get('{% url "explorer:score_summary_taxonomy" taxonomy_id="root" %}')
+	  .done(function(response) { $('#score-summary-taxonomy-area').html(response); });
+	$.get('{% url "explorer:score_summary_isotype" taxonomy_id="root" %}')
+	  .done(function(response) { $('#score-summary-isotype-area').html(response); });
 
 	$('.tax-display-button').click(function() {
 		event.cancelBubble = true;
 		if (event.stopPropagation) event.stopPropagation();
 
-		$('#genome-summary-area').html('<div class="loading-overlay"></div>');
-		$.get('{% url "explorer:genome_summary_dynamic" %}' + this.id.split('-')[0])
-		  .done(function(response) { $('#genome-summary-area').html(response); });
+		if (!['assembly', 'species'].includes(this.id.split('-')[0])) {
+			$('#genome-summary-area').html('<div class="loading-overlay"></div>');
+			$.get('{% url "explorer:genome_summary_dynamic" %}' + this.id.split('-')[1])
+			  .done(function(response) { $('#genome-summary-area').html(response); });
 
-		$('#score-summary-area').html('<div class="loading-overlay"></div>');
-		$.get('{% url "explorer:score_summary_dynamic" %}' + this.id.split('-')[0])
-		  .done(function(response) { $('#score-summary-area').html(response); });
-		  
-	})
+			$('#score-summary-taxonomy-area').html('<div class="loading-overlay"></div>');
+			$.get('{% url "explorer:score_summary_taxonomy_dynamic" %}' + this.id.split('-')[1])
+			  .done(function(response) { $('#score-summary-taxonomy-area').html(response); });
+		}
+
+		$('#score-summary-isotype-area').html('<div class="loading-overlay"></div>');
+		$.get('{% url "explorer:score_summary_isotype_dynamic" %}' + this.id.split('-')[1])
+		  .done(function(response) { $('#score-summary-isotype-area').html(response); }); 
+	});
 })
 </script>
 {% endblock %}
@@ -39,7 +48,7 @@ $(document).ready(function() {
 {% block filter %}
 
 <div class="container">
-	<div class="col-12">
+	<div class="col-12 tax-area">
 		{% for x in tree %}
 			{% if x.start_nodes %}
 			<div class="accordion tax-accordion" id='node-{{ x.data.tax.id }}'>
@@ -51,9 +60,7 @@ $(document).ready(function() {
 		    			{{ x.data.tax }}
 		    		</div>
 			    	<div class="col-1 d-flex justify-content-end">
-			    		{% if x.data.tax.rank != 'assembly' %}
-			    		<button class="btn btn-link tax-display-button" type="button" id="{{ x.data.tax.id }}-display">&rarr;</button>
-			    		{% endif %}
+			    		<button class="btn btn-link tax-display-button" type="button" id="{{ x.data.tax.rank }}-{{ x.data.tax.id }}-display" name="{{ x.data.tax.name }}">&rarr;</button>
 			    	</div>
 		    	</div>
 			    <div id="{{ x.data.tax.id }}-children" class="collapse" aria-labelledby="{{ x.data.tax.id }}" data-parent="#node-{{ x.data.parent.tax.id }}">
@@ -77,54 +84,41 @@ $(document).ready(function() {
 {% endblock %}
 
 {% block plots %}
-<div class="container">
-	<div class="col-12">
-		<div class="plotbox-row d-flex justify-content-center flex-wrap">
-			<div class="col-12 col-sm-auto">
-				<div class="plotbox-outer">
-					<div class="plotbox-header">
-						<h5>tRNA counts by subclade</h5>
-					</div>
-					<div class="table-inner" id="genome-summary-area">
-						<div class="loading-overlay"></div>
-					</div>
-				</div>
+<div class="plotbox-row d-flex justify-content-center flex-wrap">
+	<div class="col-12 col-sm-auto">
+		<div class="plotbox-outer">
+			<div class="plotbox-header">
+				<h5>tRNA counts by subclade</h5>
 			</div>
-
-			<div class="col-12 col-sm-auto">
-				<div class="plotbox-outer">
-					<div class="plotbox-header">
-						<h5>Domain-specific consensus features</h5>
-					</div>
-					<div class="table-inner" id="score-summary-area">
-						<div class="loading-overlay"></div>
-					</div>
-				</div>
-			</div>
-
-
-			<div class="col-12 col-sm-auto">
-				<div class="plotbox-outer">
-					<div class="plotbox-header">
-						<h5>Domain-specific consensus features</h5>
-					</div>
-					<div class="table-inner" id="domain-features-area">
-						<div class="loading-overlay"></div>
-					</div>
-				</div>
-			</div>
-
-			<div class="col-12 col-sm-auto">
-				<div class="plotbox-outer">
-					<div class="plotbox-header">
-						<h5>Domain-specific consensus features</h5>
-					</div>
-					<div class="table-inner" id="domain-features-area">
-						<div class="loading-overlay"></div>
-					</div>
-				</div>
+			<div class="table-inner" id="genome-summary-area">
+				<div class="loading-overlay"></div>
 			</div>
 		</div>
 	</div>
+
+	<div class="col-12 col-sm-auto">
+		<div class="plotbox-outer">
+			<div class="plotbox-header">
+				<h5>Taxonomy tRNA statistics</h5>
+			</div>
+			<div class="table-inner" id="score-summary-taxonomy-area">
+				<div class="loading-overlay"></div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="col-12 col-sm-auto">
+		<div class="plotbox-outer">
+			<div class="plotbox-header">
+				<h5>tRNA scores by isotype</h5>
+			</div>
+			<div class="table-inner" id="score-summary-isotype-area">
+				<div class="loading-overlay"></div>
+			</div>
+		</div>
+	</div>
+
 </div>
+
 {% endblock %}
