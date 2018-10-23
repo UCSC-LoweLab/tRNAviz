@@ -3,8 +3,6 @@
 {% load explorer_extras %}
 
 {% block static %}
-<script src="{% static 'js/bootstrap-toggle.min.js' %}"></script>
-<link href="{% static 'css/bootstrap-toggle.min.css' %}" rel="stylesheet">
 <script src="{% static 'js/jquery-ui.min.js' %}"></script>
 <link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}">
 <script src="{% static 'explorer/js/tooltip.js' %}"></script>
@@ -51,22 +49,22 @@ $(document).ready(function() {
 		$('#id_form-' + i + '-isotype').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
 	}
 	// Destroy bootstrap toggle for dummy, reinitialize when adding a new row
-	$('#id_form-1-use_fasta').bootstrapToggle('destroy');
+	// $('#id_form-1-use_fasta').bootstrapToggle('destroy');
 })
 
-$(document).on('click', '.toggle', function(e) {
+var adata;
+$(document).on('click', '.use-fasta-toggle', function(e) {
 	e.preventDefault();
-
-  // Form watches for "checked" attribute in checkbox input but toggle machinery doesn't do this
-	var form_switch = $(this).find('input')[0];
-	if (form_switch.hasAttribute('checked')) $(form_switch).removeAttr('checked');
-	else $(form_switch).attr('checked', true);
+	adata = this;
+  
+  // String indicating which option is selected
+	var use_fasta = $(this).find('label.active').find('input').val()
 
 	// Replace fasta / select
 	var db_selects = $(this).closest('.form-row').find('.db-select');
 	var fasta_input = $(this).closest('.form-row').find('.fasta-input');
 	var domain_select = $(this).closest('.form-row').find('.domain-select');
-	if (form_switch.hasAttribute('checked')) {
+	if (use_fasta == "True") {
 		db_selects.css('display', 'none');
 		fasta_input.css('display', 'block');
 		domain_select.css('display', 'inline-block');
@@ -111,7 +109,7 @@ $(document).on('click', '.add-form-row', function(e){
 	  	}
 		});
   	isotype_select.select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
-  	use_fasta_toggle.bootstrapToggle();
+  	// use_fasta_toggle.bootstrapToggle();
   });
 });
 
@@ -303,20 +301,28 @@ d3.json("{% url 'explorer:coords' %}", function(coords) {
 									<div class="btn-group btn-group-toggle d-none d-sm-inline-block" data-toggle="buttons">
 											<label class="btn btn-sm btn-secondary spoof-button">Select domain</label>
 									</div>
-
-										<div class="btn-group btn-group-toggle" data-toggle="buttons">
-											{% for radio in form.domain %}
-											{% if radio.data.value == form.domain.value %}
-											<label class="btn btn-sm btn-outline-secondary active" for="{{ radio.id_for_label }}">
-											{% else %}
-											<label class="btn btn-sm btn-outline-secondary" for="{{ radio.id_for_label }}">
-											{% endif %}{{ radio.tag }}{{ radio.choice_label }}
-											</label>
-											{% endfor %}
-										</div>
+									<div class="btn-group btn-group-toggle" data-toggle="buttons">
+										{% for radio in form.domain %}
+										{% if radio.data.value == form.domain.value %}
+										<label class="btn btn-sm btn-outline-secondary active" for="{{ radio.id_for_label }}">
+										{% else %}
+										<label class="btn btn-sm btn-outline-secondary" for="{{ radio.id_for_label }}">
+										{% endif %}{{ radio.tag }}{{ radio.choice_label }}
+										</label>
+										{% endfor %}
+									</div>
 								</div>
-								<div class='col-11'>
-									{{ form.use_fasta }}
+								<div class='col-11 pt-1 use-fasta-toggle'>
+									<div class="btn-group btn-group-toggle" data-toggle="buttons">
+										{% for radio in form.use_fasta %}
+										{% if radio.data.value == form.use_fasta.value %}
+										<label class="btn btn-sm btn-outline-secondary active" for="{{ radio.id_for_label }}">
+										{% else %}
+										<label class="btn btn-sm btn-outline-secondary" for="{{ radio.id_for_label }}">
+										{% endif %}{{ radio.tag }}{{ radio.choice_label }}
+										</label>
+										{% endfor %}
+									</div>
 								</div>
 								{% if forloop.counter >= 2 %}
 								<hr class="col-md-10">

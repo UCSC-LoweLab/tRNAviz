@@ -147,8 +147,8 @@ ISOTYPES_DISTINCT = (('', ''), ) + ISOTYPES[1:]
 POSITIONS_DISTINCT = (('', ''), ) + SINGLE_POSITIONS[1:] + PAIRED_POSITIONS[1:] + VARIABLE_ARM[1:] + TERTIARY_INTERACTIONS[1:]
 
 NUM_MODELS = (
-  ('uni', 'Universal'),
-  ('euk', 'Eukaryota'),
-  ('bact', 'Bacteria'),
-  ('arch', 'Archaea')
+  ('Universal', 'Universal'),
+  ('Eukaryota', 'Eukaryota'),
+  ('Bacteria', 'Bacteria'),
+  ('Archaea', 'Archaea')
 )

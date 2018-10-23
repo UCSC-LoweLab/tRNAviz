@@ -135,9 +135,6 @@ DEBUG_TOOLBAR_CONFIG = {
 # Testing specific options
 if len(sys.argv) > 1 and sys.argv[1] in ['test', 'coverage']:
     MIGRATION_MODULES = {'explorer': None,}
-else:
-    MIDDLEWARE += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
-    INSTALLED_APPS += ('debug_toolbar', )
 
 # For import export
 IMPORT_EXPORT_USE_TRANSACTIONS = True

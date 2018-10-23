@@ -23,8 +23,6 @@ class SummaryForm(forms.Form):
     choices = choices.ISOTYPES,
     required = True)
 
-
-
 class DummyFormSet(forms.BaseFormSet):
   def __init__(self, dummy_form_index = 1, *args, **kwargs):
     super().__init__(*args, **kwargs)
@@ -85,7 +83,6 @@ class DummyFormSet(forms.BaseFormSet):
       self.clean()
     except ValidationError as e:
         self._non_form_errors = self.error_class(e.error_list)
-
 
 class CladeGroupForm(forms.Form):
   clade_group = forms.CharField(widget = forms.SelectMultiple({'class': 'form-control multiselect clade-group-select'}), required = False)
@@ -187,32 +184,27 @@ class BaseFocusFormSet(DummyFormSet):
 FocusFormSet = formset_factory(FocusForm, formset = BaseFocusFormSet, extra = 3)
 
 class CompareForm(forms.Form):
-  name = forms.CharField(widget = forms.TextInput({
-    'class': 'form-control name-input',
-    'placeholder': 'Group name'
-    }), max_length = 20, required = False)
-  fasta = forms.CharField(widget = forms.Textarea({
-    'class': 'form-control fasta-input',
-    'placeholder': 'Paste tRNAs in FASTA format'
-    }), required = False)
+  name = forms.CharField(
+    widget = forms.TextInput({'class': 'form-control name-input', 'placeholder': 'Group name'}), 
+    max_length = 20, 
+    required = False)
+  fasta = forms.CharField(
+    widget = forms.Textarea({
+      'class': 'form-control fasta-input',
+      'placeholder': 'Paste tRNAs in FASTA format'
+    }), 
+    required = False)
   clade = forms.ChoiceField(choices = choices.CLADES, required = False)
   isotype = forms.ChoiceField(
     widget = forms.Select({'class': 'form-control multiselect isotype-select'}), 
     initial = 'All',
     choices = choices.ISOTYPES,
     required = False)
-  use_fasta = forms.BooleanField(
-    widget = forms.CheckboxInput(attrs = {
-      'class': 'use-fasta-toggle',
-      'data-toggle': 'toggle',
-      'data-size': 'small',
-      'data-onstyle': 'info',
-      'data-offstyle': 'secondary',
-      'data-on': 'Switch to data select',
-      'data-off': 'Switch to FASTA input'
-      }),
+  use_fasta = forms.ChoiceField(
+    widget = forms.RadioSelect(),
+    choices = ((False, 'Select tRNAs'), (True, 'Input FASTA')),
     initial = False,
-    required = False)
+    required = True)
   domain = forms.ChoiceField(
     widget = forms.RadioSelect(),
     choices = choices.NUM_MODELS, 
@@ -301,7 +293,6 @@ class CompareForm(forms.Form):
         raise ValidationError('Input sequence may not contain the following characters: {}'.format(bad_char_html))
       if not line:
         return True
-
 
 class BaseCompareFormSet(DummyFormSet):
   def __init__(self, *args, **kwargs):
