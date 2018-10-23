@@ -443,6 +443,10 @@ var draw_species_distribution = function(plot_data) {
           of: d3.event,
           collision: "flip"
         });
+        d3.select(this)
+          .transition()
+          .duration(100)
+          .attr('class', 'distro-rect-highlight');
         highlight_cloverleaf_tooltip(d.data.position);
       })
       .on('mousemove', function(d, i) {  
