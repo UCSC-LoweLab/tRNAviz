@@ -49,8 +49,8 @@ class CompareTests(TestCase):
       if cls.formset_data[i + 2]['use_fasta']:
         num_model = compare.NUMBERING_MODELS[cls.formset_data[i + 2]['domain']]
       else:
-        clade_qs = models.Taxonomy.objects.filter(taxid = cls.formset_data[i + 2]['clade']).values()[0]
-        cls.num_model = compare.NUMBERING_MODELS[clade_qs['domain']]
+        clade_tax = models.Taxonomy.objects.filter(taxid = cls.formset_data[i + 2]['clade'])[0]
+        cls.num_model = compare.NUMBERING_MODELS[models.Taxonomy.objects.filter(taxid = clade_tax.domain).get().name]
       current_bits = compare.align_trnas_collect_bit_scores(trna_fasta_fh.name, cls.num_model, cls.ref_model_fh.name)
       current_bits['group_name'] = cls.formset_data[i + 2]['name']
       current_bits['group'] = 'group-{}'.format(i)

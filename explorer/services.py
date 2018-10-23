@@ -374,7 +374,7 @@ def query_trnas_for_species_distribution(clade_groups, clade_info, foci):
       if taxid not in clade_group: continue
       name, rank = clade_info[taxid]
       if rank == 'class': rank = 'taxclass'
-      q_list.append(Q(**{str(rank): name}))
+      q_list.append(Q(**{rank if rank != 'class' else 'taxclass': taxid}))
     query_filter_args = Q()
     for q in q_list:
       query_filter_args = query_filter_args | q
@@ -387,6 +387,9 @@ def query_trnas_for_species_distribution(clade_groups, clade_info, foci):
       trna_qs = trna_qs.values(query_position, 'assembly')
       df = read_frame(trna_qs)
       df.columns = ['feature', 'assembly']
+      taxes = read_frame(models.Taxonomy.objects.filter(*(query_filter_args,), rank = 'assembly').values('taxid', 'name'))
+      taxes = taxes.set_index('taxid').to_dict()['name']
+      df['assembly'] = df['assembly'].apply(lambda x: taxes[x])
       df['position'] = focus['position']
       df['isotype'] = focus['isotype']
       df['anticodon'] = focus['anticodon']

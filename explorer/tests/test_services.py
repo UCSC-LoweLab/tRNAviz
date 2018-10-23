@@ -125,7 +125,7 @@ class SummaryServicesTests(TestCase):
     counts = json.loads(json_response.content.decode('utf8'))
     self.assertEqual(len(counts), 7)
 
-  @tag('domain-features', 'current')
+  @tag('domain-features')
   def test_domain_features(self):
     json_response = services.domain_features(self.request, self.clade_txid, self.isotype)
     cons = json.loads(json_response.content.decode('utf8'))
@@ -147,8 +147,8 @@ class SummaryServicesTests(TestCase):
     http = response.content.decode('utf8')
     self.assertIn('Saccharomyces', http)
     self.assertIn('Eukaryota', http)
-    self.assertIn('Isotype', http)
-    self.assertIn('Anticodon', http)
+    self.assertIn('Ala', http)
+    self.assertIn('AGC', http)
 
   @tag('isotype-discrepancies')
   def test_isotype_discrepancies(self):
@@ -301,5 +301,6 @@ class TaxonomyServicesTests(TestCase):
   def test_score_summary_isotype(self):
     response = services.score_summary_isotype(self.request, 'root')
     http = response.content.decode('utf8')
-    self.assertIn('Bacteria', http)
+    self.assertIn('Ala', http)
+    self.assertIn('AGC', http)
     self.assertIn('Total', http)

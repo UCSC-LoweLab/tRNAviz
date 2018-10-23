@@ -41,8 +41,8 @@ class SummaryViewTests(TestCase):
     self.assertEqual(response.status_code, 200)
     self.assertContains(response, 'Error in clade')
     self.assertContains(response, 'Error in isotype')
-    self.assertContains(response, '<td>{}</td>'.format(self.default_clade))
-    self.assertContains(response, '<td>{}</td>'.format(self.default_isotype))
+    self.assertContains(response, self.default_clade)
+    self.assertContains(response, self.default_isotype)
 
 @tag('variation', 'distribution')
 class DistributionViewTests(TestCase):
@@ -56,10 +56,10 @@ class DistributionViewTests(TestCase):
     request = self.factory.get(reverse('explorer:variation_distribution'))
     response = views.variation_distribution(request)
     self.assertEqual(response.status_code, 200)
-    self.assertContains(response, '<td><p>Group 1: Saccharomyces (genus), Schizosaccharomyces (genus)')
-    self.assertContains(response, 'Group 2: Basidiomycota (phylum)</p></td>')
-    self.assertContains(response, '<td>All</td>')
-    self.assertContains(response, '<td>8, 9, 14, 35, 36, 37, 46, 73, 12:23, 18:55, 11:24</td>')
+    self.assertContains(response, 'Saccharomyces (genus), Schizosaccharomyces (genus)')
+    self.assertContains(response, 'Basidiomycota (phylum)')
+    self.assertContains(response, 'All')
+    self.assertContains(response, '8, 9, 14, 35, 36, 37, 46, 73, 12:23, 18:55, 11:24')
 
   @tag('distribution')
   def test_distribution_view_valid_post(self):
@@ -74,9 +74,9 @@ class DistributionViewTests(TestCase):
     })
     response = views.variation_distribution(request)
     self.assertEqual(response.status_code, 200)
-    self.assertContains(response, 'Group 1: Saccharomyces (genus)')
-    self.assertContains(response, 'Group 2: Basidiomycota (phylum)')
-    self.assertContains(response, 'Group 3: Encephalitozoon (genus)')
+    self.assertContains(response, 'Saccharomyces (genus)')
+    self.assertContains(response, 'Basidiomycota (phylum)')
+    self.assertContains(response, 'Encephalitozoon (genus)')
     self.assertContains(response, 'paired, 1:72, variable, 2:71, 8')
     self.assertContains(response, 'His, Met, Phe')
 
@@ -103,22 +103,22 @@ class SpeciesViewTests(TestCase):
     request = self.factory.get(reverse('explorer:variation_species'))
     response = views.variation_species(request)
     self.assertEqual(response.status_code, 200)
-    self.assertContains(response, 'Group 1: Saccharomyces (genus), Schizosaccharomyces (genus)')
-    self.assertContains(response, '<td>3:70</td>')
-    self.assertContains(response, '<td>Gly</td>')
-    self.assertContains(response, '<td>All</td>')
-    self.assertContains(response, '<td>16.5 - 100.1</td>')
-    self.assertContains(response, '<td>16.5 - 70.1</td>')
+    self.assertContains(response, 'Saccharomyces (genus), Schizosaccharomyces (genus)')
+    self.assertContains(response, '3:70')
+    self.assertContains(response, 'Gly')
+    self.assertContains(response, 'All')
+    self.assertContains(response, '16.5 - 100.1')
+    self.assertContains(response, '16.5 - 70.1')
 
   def test_species_view_valid_post(self):
     request = self.factory.post(reverse('explorer:variation_species'), self.valid_post_data)
     response = views.variation_species(request)
     self.assertEqual(response.status_code, 200)
-    self.assertContains(response, 'Group 1: Saccharomyces (genus)')
-    self.assertContains(response, 'Group 2: Basidiomycota (phylum)')
-    self.assertContains(response, 'Group 3: Encephalitozoon (genus)')
-    self.assertContains(response, '<td>Met</td>')
-    self.assertContains(response, '<td>30.5 - 80</td>')
+    self.assertContains(response, 'Saccharomyces (genus)')
+    self.assertContains(response, 'Basidiomycota (phylum)')
+    self.assertContains(response, 'Encephalitozoon (genus)')
+    self.assertContains(response, 'Met')
+    self.assertContains(response, '30.5 - 80')
 
 @tag('compare')
 class CompareViewTests(TestCase):
@@ -151,7 +151,7 @@ class CompareViewTests(TestCase):
     request = self.factory.get(reverse('explorer:compare'))
     response = views.compare(request)
     self.assertEqual(response.status_code, 200)
-    self.assertContains(response, '<h4>Selections</h4>')
+    self.assertContains(response, 'Query selections')
 
   def test_compare_view_get_no_errors(self):
     request = self.factory.get(reverse('explorer:compare'))
@@ -167,7 +167,7 @@ class CompareViewTests(TestCase):
     request = self.factory.post(reverse('explorer:compare'), self.invalid_post_data)
     with self.assertRaises(ValidationError):
       response = views.compare(request)
-  
+    
   def test_compare_view_form_errors_rendered(self):
     request = self.factory.post(reverse('explorer:compare'), self.invalid_form_data)
     response = views.compare(request)
@@ -179,7 +179,6 @@ class TaxonomyServicesTests(TestCase):
   def setUp(self):
     self.factory = RequestFactory() 
 
-  @tag('current')
   def test_taxonomy_get(self):
     request = self.factory.get(reverse('explorer:taxonomy'))
     response = views.taxonomy(request)

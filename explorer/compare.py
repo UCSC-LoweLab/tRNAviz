@@ -44,10 +44,10 @@ BITCHART_POSITIONS = ['8', '9', '14', '15', '16', '17', '17a', '18', '19', '20',
   '1:72', '2:71', '3:70', '4:69', '5:68', '6:67', '7:66', '10:25', '11:24', '12:23', '13:22', 
   '27:43', '28:42', '29:41', '30:40', '31:39', '49:65', '50:64', '51:63', '52:62', '53:61']
 
-NUMBERING_MODELS = {'uni': '{}/all-num.cm'.format(settings.ENGINE_DIR),
-  'euk': '{}/euk-num.cm'.format(settings.ENGINE_DIR),
-  'bact': '{}/bact-num.cm'.format(settings.ENGINE_DIR),
-  'arch': '{}/arch-num.cm'.format(settings.ENGINE_DIR)}
+NUMBERING_MODELS = {'Universal': '{}/all-num.cm'.format(settings.ENGINE_DIR),
+  'Eukaryota': '{}/euk-num.cm'.format(settings.ENGINE_DIR),
+  'Bacteria': '{}/bact-num.cm'.format(settings.ENGINE_DIR),
+  'Archaea': '{}/arch-num.cm'.format(settings.ENGINE_DIR)}
 
 def bitchart(request, formset_json):
   try:
@@ -66,8 +66,8 @@ def bitchart(request, formset_json):
       if formset_data[i + 2]['use_fasta']:
         num_model = NUMBERING_MODELS[formset_data[i + 2]['domain']]
       else:
-        clade_qs = models.Taxonomy.objects.filter(taxid = formset_data[i + 2]['clade']).values()[0]
-        num_model = NUMBERING_MODELS[clade_qs['domain']]
+        clade_tax = models.Taxonomy.objects.filter(taxid = formset_data[i + 2]['clade'])[0]
+        num_model = NUMBERING_MODELS[models.Taxonomy.objects.filter(taxid = clade_tax.domain).get().name]
       current_bits = align_trnas_collect_bit_scores(trna_fasta_fh.name, num_model, ref_model_fh.name)
       current_bits['group_name'] = formset_data[i + 2]['name']
       current_bits['group'] = 'group-{}'.format(i)
@@ -126,9 +126,9 @@ def write_trnas_to_files(formset_data, seqs):
   return trna_fasta_files
 
 def query_trnas(form_data):
-  clade_qs = models.Taxonomy.objects.filter(taxid = form_data['clade']).values()[0]
-  rank, name = clade_qs['rank'] if clade_qs['rank'] != 'class' else 'taxclass', clade_qs['name']
-  trna_qs = models.tRNA.objects.filter(Q(**{rank: name})).values('seqname')
+  clade_tax = models.Taxonomy.objects.filter(taxid = form_data['clade'])[0]
+  rank = clade_tax.rank if clade_tax.rank != 'class' else 'taxclass'
+  trna_qs = models.tRNA.objects.filter(Q(**{rank: clade_tax.taxid})).values('seqname')
   if form_data['isotype'] != 'All':
     trna_qs = trna_qs.filter(isotype = form_data['isotype'])
   return trna_qs
@@ -137,8 +137,8 @@ def build_reference_model(formset_data, trna_fasta_files):
   # Build reference CM model
   ref_fasta = trna_fasta_files[0].name
   ref_align_fh = NamedTemporaryFile()
-  clade_qs = models.Taxonomy.objects.filter(taxid = formset_data[0]['clade']).values()[0]
-  num_model = NUMBERING_MODELS[clade_qs['domain']]
+  clade_tax = models.Taxonomy.objects.filter(taxid = formset_data[0]['clade'])[0]
+  num_model = NUMBERING_MODELS[models.Taxonomy.objects.filter(taxid = clade_tax.domain).get().name]
   cmd_cmalign = 'cmalign -g --notrunc --matchonly -o {} {} {} > /dev/null'.format(ref_align_fh.name, num_model, ref_fasta)
   res = subprocess.run(cmd_cmalign, shell = True)
   ref_model_fh = NamedTemporaryFile()
@@ -205,7 +205,7 @@ def align_trnas_collect_bit_scores(trna_fasta, num_model, ref_model):
 
 def get_cons_bits(ref_taxid, ref_isotype):
   ref_cons_qs = models.Consensus.objects.filter(taxid = ref_taxid, isotype = ref_isotype).values()
-  ref_cons = read_frame(ref_cons_qs).drop(['id', 'taxid', 'rank', 'isotype'], axis = 1).stack().unstack(0).reset_index()
+  ref_cons = read_frame(ref_cons_qs).drop(['id', 'taxid', 'isotype'], axis = 1).stack().unstack(0).reset_index()
   ref_cons.columns = ['position', 'feature']
   ref_cons.position = ref_cons.position.apply(lambda x: x[1:].replace('_', ':'))
   ref_cons['score'] = 0
@@ -216,7 +216,7 @@ def get_cons_bits(ref_taxid, ref_isotype):
 
 def get_modal_freqs(ref_taxid, ref_isotype):
   freqs_qs = models.Freq.objects.filter(taxid = ref_taxid, isotype = ref_isotype).values()
-  ref_freqs = read_frame(freqs_qs).drop(['id', 'taxid', 'rank', 'isotype'], axis = 1)
+  ref_freqs = read_frame(freqs_qs).drop(['id', 'taxid', 'isotype'], axis = 1)
   ref_freqs['feature'] = ref_freqs.drop(['position', 'total'], axis = 1).idxmax(axis = 1)
   ref_freqs = ref_freqs[['position', 'feature', 'total']]
   ref_freqs['score'] = 0

@@ -210,12 +210,13 @@ class CompareForm(forms.Form):
       'data-offstyle': 'secondary',
       'data-on': 'Switch to data select',
       'data-off': 'Switch to FASTA input'
-      }), 
+      }),
+    initial = False,
     required = False)
   domain = forms.ChoiceField(
     widget = forms.RadioSelect(),
     choices = choices.NUM_MODELS, 
-    initial = 'uni', 
+    initial = 'Universal', 
     required = False)
 
   def as_dict(self):
