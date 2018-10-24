@@ -28,7 +28,7 @@ IUPAC_CODES.update(PAIRED_FEATURES)
 IUPAC_CODES.update({'Absent': '-', 'Purine': 'R', 'Pyrimidine': 'Y', 'Amino': 'M', 'Keto': 'K', 'Weak': 'W', 'Strong': 'S', 
   'B': 'B', 'D': 'D', 'H': 'H', 'V': 'V', 'N': 'N', 
   'PurinePyrimidine': 'R:Y', 'PyrimidinePurine': 'Y:R', 'WobblePair': 'K:K', 'StrongPair': 'S:S', 'WeakPair': 'W:W', 'AminoKeto': 'M:K', 'KetoAmino': 'K:M', 
-  'Paired': 'N:N', 'Bulge': '', 'Mismatched': 'N|N', 'NN': '', '': ''})
+  'Paired': 'N:N', 'Bulge': '', 'Mismatched': 'N|N', 'High mismatch rate': 'N|N', 'NN': '', '': ''})
 HUMAN_LABELS = {
   'Amino': 'A / C', 'Keto': 'G / U', 'Weak': 'A / U', 'Strong': 'G / C', 
   'B': 'C / G / U', 'H': 'A / C / U', 'D': 'A / G / U', 'V': 'A / C / G', 'N': 'N',
@@ -54,7 +54,6 @@ def bitchart(request, formset_json):
     # get formset
     formset_data = json.loads(open(settings.MEDIA_ROOT + formset_json).read())
     os.remove(settings.MEDIA_ROOT + formset_json)
-    
     seqs = read_all_trnas()
     trna_fasta_files = write_trnas_to_files(formset_data, seqs)
     ref_model_fh = build_reference_model(formset_data, trna_fasta_files)
@@ -63,7 +62,7 @@ def bitchart(request, formset_json):
     # Align tRNAs to reference model and collect bit scores
     bits = pd.DataFrame()
     for i, trna_fasta_fh in enumerate(trna_fasta_files[1:]):
-      if formset_data[i + 2]['use_fasta']:
+      if formset_data[i + 2]['use_fasta'] == "True":
         num_model = NUMBERING_MODELS[formset_data[i + 2]['domain']]
       else:
         clade_tax = models.Taxonomy.objects.filter(taxid = formset_data[i + 2]['clade'])[0]
@@ -111,7 +110,7 @@ def write_trnas_to_files(formset_data, seqs):
     trna_seqs = []
 
     # For selects, query db
-    if 'use_fasta' not in form_data or not form_data['use_fasta']:
+    if 'use_fasta' not in form_data or form_data['use_fasta'] != "True":
       trna_qs = query_trnas(form_data)
       seqnames = [d['seqname'] for d in trna_qs]
       for seq in seqs:

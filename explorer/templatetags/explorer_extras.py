@@ -56,8 +56,7 @@ def clade_lookup(taxid):
 @register.filter('haserrors')
 def haserrors(formset, formset_type):
   for i, errordict in enumerate(formset.errors):
-    if formset_type == 'compare' and i < 2: continue
-    elif i < 1: continue
+    if formset_type != 'compare' and i == 0: continue
     if len(errordict) > 0:
       return True
   if len(formset.non_form_errors()) > 0:
@@ -73,3 +72,8 @@ def focus_value(focus, key):
   if key == 'score':
     return '{} - {}'.format(focus['score_min'], focus['score_max'])
   return focus[key]
+
+
+@register.filter('cast_bool')
+def cast_bool(string):
+  return string == "True"

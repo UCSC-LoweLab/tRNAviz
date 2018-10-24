@@ -48,14 +48,11 @@ $(document).ready(function() {
 		});
 		$('#id_form-' + i + '-isotype').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
 	}
-	// Destroy bootstrap toggle for dummy, reinitialize when adding a new row
-	// $('#id_form-1-use_fasta').bootstrapToggle('destroy');
 })
 
 var adata;
 $(document).on('click', '.use-fasta-toggle', function(e) {
 	e.preventDefault();
-	adata = this;
   
   // String indicating which option is selected
 	var use_fasta = $(this).find('label.active').find('input').val()
@@ -65,14 +62,14 @@ $(document).on('click', '.use-fasta-toggle', function(e) {
 	var fasta_input = $(this).closest('.form-row').find('.fasta-input');
 	var domain_select = $(this).closest('.form-row').find('.domain-select');
 	if (use_fasta == "True") {
-		db_selects.css('display', 'none');
-		fasta_input.css('display', 'block');
-		domain_select.css('display', 'inline-block');
+		db_selects.removeClass('d-block').addClass('d-none');
+		fasta_input.removeClass('d-none').addClass('d-block');
+		domain_select.removeClass('d-none').addClass('d-inline-block');
 	}
 	else {
-		db_selects.css('display', 'block');
-		fasta_input.css('display', 'none');
-		domain_select.css('display', 'none');
+		db_selects.removeClass('d-none').addClass('d-block');
+		fasta_input.removeClass('d-block').addClass('d-none');
+		domain_select.removeClass('d-inline-block').addClass('d-none');
 	}
 });
 
@@ -81,18 +78,33 @@ $(document).on('click', '.add-form-row', function(e){
   var clade_select, isotype_select, fasta_input, use_fasta_toggle;
 
   var addFormRow = function () {
-  	var new_form = $('.form-row-dummy').clone(true).removeClass().addClass('form-row').css('display', 'block');
+  	var new_form = $('.form-row-dummy').clone(true).removeClass().addClass('form-row d-block');
   	var form_index = $('#id_form-TOTAL_FORMS').val();
   	name_input = new_form.find('#id_form-1-name');
-  	name_input.attr({'name': 'form-' + form_index + '-name', 'id': 'id_form-' + form_index + '-name'}).val('');
+  	name_input.attr({'name': 'form-' + form_index + '-name', 'id': 'id_form-' + form_index + '-name'});
 	  clade_select = new_form.find('#clade-select-1');
-	  clade_select.attr({'name': 'form-' + form_index + '-clade', 'id': 'clade-select-' + form_index}).val('');
+	  clade_select.attr({'name': 'form-' + form_index + '-clade', 'id': 'clade-select-' + form_index});
 	  isotype_select = new_form.find('#id_form-1-isotype');
 	  isotype_select.attr({'name': 'form-' + form_index + '-isotype', 'id': 'id_form-' + form_index + '-isotype'}).val('');
 	  fasta_input = new_form.find('#id_form-1-fasta')
-	  fasta_input.attr({'name': 'form-' + form_index + '-fasta', 'id': 'id_form-' + form_index + '-fasta'}).val('');
-	  use_fasta_toggle = new_form.find('#id_form-1-use_fasta');
-	  use_fasta_toggle.attr({'name': 'form-' + form_index + '-use_fasta', 'id': 'id_form-' + form_index + '-use_fasta'}).val('');
+	  fasta_input.attr({'name': 'form-' + form_index + '-fasta', 'id': 'id_form-' + form_index + '-fasta'});
+
+	  new_form.find('.use-fasta-toggle label').each(function(i) {
+		  $(new_form.find('.use-fasta-toggle label')[i]).attr({'for': 'id_form-' + form_index + '-use_fasta_' + i});
+		  $(new_form.find('.use-fasta-toggle input')[i]).attr({
+		  	'name': 'form-' + form_index + '-use_fasta',
+		  	'id': 'id_form-' + form_index + '-use_fasta_' + i
+		  });
+		});
+
+	  new_form.find('.domain-select label:not(.spoof-button)').each(function(i) {
+		  $(new_form.find('.domain-select label:not(.spoof-button)')[i]).attr({'for': 'id_form-' + form_index + '-domain_' + i});
+		  $(new_form.find('.domain-select input')[i]).attr({
+		  	'name': 'form-' + form_index + '-domain',
+		  	'id': 'id_form-' + form_index + '-domain_' + i
+		  });
+		});
+
 	  $('#id_form-TOTAL_FORMS').val(++form_index);
 	  $('.form-row:last').after(new_form);
   }
@@ -109,7 +121,6 @@ $(document).on('click', '.add-form-row', function(e){
 	  	}
 		});
   	isotype_select.select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
-  	// use_fasta_toggle.bootstrapToggle();
   });
 });
 
@@ -162,7 +173,7 @@ $(document).ready(function () {
 	if ('{{ valid_form }}' == 'True') {
 		d3.json('{% url "explorer:bitchart" formset_json=formset_json %}', 
 			function(plot_data) {
-			  d3.select('#bitchart-area .loading-overlay').style('display', 'none');
+			  d3.select('#bitchart-area .loading-overlay').attr('class', 'loading-overlay d-none');
 			  if ("server_error" in plot_data) d3.select('#bitchart-area').text(plot_data['server_error'])
 			  else draw_bitchart(plot_data);
 			}
@@ -252,6 +263,9 @@ d3.json("{% url 'explorer:coords' %}", function(coords) {
 									Isotype
 									{{ form.isotype }}
 								</div>
+								<div class='d-none'>
+									{{ form.use_fasta }}
+								</div>
 							</div>
 						</div>
 					</div>
@@ -266,7 +280,7 @@ d3.json("{% url 'explorer:coords' %}", function(coords) {
 					<div class="col-12">
 			{% else %}
 				{% if forloop.counter == 2 %}
-						<div class='form-row-dummy' style='display:none;'>
+						<div class='form-row-dummy d-none'>
 				{% else %}
 						<div class='form-row'>
 				{% endif %}
@@ -280,7 +294,7 @@ d3.json("{% url 'explorer:coords' %}", function(coords) {
 							  	<button type="button" class="close btn remove-form-row" aria-label="Delete row"><span aria-hidden="true">&times;</span></button>
 							  </div>
 							  {% endif %}
-								<div class='col-11 pb-1 db-select'>
+								<div class='col-11 pb-1 db-select {{ form.use_fasta.value|cast_bool|yesno:"d-none,d-block" }}'>
 									Clade
 									<select class='form-control multiselect clade-select' name="{{ form.clade.html_name }}" id="clade-select-{{ forloop.counter0 }}">
 										<option></option>
@@ -289,15 +303,15 @@ d3.json("{% url 'explorer:coords' %}", function(coords) {
 										{% endif %}
 									</select>
 								</div>
-								<div class='col-11 pb-1 db-select'>
+								<div class='col-11 pb-1 db-select {{ form.use_fasta.value|cast_bool|yesno:"d-none,d-block" }}'>
 									Isotype
 									{{ form.isotype }}
 								</div>
-								<div class='col-11 pb-1 fasta-input' style="display: {{ form.use_fasta.value|yesno:'block,none' }};">
+								<div class='col-11 pb-1 fasta-input {{ form.use_fasta.value|cast_bool|yesno:"d-block,d-none" }}'>
 									Input tRNAs
 									{{ form.fasta }}
 								</div>
-								<div class='col-12 pb-1 domain-select' style="display: {{ form.use_fasta.value|yesno:'inline-block,none' }};">
+								<div class='col-12 pb-1 domain-select {{ form.use_fasta.value|cast_bool|yesno:"d-inline-block,d-none" }}'>
 									<div class="btn-group btn-group-toggle d-none d-sm-inline-block" data-toggle="buttons">
 											<label class="btn btn-sm btn-secondary spoof-button">Select domain</label>
 									</div>
@@ -307,8 +321,7 @@ d3.json("{% url 'explorer:coords' %}", function(coords) {
 										<label class="btn btn-sm btn-outline-secondary active" for="{{ radio.id_for_label }}">
 										{% else %}
 										<label class="btn btn-sm btn-outline-secondary" for="{{ radio.id_for_label }}">
-										{% endif %}{{ radio.tag }}{{ radio.choice_label }}
-										</label>
+										{% endif %}{{ radio.tag }}{{ radio.choice_label }}</label>
 										{% endfor %}
 									</div>
 								</div>
@@ -362,7 +375,7 @@ d3.json("{% url 'explorer:coords' %}", function(coords) {
 			{% elif forloop.counter > 2 %}
 			<tr>
 				<th scope="row">Selection {{ forloop.counter|minus2 }}: {{ form.name.value }}</th>
-				{% if form.use_fasta.value %}
+				{% if form.use_fasta.value == "True" %}
 				<td>User FASTA input</td>
 				{% else %}
 				<td>{{ form.clade.value|clade_lookup }}, {{ form.isotype.value }}</td>

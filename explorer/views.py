@@ -102,7 +102,7 @@ def compare(request):
 
   formset = forms.CompareFormSet(request.POST)
   formset_json_fh = NamedTemporaryFile('w')
-
+  
   if formset.is_valid():
     formset_json_fh.write(json.dumps([form.as_dict() for form in formset]))
     formset_json_fh.flush()

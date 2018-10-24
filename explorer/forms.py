@@ -35,11 +35,12 @@ class DummyFormSet(forms.BaseFormSet):
     forms_valid = True
     self.errors
     for i in range(0, self.total_form_count()):
-      if i == self.dummy_form_index: continue
       form = self.forms[i]
       if self.can_delete and self._should_delete_form(form):
         continue
-      forms_valid &= form.is_valid()
+      is_valid = form.is_valid()
+      if i == self.dummy_form_index: continue
+      forms_valid &= is_valid
     return forms_valid and not self.non_form_errors()
 
   def full_clean(self):
@@ -60,12 +61,13 @@ class DummyFormSet(forms.BaseFormSet):
         empty_forms_count += 1
       # Accessing errors calls full_clean() if necessary.
       # _should_delete_form() requires cleaned_data.
-      form_errors = {}
-      if i != self.dummy_form_index: form_errors = form.errors
-      else: form.errors
+      form_errors = form.errors
+      if i == self.dummy_form_index: 
+        form_errors = {}
       if self.can_delete and self._should_delete_form(form):
         continue
       self._errors.append(form_errors)
+
     try:
       if (self.validate_max and self.total_form_count() - len(self.deleted_forms) > self.max_num) or \
           self.management_form.cleaned_data['TOTAL_FORMS'] > self.absolute_max:
@@ -202,8 +204,8 @@ class CompareForm(forms.Form):
     required = False)
   use_fasta = forms.ChoiceField(
     widget = forms.RadioSelect(),
-    choices = ((False, 'Select tRNAs'), (True, 'Input FASTA')),
-    initial = False,
+    choices = (('False', 'Select tRNAs'), ('True', 'Input FASTA')),
+    initial = 'False',
     required = True)
   domain = forms.ChoiceField(
     widget = forms.RadioSelect(),
@@ -217,13 +219,12 @@ class CompareForm(forms.Form):
       'fasta': str(self['fasta'].value()),
       'clade': str(self['clade'].value()),
       'isotype': str(self['isotype'].value()),
-      'use_fasta': bool(self['use_fasta'].value()),
+      'use_fasta': str(self['use_fasta'].value()),
       'domain': str(self['domain'].value())
     }
 
   def _clean_fields(self):
     # validate fields, but only validate fasta sequence if necessary
-    # by default, clade and isotype will always be validated. This should not be a problem unless you hack the POST request. And why would you do that?
     for name, field in self.fields.items():
       if name == 'fasta':
         # save value for later
@@ -239,7 +240,7 @@ class CompareForm(forms.Form):
       except ValidationError as e:
         self.add_error(name, e)
 
-    if self.cleaned_data['use_fasta']:
+    if self.cleaned_data['use_fasta'] == "True":
       try:
         # perform regular validation first
         self.cleaned_data['fasta'] = self.fields['fasta'].clean(fasta)
@@ -253,6 +254,7 @@ class CompareForm(forms.Form):
         self.add_error('clade', 'Please make a selection for both clade and isotype fields')
       if 'isotype' in self.cleaned_data and self.cleaned_data['isotype'] == '':
         self.add_error('isotype', 'Please make a selection for both clade and isotype fields')
+
 
   # Easier than overloading a CharField
   def check_fasta(self, input_str):
@@ -297,11 +299,14 @@ class CompareForm(forms.Form):
 class BaseCompareFormSet(DummyFormSet):
   def __init__(self, *args, **kwargs):
     super().__init__(1, *args, **kwargs)
+    for form in self.forms:
+      form.empty_permitted = False
 
   def clean(self):
     ref_form = self.forms[0]
-    trna_qs = compare.query_trnas(ref_form.cleaned_data)
-    if len(trna_qs) < 5:
-      raise ValidationError('Not enough sequences in database for reference category. Query a broader set.')
+    if ref_form.is_valid():
+      trna_qs = compare.query_trnas(ref_form.cleaned_data)
+      if len(trna_qs) < 5:
+        raise ValidationError('Not enough sequences in database for reference category. Query a broader set.')
   
 CompareFormSet = formset_factory(CompareForm, formset = BaseCompareFormSet, can_delete = True, extra = 3)

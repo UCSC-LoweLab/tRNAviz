@@ -24,6 +24,7 @@ class CompareTests(TestCase):
   @classmethod
   def setUpClass(cls):
     super(CompareTests, cls).setUpClass()
+    print('\nSetting up compare class test environment...')
     cls.formset = forms.CompareFormSet({
       'form-0-name': '', 'form-0-clade': '4751', 'form-0-isotype': 'Asp', 
       'form-1-name': '', 'form-1-clade': '2759', 'form-1-isotype': 'All', 'form-1-domain': 'uni',
@@ -62,6 +63,7 @@ class CompareTests(TestCase):
     ref_cons = compare.get_cons_bits(ref_taxid, ref_isotype)
     ref_freqs = compare.get_modal_freqs(ref_taxid, ref_isotype)
     cls.bits = pd.concat([cls.bits, ref_cons, ref_freqs], sort = True).reset_index(drop = True)
+    print('done\n')
 
   def test_compare_read_all_trnas(self):
     self.assertTrue(len(self.seqs) > 0)
