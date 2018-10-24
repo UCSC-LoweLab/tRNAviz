@@ -507,10 +507,11 @@ def score_summary_taxonomy(request, taxonomy_id):
     # Add "total" row
     if taxonomy_id == 'root': trna_qs = models.tRNA.objects.all()
     else: trna_qs = models.tRNA.objects.filter(**{tax.rank if tax.rank != 'class' else 'taxclass': tax.taxid})
-    scores.append(get_score_summary_taxonomy_dict('Total', trna_qs))
+    scores.append(get_score_summary_taxonomy_dict('All', trna_qs))
     scores = pd.DataFrame(scores)
 
     scores = scores.set_index('name')
+    scores = scores[['Score (median)', 'G/C content (median)', 'Intron length (mean)', 'Indels (mean)']]
     scores.index.name = None
     if taxonomy_id != 'root': 
       scores.index.name = str(tax)
@@ -538,14 +539,13 @@ def score_summary_isotype(request, taxonomy_id):
     isotype_totals = trnas.groupby(['isotype']).agg({'score': ['median', 'count'], 'isoscore': ['median']})
     isotype_totals['anticodon'] = 'Total'
     isotype_totals = isotype_totals.reset_index().set_index(['isotype', 'anticodon'])
-
-    scores = scores.append(isotype_totals).sort_index()
-    scores.columns = ['Isotype model score', 'Score', '# tRNAs']
+    scores = scores.append(isotype_totals).sort_index().sort_index(axis = 1)
+    scores.columns = ['Isotype model score (median)', '# tRNAs', 'Score (median)']
     scores['# tRNAs'] = scores['# tRNAs'].apply(lambda x: '{:,}'.format(x))
-    scores['Score'] = scores['Score'].apply(lambda x: '{:.2f}'.format(x))
-    scores['Isotype model score'] = scores['Isotype model score'].apply(lambda x: '{:.2f}'.format(x))
+    scores['Score (median)'] = scores['Score (median)'].apply(lambda x: '{:.2f}'.format(x))
+    scores['Isotype model score (median)'] = scores['Isotype model score (median)'].apply(lambda x: '{:.2f}'.format(x))
     scores.index.names = [None, None]
-    scores = scores[['Score', 'Isotype model score', '# tRNAs']]
+    scores = scores[['Score (median)', 'Isotype model score (median)', '# tRNAs']]
 
     return HttpResponse(scores.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, na_rep = '0', sparsify = True))
 
