@@ -125,25 +125,16 @@ class CompareViewTests(TestCase):
   def setUp(self):
     self.factory = RequestFactory()
     self.valid_post_data = {
-      'form-0-name': '',
-      'form-0-clade': '4893',
-      'form-0-isotype': 'All',
-      'form-1-name': '',
-      'form-1-clade': '',
-      'form-1-isotype': '',
-      'form-2-clade': '2759',
-      'form-2-name': 'Test',
-      'form-2-isotype': 'All',
-      'form-TOTAL_FORMS': '3',
-      'form-MIN_NUM_FORMS': '0',
-      'form-MAX_NUM_FORMS': '1000',
-      'form-INITIAL_FORMS': '0'
+      'form-0-name': '', 'form-0-clade': '4893', 'form-0-isotype': 'All', 'form-0-use_fasta': 'False',
+      'form-1-name': '', 'form-1-clade': '', 'form-1-isotype': 'All', 'form-1-use_fasta': 'False',
+      'form-2-clade': '2759', 'form-2-name': 'Test', 'form-2-isotype': 'All', 'form-2-use_fasta': 'False',
+      'form-TOTAL_FORMS': '3', 'form-MIN_NUM_FORMS': '0', 'form-MAX_NUM_FORMS': '1000', 'form-INITIAL_FORMS': '0'
     }
     self.invalid_post_data = {'form': 'invalid'}
     self.invalid_form_data = {
-      'form-0-name': '', 'form-0-clade': '41955', 'form-0-isotype': 'Asp',
-      'form-1-name': '', 'form-1-clade': '2759', 'form-1-isotype': 'All', 'form-1-domain': 'uni',
-      'form-2-name': 'Test', 'form-2-clade': '4893', 'form-2-isotype': 'All', 'form-2-domain': 'euk',
+      'form-0-name': '', 'form-0-clade': '41955', 'form-0-isotype': 'Asp', 'form-0-use_fasta': 'False',
+      'form-1-name': '', 'form-1-clade': '', 'form-1-isotype': 'All', 'form-1-use_fasta': 'False',
+      'form-2-name': 'Test', 'form-2-clade': '4893', 'form-2-isotype': 'All', 'form-2-domain': 'Eukaryota', 'form-2-use_fasta': 'False',
       'form-TOTAL_FORMS': '3', 'form-MIN_NUM_FORMS': '0', 'form-MAX_NUM_FORMS': '1000', 'form-INITIAL_FORMS': '0'
     }
 

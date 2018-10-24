@@ -47,7 +47,7 @@ class SummaryServicesTests(TestCase):
     self.tilemap_cons = models.Consensus.objects.filter(taxid = self.clade_txid).exclude(isotype = 'All').values()
     self.tilemap_freqs = services.gather_tilemap_freqs(clade_txid = self.clade_txid)
 
-  @tag('compare', 'cloverleaf')
+  @tag('cloverleaf')
   def test_services_coords(self):
     json_response = self.client.get(reverse('explorer:coords'))
     coords_list = json.loads(json_response.content.decode('utf8'))

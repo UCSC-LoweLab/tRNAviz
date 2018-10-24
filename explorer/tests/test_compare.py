@@ -20,15 +20,16 @@ class CompareTests(TestCase):
     self.ref_isotype = 'Asp'
     self.factory = RequestFactory()
     self.request = self.factory.get('')
+    self.num_model = compare.NUMBERING_MODELS['Eukaryota']
 
   @classmethod
   def setUpClass(cls):
     super(CompareTests, cls).setUpClass()
     print('\nSetting up compare class test environment...')
     cls.formset = forms.CompareFormSet({
-      'form-0-name': '', 'form-0-clade': '4751', 'form-0-isotype': 'Asp', 
-      'form-1-name': '', 'form-1-clade': '2759', 'form-1-isotype': 'All', 'form-1-domain': 'uni',
-      'form-2-name': 'Test', 'form-2-clade': '4893', 'form-2-isotype': 'All', 'form-2-domain': 'euk',
+      'form-0-name': '', 'form-0-clade': '4751', 'form-0-isotype': 'Asp', 'form-0-use_fasta': 'False',
+      'form-1-name': '', 'form-1-clade': '2759', 'form-1-isotype': 'All', 'form-1-domain': 'Universal', 'form-1-use_fasta': 'False',
+      'form-2-name': 'Test', 'form-2-clade': '4893', 'form-2-isotype': 'All', 'form-2-domain': 'Eukaryota', 'form-2-use_fasta': 'False',
       'form-TOTAL_FORMS': '3', 'form-MIN_NUM_FORMS': '0', 'form-MAX_NUM_FORMS': '1000', 'form-INITIAL_FORMS': '0'
       })
     
@@ -51,8 +52,8 @@ class CompareTests(TestCase):
         num_model = compare.NUMBERING_MODELS[cls.formset_data[i + 2]['domain']]
       else:
         clade_tax = models.Taxonomy.objects.filter(taxid = cls.formset_data[i + 2]['clade'])[0]
-        cls.num_model = compare.NUMBERING_MODELS[models.Taxonomy.objects.filter(taxid = clade_tax.domain).get().name]
-      current_bits = compare.align_trnas_collect_bit_scores(trna_fasta_fh.name, cls.num_model, cls.ref_model_fh.name)
+        num_model = compare.NUMBERING_MODELS[models.Taxonomy.objects.filter(taxid = clade_tax.domain).get().name]
+      current_bits = compare.align_trnas_collect_bit_scores(trna_fasta_fh.name, num_model, cls.ref_model_fh.name)
       current_bits['group_name'] = cls.formset_data[i + 2]['name']
       current_bits['group'] = 'group-{}'.format(i)
       cls.bits = cls.bits.append(current_bits)
@@ -63,7 +64,7 @@ class CompareTests(TestCase):
     ref_cons = compare.get_cons_bits(ref_taxid, ref_isotype)
     ref_freqs = compare.get_modal_freqs(ref_taxid, ref_isotype)
     cls.bits = pd.concat([cls.bits, ref_cons, ref_freqs], sort = True).reset_index(drop = True)
-    print('done\n')
+    print('done')
 
   def test_compare_read_all_trnas(self):
     self.assertTrue(len(self.seqs) > 0)

@@ -133,7 +133,7 @@ class FocusFormSetTests(TestCase):
     foci = formset.get_foci()
     self.assertEqual(foci, self.foci)
 
-@tag('compare', 'current')
+@tag('compare')
 class CompareFormTests(TestCase):
   def test_compare_form_valid_select(self):
     form_data = {'name': 'test-name', 'fasta': '', 'clade': '4930', 'isotype': 'All', 'use_fasta': 'False'}
