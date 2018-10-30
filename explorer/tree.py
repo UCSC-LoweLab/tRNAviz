@@ -57,8 +57,6 @@ class DAGNode(object):
         return result
     return False
 
-
-
 class Tree(object):
 
   ''' Convert Taxonomy model into a tree '''
@@ -81,3 +79,13 @@ class Tree(object):
 
 # compile taxonomy tree now, so we don't have to calculate it for every /taxonomy/ request
 full_tree = Tree()
+
+
+def convertNewick(newick, node):
+  if len(node.children) > 0:
+    children_newick = []
+    for child in node.children:
+      children_newick.append(convertNewick(newick, child))
+    if len(children_newick) > 0:
+      return('(' + ','.join(children_newick) + ')' + node.tax.name)
+  return(node.tax.name)

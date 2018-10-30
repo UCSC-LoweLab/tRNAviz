@@ -38,6 +38,15 @@ $(document).ready(function() {
 		$.get('{% url "explorer:score_summary_isotype_dynamic" %}' + this.id.split('-')[1])
 		  .done(function(response) { $('#score-summary-isotype-area').html(response); }); 
 	});
+
+	$('.itol-button').click(function() {
+		event.cancelBubble = true;
+		if (event.stopPropagation) event.stopPropagation();
+
+		if (!['assembly', 'species'].includes(this.id.split('-')[0])) {
+			window.open('{% url "explorer:visualize_itol_dynamic" %}' + this.id.split('-')[1]);
+		}
+	})
 })
 </script>
 {% endblock %}
@@ -60,7 +69,10 @@ $(document).ready(function() {
 		    			{{ x.data.tax }}
 		    		</div>
 			    	<div class="col-1 d-flex justify-content-end">
-			    		<button class="btn btn-link tax-display-button" type="button" id="{{ x.data.tax.rank }}-{{ x.data.tax.id }}-display" name="{{ x.data.tax.name }}">&rarr;</button>
+			    		{% if x.data.rank != 'assembly' and x.data.rank != 'species' %}
+							<button class="btn btn-link itol-button" type="button" id="{{ x.data.tax.rank }}-{{ x.data.tax.id }}-display" name="{{ x.data.tax.name }}">&#12076;</button>
+			    		{% endif %}
+			    		<button class="btn btn-link tax-display-button" type="button" id="{{ x.data.tax.rank }}-{{ x.data.tax.id }}-itol">&rarr;</button>
 			    	</div>
 		    	</div>
 			    <div id="{{ x.data.tax.id }}-children" class="collapse" aria-labelledby="{{ x.data.tax.id }}" data-parent="#node-{{ x.data.parent.tax.id }}">

@@ -551,3 +551,15 @@ def score_summary_isotype(request, taxonomy_id):
 
   except:
     return HttpResponse('Unknown server error')
+
+
+def newick_tree(taxonomy_id):
+  if taxonomy_id == 'root':
+    tax = 'root'
+    node = tree.full_tree.root
+  else:
+    tax = models.Taxonomy.objects.get(id = taxonomy_id)
+    node = tree.full_tree.root.dfs(tax.taxid)
+
+  newick = tree.convertNewick('', node)
+  return newick

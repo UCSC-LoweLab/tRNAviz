@@ -42,4 +42,7 @@ urlpatterns = [
 
 
   path('taxonomy/', views.taxonomy, name = 'taxonomy'),
+  path('taxonomy/visualize_itol/<str:taxonomy_id>', views.visualize_itol, name = 'visualize_itol'),
+  path('taxonomy/visualize_itol/', views.visualize_itol, name = 'visualize_itol_dynamic'),
+  path('api/newick_tree/<str:taxonomy_id>', services.newick_tree, name = 'newick_tree'),
 ]

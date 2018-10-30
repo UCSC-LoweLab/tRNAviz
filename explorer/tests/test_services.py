@@ -304,3 +304,8 @@ class TaxonomyServicesTests(TestCase):
     self.assertIn('Ala', http)
     self.assertIn('AGC', http)
     self.assertIn('Total', http)
+
+  def test_newick_tree(self):
+    tree = services.newick_tree('8618')
+    self.assertIn('Crenarchaeota', tree)
+    self.assertIn('Thermoprotei', tree)

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib import messages
 from django.conf import settings
+from django.http import HttpResponse
 
 import json
 from tempfile import NamedTemporaryFile
@@ -11,6 +12,7 @@ from . import models
 from . import forms
 from . import choices
 from . import tree
+from . import services
 
 def summary(request):
   clade = 'Saccharomyces (genus)'
@@ -127,3 +129,23 @@ def taxonomy(request):
   return render(request, 'explorer/taxonomy.html', {
     'tree': phylogeny
   })
+
+def visualize_itol(request, taxonomy_id):
+  newick_tree = services.newick_tree(taxonomy_id)
+  tree_fh = NamedTemporaryFile('w')
+  tree_fh.write(newick_tree)
+  tree_fh.flush()
+
+  try:
+    from itolapi import Itol
+
+    itol_uploader = Itol()
+    itol_uploader.add_file(tree_fh.name)
+    status = itol_uploader.upload()
+    assert status != False
+    itol_page = itol_uploader.get_webpage()
+    redirect(itol_uploader.get_webpage())
+  except:
+    return HttpResponse('Something went wrong with the iTOL API. Save the following Newick tree to a file and upload it to iTOL yourself to visualize the tree:\n{}'.format(newick_tree), content_type = "text/plain")
+
+  return HttpResponse(newick_tree)
