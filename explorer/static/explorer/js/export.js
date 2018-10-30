@@ -31,12 +31,19 @@
 var download_pdf = function(id) {
   selector = $('#' + id);
   svg_selector = selector.clone();
-  svg_selector.find('*').each(function() {
-    if (this.id != '') $(this).css($('#' + this.id).getStyleObject())
+  svg_selector.children().each(function() {
+    $(this).find('*').each(function() {
+      if (this.id != '') $(this).css($('#' + this.id).getStyleObject());
+    })
   })
   svg = svg_selector[0];
-  pdf = new jsPDF('l', 'pt', [selector.width(), selector.height()]);
-  svg2pdf(svg, pdf, {xOffset: 5, yOffset: 5, scale: 0.96});
+  if (selector.width() > selector.height()) {
+    pdf = new jsPDF('l', 'pt', [selector.width(), selector.height()]);  
+  }
+  else {
+    pdf = new jsPDF('p', 'pt', [selector.width(), selector.height()]);
+  }
+  svg2pdf(svg, pdf, {xOffset: 5, yOffset: 5, scale: 0.98});
   pdf.save(id + '.pdf');
 }
 
