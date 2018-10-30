@@ -138,7 +138,6 @@ def visualize_itol(request, taxonomy_id):
 
   try:
     from itolapi import Itol
-
     itol_uploader = Itol()
     itol_uploader.add_file(tree_fh.name)
     status = itol_uploader.upload()

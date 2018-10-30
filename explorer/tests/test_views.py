@@ -175,9 +175,7 @@ class TaxonomyServicesTests(TestCase):
     response = views.taxonomy(request)
     self.assertEqual(response.status_code, 200)
 
-  @tag('current')
+  @tag('not-done')
   def test_visualize_itol(self):
     request = self.factory.get(reverse('explorer:visualize_itol_dynamic'))
-    import pdb
-    pdb.set_trace()
     response = views.visualize_itol(request, '8618')
