@@ -205,6 +205,7 @@ class tRNA(models.Model):
 class Consensus(models.Model):
   taxid = models.CharField(max_length = 10)
   isotype = models.CharField(max_length = 5)
+  datatype = models.CharField(max_length = 15)
 
   p1_72 = models.CharField('1:72', default = '', max_length = 20, blank = True, null = True)
   p1 = models.CharField('1', default = '', max_length = 20, blank = True, null = True)
