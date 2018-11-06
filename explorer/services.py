@@ -72,40 +72,53 @@ def gather_cloverleaf_freqs(clade_txid, isotype):
       freqs[position] = {PAIRED_FEATURES[pair]: freq[pair] for pair in PAIRED_FEATURES}
   return freqs
 
-def annotate_cloverleaf_positions(cons, freqs):
-  # create 95 dicts, one for each position, each containing a freqs dict and consensus feature
-  plot_data = {}
-  for colname in cons:
-    position = colname.replace('p', '').replace('_', ':')
-    if position in SUMMARY_SINGLE_POSITIONS:
-      position_consensus = LABELS[cons[colname]]
-      plot_data[position] = {
-        'consensus': position_consensus,
-        'freqs': freqs[position]
-      }
-    elif position in SUMMARY_PAIRED_POSITIONS:
-      position5, position3 = position.split(':')
-      if cons[colname] == '': 
-        position5_consensus, position3_consensus = ('', '')
-      else:
-        position5_consensus, position3_consensus = CONSENSUS_PAIRED_LABELS[cons[colname]]
-
-      plot_data[position5] = {
-        'consensus': position5_consensus,
-        'freqs': freqs[position]
-      }
-      plot_data[position3] = {
-        'consensus': position3_consensus,
-        'freqs': freqs[position]
-      }
-  return plot_data
-
 def cloverleaf(request, clade_txid, isotype):
   try:
+    freqs = gather_cloverleaf_freqs(clade_txid, isotype)  # create 95 dicts, one for each position, each containing a freqs dict and consensus feature
     cons_qs = models.Consensus.objects.filter(taxid = clade_txid, isotype = isotype)
-    cons = cons_qs.values()[0]
-    freqs = gather_cloverleaf_freqs(clade_txid, isotype)
-    plot_data = annotate_cloverleaf_positions(cons, freqs)
+    cons = cons_qs.filter(datatype = 'Consensus').values()[0]
+    if isotype == 'All':
+      near_cons = cons_qs.filter(datatype = 'Near-consensus').values()[0]
+    plot_data = {}
+    for colname in cons:
+      position = colname.replace('p', '').replace('_', ':')
+      if position in SUMMARY_SINGLE_POSITIONS:
+        if cons[colname] is not None:
+          position_feature = LABELS[cons[colname]]
+          datatype = 'Consensus'
+        elif isotype == 'All' and near_cons[colname] is not None:
+          position_feature = LABELS[near_cons[colname]]
+          datatype = 'Near-consensus'
+        else:
+          position_feature = ''
+        plot_data[position] = {
+          'feature': position_feature,
+          'datatype': datatype,
+          'freqs': freqs[position],
+        }
+      elif position in SUMMARY_PAIRED_POSITIONS:
+        position5, position3 = position.split(':')
+        if cons[colname] is not None: 
+          position5_feature, position3_feature = CONSENSUS_PAIRED_LABELS[cons[colname]]
+          datatype = 'Consensus'
+        elif isotype == 'All' and near_cons[colname] is not None:
+          position5_feature, position3_feature = CONSENSUS_PAIRED_LABELS[near_cons[colname]]
+          datatype = 'Near-consensus'
+        else:
+          position5_feature, position3_feature = ('', '')
+          datatype = 'Consensus'
+
+        plot_data[position5] = {
+          'feature': position5_feature,
+          'datatype': datatype,
+          'freqs': freqs[position]
+        }
+        plot_data[position3] = {
+          'feature': position3_feature,
+          'datatype': datatype,
+          'freqs': freqs[position]
+        }
+
     return JsonResponse(plot_data)
 
   except IndexError:
@@ -363,7 +376,6 @@ def distribution(request, clade_txids, isotypes, positions):
   except Exception as e:
     return JsonResponse({'server_error': 'Unknown server error'})
 
-
 def query_trnas_for_species_distribution(clade_groups, clade_info, foci):
   # Filter tRNA set with user queries
   trnas = []
@@ -429,7 +441,6 @@ def species_distribution(request, clade_txids, foci):
       return JsonResponse({'error': str(e)})
     return JsonResponse({'error': 'Unknown server error'})
 
-
 def genome_summary(request, taxonomy_id):
   try:
     if taxonomy_id == 'root':
@@ -475,7 +486,6 @@ def genome_summary(request, taxonomy_id):
   
   except:
     return HttpResponse('Unknown server error')
-
 
 def get_score_summary_taxonomy_dict(name, trna_qs):
   df = read_frame(trna_qs.values('score', 'GCcontent', 'intron_length', 'insertions', 'deletions'))
@@ -524,7 +534,6 @@ def score_summary_taxonomy(request, taxonomy_id):
   except:
     return HttpResponse('Unknown server error')
 
-
 def score_summary_isotype(request, taxonomy_id):
   try:
     if taxonomy_id == 'root':
@@ -551,7 +560,6 @@ def score_summary_isotype(request, taxonomy_id):
 
   except:
     return HttpResponse('Unknown server error')
-
 
 def newick_tree(taxonomy_id):
   if taxonomy_id == 'root':

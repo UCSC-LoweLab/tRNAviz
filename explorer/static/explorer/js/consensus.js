@@ -112,7 +112,8 @@ var draw_cloverleaf = function(cloverleaf_data, isotype) {
   	new Promise(function(resolve, reject) {
   	  var coords = d3.select('#cloverleaf').selectAll('circle').data();
   	  for (var index in coords) {
-  	  	coords[index]['consensus'] = cloverleaf_data[coords[index]['position']]['consensus'];
+  	  	coords[index]['feature'] = cloverleaf_data[coords[index]['position']]['feature'];
+        coords[index]['datatype'] = cloverleaf_data[coords[index]['position']]['datatype'];
   	  	coords[index]['freqs'] = cloverleaf_data[coords[index]['position']]['freqs'];
   	  }
   	  resolve(coords);
@@ -126,6 +127,7 @@ var draw_cloverleaf = function(cloverleaf_data, isotype) {
     var tooltip = d3.select('.tooltip-cloverleaf');
     var tooltip_position = tooltip.append('div').attr('class', 'tooltip-position')
     var tooltip_consensus = tooltip.append('div').attr('class', 'tooltip-consensus')
+    var tooltip_datatype = tooltip.append('div').attr('class', 'tooltip-datatype')
 
     d3.select('#cloverleaf').selectAll('circle')
       .data(coords)
@@ -133,7 +135,8 @@ var draw_cloverleaf = function(cloverleaf_data, isotype) {
       .attr('cx', d => d['x'])
       .attr('cy', d => d['y'])
       .attr('r', d => d['radius'])
-      .attr('fill', d => feature_scale(d['consensus']))
+      .classed('cloverleaf-near-consensus', d => d['datatype'] == 'Near-consensus')
+      .attr('fill', d => feature_scale(d['feature']))
       .on('mouseover',  function(d) {
         if (!d3.select('#cloverleaf').attr('locked')) {
           dehighlight();
@@ -162,26 +165,28 @@ var draw_cloverleaf = function(cloverleaf_data, isotype) {
 
   function highlight(d) {
     d3.select('.tooltip-position').html('Position ' + d['position'])
-    d3.select('.tooltip-consensus').html(d['consensus'])
+    if (d['feature'] != '') {
+      d3.select('.tooltip-consensus').html(d['feature'])
+      d3.select('.tooltip-datatype').html(d['datatype'])
+    }
+    else {
+      d3.select('.tooltip-consensus').html('')
+      d3.select('.tooltip-datatype').html('')
+    }
     d3.select('.tooltip-cloverleaf').transition()
       .duration(100)
       .style('opacity', .95)
       .style('left', d3.event.pageX + 'px')
       .style('top', d3.event.pageY + 'px');
     d3.select('#circle' + d['position'])
-      .transition()
-      .duration(100)
-      .attr('class', 'cloverleaf-highlight');
+      .classed('cloverleaf-highlight', true);
     update_base_distro(d, 'cloverleaf', isotype);
   }
   function dehighlight() { 
-    d3.select('.tooltip-cloverleaf').transition()    
-      .duration(100)    
+    d3.select('.tooltip-cloverleaf')
       .style('opacity', 0); 
     d3.select('.cloverleaf-highlight')
-      .transition()
-      .duration(100)
-      .attr('class', 'cloverleaf-circle');
+      .classed('cloverleaf-highlight', false);
   }
   var set_cloverleaf_text_attributes = function(coords) {
 
@@ -193,12 +198,13 @@ var draw_cloverleaf = function(cloverleaf_data, isotype) {
         if (d['position'].search('V') == -1) return d['y'] + 5;
         else return d['y'] + 4;
       })
+      .attr('opacity', d => d['datatype'] == 'Near-consensus' ? 0.3 : 1)
       .attr('text-anchor', 'middle')
       .attr('font-size', d => {
         if (d['position'].search('V') == -1) return '15px';
         else return '10px';
       })
-      .text(d => feature_code[d['consensus']])
+      .text(d => feature_code[d['feature']])
       .style('pointer-events', 'none');
   };
 };

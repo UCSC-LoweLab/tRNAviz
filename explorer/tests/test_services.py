@@ -43,6 +43,7 @@ class SummaryServicesTests(TestCase):
     self.clade_txid = '4930'
     self.isotype = 'All'
     self.cloverleaf_cons = models.Consensus.objects.filter(taxid = self.clade_txid, isotype = self.isotype).values()[0]
+    self.cloverleaf_near_cons = models.Consensus.objects.filter(taxid = self.clade_txid, isotype = self.isotype).values()[0]
     self.cloverleaf_freqs = services.gather_cloverleaf_freqs(self.clade_txid, self.isotype)
     self.tilemap_cons = models.Consensus.objects.filter(taxid = self.clade_txid).exclude(isotype = 'All').values()
     self.tilemap_freqs = services.gather_tilemap_freqs(clade_txid = self.clade_txid)
@@ -69,20 +70,13 @@ class SummaryServicesTests(TestCase):
     for feature in services.PAIRED_FEATURES.values():
       with self.subTest(feature = feature):
         self.assertIn(feature, freqs['3:70'])
-    
-  @tag('cloverleaf')
-  def test_services_annotate_cloverleaf_positions(self):
-    plot_data = services.annotate_cloverleaf_positions(self.cloverleaf_cons, self.cloverleaf_freqs)
-    self.assertEqual(len(plot_data), 95)
-    for position in plot_data:
-      with self.subTest(position = position):
-        self.assertIn('freqs', plot_data[position])
-        self.assertIn('consensus', plot_data[position])
   
   @tag('cloverleaf')
   def test_services_cloverleaf(self):
     json_response = services.cloverleaf(self.request, self.clade_txid, self.isotype)
     plot_data = json.loads(json_response.content.decode('utf8'))
+    import pdb
+    pdb.set_trace()
     self.assertEqual(len(plot_data), 95)
 
   @tag('tilemap')

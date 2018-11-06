@@ -44,6 +44,9 @@ div.tooltip th {
   stroke-width: 2;
   fill-opacity: 0.7;
 }
+.cloverleaf-near-consensus {
+  opacity: 0.5;
+}
 .distro-rect {
   stroke: #444444;
   stroke-width: 1;
