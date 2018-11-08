@@ -353,7 +353,7 @@ class Freq(models.Model):
   C = models.IntegerField(default = 0)
   G = models.IntegerField(default = 0)
   U = models.IntegerField(default = 0)
-  absent = models.IntegerField(default = 0, db_column = '-')
+  Absent = models.IntegerField(default = 0, db_column = '-')
   AU = models.IntegerField('A:U', db_column = 'A:U', default = 0)
   UA = models.IntegerField('U:A', db_column = 'U:A', default = 0)
   GC = models.IntegerField('G:C', db_column = 'G:C', default = 0)

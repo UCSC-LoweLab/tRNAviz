@@ -19,7 +19,7 @@ PAIRED_POSITIONS = ['1:72', '2:71', '3:70', '4:69', '5:68', '6:67', '7:66', '10:
 
 SUMMARY_SINGLE_POSITIONS = SINGLE_POSITIONS + ['V1', 'V2', 'V3', 'V4', 'V5']
 SUMMARY_PAIRED_POSITIONS = PAIRED_POSITIONS + ['V11:V21', 'V12:V22', 'V13:V23', 'V14:V24', 'V15:V25', 'V16:V26', 'V17:V27']
-SINGLE_FEATURES = {'A': 'A', 'C': 'C', 'G': 'G', 'U': 'U', 'absent': '-'}
+SINGLE_FEATURES = {'A': 'A', 'C': 'C', 'G': 'G', 'U': 'U', 'Absent': '-'}
 PAIRED_FEATURES = {
   'AU': 'A:U', 'UA': 'U:A', 'GC': 'G:C', 'CG': 'C:G', 'GU': 'G:U', 'UG': 'U:G', 
   'AA': 'A:A', 'AC': 'A:C', 'AG': 'A:G', 'CA': 'C:A', 'CC': 'C:C', 'CU': 'C:U', 'GA': 'G:A', 'GG': 'G:G', 'UC': 'U:C', 'UU': 'U:U',
@@ -33,16 +33,17 @@ LABELS = {
   'AU': 'A:U', 'UA': 'U:A', 'CG': 'C:G', 'GC': 'G:C', 'GU': 'G:U', 'UG': 'U:G',
   'PurinePyrimidine': 'Purine:Pyrimidine', 'PyrimidinePurine': 'Pyrimidine:Purine',
   'WobblePair': 'G:U / U:G', 'StrongPair': 'C:G / G:C', 'WeakPair': 'A:U / U:A', 'AminoKeto': 'A:U / C:G', 'KetoAmino': 'G:C / U:A', 
-  'Paired': 'Paired', 'Malformed': '-:N / N:-', 'Mismatched': 'Mismatched', 'NN': 'N:N', None: ''
+  'Paired': 'Paired', 'Malformed': '-:N / N:-', 'Mismatched': 'Mismatched', 'NN': 'N:N'
 }
+CONSENSUS_SINGLE_CODES = LABELS
 LABELS.update(PAIRED_FEATURES)
 
-CONSENSUS_PAIRED_LABELS = {
+CONSENSUS_PAIRED_CODES = {
   'GC': ('G', 'C'), 'AU': ('A', 'U'), 'UA': ('U', 'A'), 'CG': ('C', 'G'), 'GU': ('G', 'U'), 'UG': ('U', 'G'),
   'PurinePyrimidine': ('Purine', 'Pyrimidine'), 'PyrimidinePurine': ('Pyrimidine', 'Purine'), 'WobblePair': ('G / U', 'G / U'),
   'StrongPair': ('G / C', 'G / C'), 'WeakPair': ('A / U', 'A / U'), 'AminoKeto': ('A / C', 'G / U'), 'KetoAmino': ('G / U', 'A / C'),
-  'Paired': ('Paired', 'Paired'), 'Absent': ('-', '-'), 'High mismatch rate': ('High mismatch rate', 'High mismatch rate'), 
-  'Mismatched': ('Mismatched', 'Mismatched'), 'Malformed': ('Malformed', 'Malformed'), 'NN': ('N', 'N'), None: ('', '')
+  'Paired': ('Paired', 'Paired'), 'Absent': ('Absent', 'Absent'), 'High mismatch rate': ('High mismatch rate', 'High mismatch rate'), 
+  'Mismatched': ('Mismatched', 'Mismatched'), 'Malformed': ('Malformed', 'Malformed'), 'NN': ('N', 'N'), '': ('', '')
 }
 
 RANKS = ['assembly', 'species', 'genus', 'family', 'order', 'subclass', 'taxclass', 'subphylum', 'phylum', 'subkingdom', 'kingdom', 'domain']
@@ -84,12 +85,13 @@ def cloverleaf(request, clade_txid, isotype):
       position = colname.replace('p', '').replace('_', ':')
       if position in SUMMARY_SINGLE_POSITIONS:
         if cons[colname] is not None:
-          position_feature = LABELS[cons[colname]]
+          position_feature = CONSENSUS_SINGLE_CODES[cons[colname]]
           datatype = 'Consensus'
         elif isotype == 'All' and near_cons[colname] is not None:
-          position_feature = LABELS[near_cons[colname]]
+          position_feature = CONSENSUS_SINGLE_CODES[near_cons[colname]]
           datatype = 'Near-consensus'
         else:
+          datatype = 'Near-consensus'
           position_feature = ''
         plot_data[position] = {
           'feature': position_feature,
@@ -99,14 +101,14 @@ def cloverleaf(request, clade_txid, isotype):
       elif position in SUMMARY_PAIRED_POSITIONS:
         position5, position3 = position.split(':')
         if cons[colname] is not None: 
-          position5_feature, position3_feature = CONSENSUS_PAIRED_LABELS[cons[colname]]
+          position5_feature, position3_feature = CONSENSUS_PAIRED_CODES[cons[colname]]
           datatype = 'Consensus'
         elif isotype == 'All' and near_cons[colname] is not None:
-          position5_feature, position3_feature = CONSENSUS_PAIRED_LABELS[near_cons[colname]]
+          position5_feature, position3_feature = CONSENSUS_PAIRED_CODES[near_cons[colname]]
           datatype = 'Near-consensus'
         else:
           position5_feature, position3_feature = ('', '')
-          datatype = 'Consensus'
+          datatype = 'Near-consensus'
 
         plot_data[position5] = {
           'feature': position5_feature,
@@ -154,9 +156,9 @@ def domain_features(request, clade_txid, isotype):
     tax = tax_qs.get()
     domain = models.Taxonomy.objects.filter(taxid = tax.domain).get()
     cols = ['taxid'] + ['p{}'.format(position.replace(':', '_')) for position in SINGLE_POSITIONS + PAIRED_POSITIONS]
-    cons_qs = models.Consensus.objects.filter(taxid__in = [clade_txid, domain.taxid], isotype = isotype).values(*cols)
+    cons_qs = models.Consensus.objects.filter(taxid__in = [clade_txid, domain.taxid], isotype = isotype, datatype = 'Consensus').values(*cols)
     df = read_frame(cons_qs)
-    df = df.set_index('taxid')
+    df = df.set_index('taxid').fillna('')
     df.columns = [col[1:].replace('_', ':') for col in df.columns]
     if df.index[0] != domain.taxid: df.iloc[::-1]
     df.loc[domain.taxid] = [LABELS[feature] for feature in df.loc[domain.taxid]]
@@ -245,7 +247,8 @@ def annotate_tiles(cons, freqs):
     for colname in con:
       position = colname.replace('p', '').replace('_', ':')
       if position in SUMMARY_SINGLE_POSITIONS:
-        position_consensus = LABELS[con[colname]]
+        if con[colname] is not None: position_consensus = CONSENSUS_SINGLE_CODES[con[colname]]
+        else: position_consensus = ''
         plot_data.append({
           'position': position,
           'isotype': isotype,
@@ -254,10 +257,10 @@ def annotate_tiles(cons, freqs):
           'type': 'single'
         })
       if position in SUMMARY_PAIRED_POSITIONS:
-        if con[colname] == '': 
+        if con[colname] is None or con[colname] == '':
           position5_consensus, position3_consensus = ('', '')
         else:
-          position5_consensus, position3_consensus = CONSENSUS_PAIRED_LABELS[con[colname]]
+          position5_consensus, position3_consensus = CONSENSUS_PAIRED_CODES[con[colname]]
 
         plot_data.append({
           'position': position,

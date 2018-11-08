@@ -29,8 +29,8 @@
 })));
 
 var feature_code = {
-	'A': 'A', 'C': 'C', 'G': 'G', 'U': 'U', '-': '-', 'N': 'N',
-	'Purine': 'R', 'Pyrimidine': 'Y', 'G / C': 'S', 'A / U': 'W', 'A / C': 'M', 'G / U': 'K',
+	'A': 'A', 'C': 'C', 'G': 'G', 'U': 'U', 'Absent': '-', 'N': 'N',
+	'Purine': 'R', 'Pyrimidine': 'Y', 'C / G': 'S', 'A / U': 'W', 'A / C': 'M', 'G / U': 'K',
 	'C / G / U': 'B', 'A / C / U': 'H', 'A / G / U': 'D', 'A / C / G': 'V',
 	'Paired': ':', 'Mismatched': '÷'
 }
@@ -48,11 +48,11 @@ var provenance = {'A': ['A'], 'C': ['C'], 'G': ['G'], 'U': ['U'],
   'Purine:Pyrimidine': ['G:C', 'A:U', 'Purine:Pyrimidine'], 'Pyrimidine:Purine': ['C:G', 'U:A', 'Pyrimidine:Purine'], 'G:U / U:G': ['G:U', 'U:G'], 'C:G / G:C': ['G:C', 'C:G'], 'A:U / U:A': ['A:U', 'U:A'], 'A:U / C:G': ['A:U', 'C:G'], 'G:C / U:A': ['G:C', 'U:A']}
 
 var feature_scale = d3.scaleOrdinal()
-  .domain(['', 'A', 'C', 'G', 'U', '-', 'absent', 'Purine', 'Pyrimidine', 'Weak', 'Strong', 'Amino', 'Keto', 'B', 'D', 'H', 'V', 'N', 'Absent', 'Mismatched', 'Paired', 'High mismatch rate',
-    'A / U', 'G / C', 'A / C', 'G / U', 'C / G / U', 'A / G / U', 'A / C / U', 'A / C / G',
+  .domain(['', 'A', 'C', 'G', 'U', '-', 'Purine', 'Pyrimidine', 'Weak', 'Strong', 'Amino', 'Keto', 'B', 'D', 'H', 'V', 'N', 'Absent', 'Mismatched', 'Paired', 'High mismatch rate',
+    'A / U', 'C / G', 'A / C', 'G / U', 'C / G / U', 'A / G / U', 'A / C / U', 'A / C / G',
     'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'A:G', 'G:A', 'C:U', 'U:C', 'A:C', 'C:A', 'A:A', 'C:C', 'G:G', 'U:U', 
     'Malformed', 'A:-', '-:A', 'C:-', '-:C', 'G:-', '-:G', 'U:-', '-:U', '-:-'])
-  .range(['#ffffff', '#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#7f7f7f', '#7f7f7f', '#ff8300','#66c2a5','#b3de69','#fb72b2','#c1764a','#b26cbd', '#e5c494','#ccebd5','#ffa79d','#a6cdea','#ffffff', '#7f7f7f','#333333','#ffffcc','#b3b3b3',
+  .range(['#ffffff', '#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', '#7f7f7f', '#ff8300','#66c2a5','#b3de69','#fb72b2','#c1764a','#b26cbd', '#e5c494','#ccebd5','#ffa79d','#a6cdea','#ffffff', '#7f7f7f','#333333','#ffffcc','#b3b3b3',
     '#b3de69', '#fb72b2', '#c1764a', '#b26cbd', '#e5c494', '#ccebd5', '#ffa79d', '#a6cdea',
     '#17b3cf', '#9ed0e5', '#ff7f0e', '#ffbb78', '#a067bc', '#ceafd5', '#2fc69e', '#8be4cf', '#e377c2', '#f7b6d2', '#c47b70', '#f0a994', '#e7cb94', '#cedb9c', '#e7969c', '#9ca8de',
     '#333333', '#333333', '#333333', '#333333', '#333333', '#333333', '#333333', '#333333', '#333333', '#7f7f7f']);
@@ -253,7 +253,7 @@ var draw_base_distro = function(freq_data, plot_type) {
   }
   
   var base_feature_scale = d3.scaleBand()
-    .domain(['A', 'C', 'G', 'U', 'absent'])
+    .domain(['A', 'C', 'G', 'U', 'Absent'])
     .range([0, base_distro_width / 2])
     .paddingInner(0.2);
 
@@ -280,7 +280,11 @@ var draw_base_distro = function(freq_data, plot_type) {
     base_distro.selectAll('g.base-xaxis, g.base-yaxis, g.rects').remove();
 
     // update features for x axis
-    var current_features = Array.from(Object.keys(coord['freqs'])).sort();
+    var current_features = Array.from(Object.keys(coord['freqs'])).sort(function(a, b) {
+      if (a == 'Absent') return 1;
+      if (b == 'Absent') return -1;
+      return a < b ? -1 : 1;
+    });
 
     var base_feature_scale = d3.scaleBand()
       .domain(current_features)
