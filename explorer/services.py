@@ -41,7 +41,7 @@ LABELS.update(PAIRED_FEATURES)
 CONSENSUS_PAIRED_CODES = {
   'GC': ('G', 'C'), 'AU': ('A', 'U'), 'UA': ('U', 'A'), 'CG': ('C', 'G'), 'GU': ('G', 'U'), 'UG': ('U', 'G'),
   'PurinePyrimidine': ('Purine', 'Pyrimidine'), 'PyrimidinePurine': ('Pyrimidine', 'Purine'), 'WobblePair': ('G / U', 'G / U'),
-  'StrongPair': ('G / C', 'G / C'), 'WeakPair': ('A / U', 'A / U'), 'AminoKeto': ('A / C', 'G / U'), 'KetoAmino': ('G / U', 'A / C'),
+  'StrongPair': ('C / G', 'C / G'), 'WeakPair': ('A / U', 'A / U'), 'AminoKeto': ('A / C', 'G / U'), 'KetoAmino': ('G / U', 'A / C'),
   'Paired': ('Paired', 'Paired'), 'Absent': ('Absent', 'Absent'), 'High mismatch rate': ('High mismatch rate', 'High mismatch rate'), 
   'Mismatched': ('Mismatched', 'Mismatched'), 'Malformed': ('Malformed', 'Malformed'), 'NN': ('N', 'N'), '': ('', '')
 }
@@ -78,7 +78,7 @@ def cloverleaf(request, clade_txid, isotype):
     freqs = gather_cloverleaf_freqs(clade_txid, isotype)  # create 95 dicts, one for each position, each containing a freqs dict and consensus feature
     cons_qs = models.Consensus.objects.filter(taxid = clade_txid, isotype = isotype)
     cons = cons_qs.filter(datatype = 'Consensus').values()[0]
-    if isotype == 'All':
+    if len(cons_qs) > 1:
       near_cons = cons_qs.filter(datatype = 'Near-consensus').values()[0]
     plot_data = {}
     for colname in cons:
@@ -87,7 +87,7 @@ def cloverleaf(request, clade_txid, isotype):
         if cons[colname] is not None:
           position_feature = CONSENSUS_SINGLE_CODES[cons[colname]]
           datatype = 'Consensus'
-        elif isotype == 'All' and near_cons[colname] is not None:
+        elif len(cons_qs) > 1 and near_cons[colname] is not None:
           position_feature = CONSENSUS_SINGLE_CODES[near_cons[colname]]
           datatype = 'Near-consensus'
         else:
@@ -103,7 +103,7 @@ def cloverleaf(request, clade_txid, isotype):
         if cons[colname] is not None: 
           position5_feature, position3_feature = CONSENSUS_PAIRED_CODES[cons[colname]]
           datatype = 'Consensus'
-        elif isotype == 'All' and near_cons[colname] is not None:
+        elif len(cons_qs) > 1 and near_cons[colname] is not None:
           position5_feature, position3_feature = CONSENSUS_PAIRED_CODES[near_cons[colname]]
           datatype = 'Near-consensus'
         else:
@@ -240,49 +240,70 @@ def gather_tilemap_freqs(clade_txid):
       freqs[isotype][position] = {PAIRED_FEATURES[pair]: freq[pair] for pair in PAIRED_FEATURES}
   return freqs
 
-def annotate_tiles(cons, freqs):
+def tilemap(request, clade_txid):
+  cons = models.Consensus.objects.filter(taxid = clade_txid, datatype = 'Consensus').exclude(isotype = 'All').values()
+  near_cons = models.Consensus.objects.filter(taxid = clade_txid, datatype = 'Near-consensus').exclude(isotype = 'All').values()
+  freqs = gather_tilemap_freqs(clade_txid)
+
   plot_data = [] # use a list instead of dict - don't need to map positions to coords like for cloverleaf
-  for con in cons:
+  for con in cons: 
     isotype = con['isotype']
+    # Properly set near-consensus object
+    filtered_near_cons = list(filter(lambda con: con['isotype'] == isotype, near_cons))
+    near_con = []
+    if len(filtered_near_cons) > 0:
+      near_con = filtered_near_cons[0]
     for colname in con:
       position = colname.replace('p', '').replace('_', ':')
       if position in SUMMARY_SINGLE_POSITIONS:
-        if con[colname] is not None: position_consensus = CONSENSUS_SINGLE_CODES[con[colname]]
-        else: position_consensus = ''
-        plot_data.append({
-          'position': position,
-          'isotype': isotype,
-          'consensus': position_consensus,
-          'freqs': freqs[isotype][position],
-          'type': 'single'
-        })
-      if position in SUMMARY_PAIRED_POSITIONS:
-        if con[colname] is None or con[colname] == '':
-          position5_consensus, position3_consensus = ('', '')
+        if con[colname] is not None:
+          position_feature = CONSENSUS_SINGLE_CODES[con[colname]]
+          datatype = 'Consensus'
+        elif colname in near_con and near_con[colname] is not None:
+          position_feature = CONSENSUS_SINGLE_CODES[near_con[colname]]
+          datatype = 'Near-consensus'
         else:
-          position5_consensus, position3_consensus = CONSENSUS_PAIRED_CODES[con[colname]]
+          datatype = 'Near-consensus'
+          position_feature = ''
 
         plot_data.append({
           'position': position,
           'isotype': isotype,
-          'consensus': position5_consensus,
+          'consensus': position_feature,
           'freqs': freqs[isotype][position],
-          'type': 'left'
+          'type': 'single',
+          'datatype': datatype
+        })
+
+      elif position in SUMMARY_PAIRED_POSITIONS:
+
+        if con[colname] is not None: 
+          position5_feature, position3_feature = CONSENSUS_PAIRED_CODES[con[colname]]
+          datatype = 'Consensus'
+        elif colname in near_con and near_con[colname] is not None:
+          position5_feature, position3_feature = CONSENSUS_PAIRED_CODES[near_con[colname]]
+          datatype = 'Near-consensus'
+        else:
+          position5_feature, position3_feature = ('', '')
+          datatype = 'Near-consensus'
+
+        plot_data.append({
+          'position': position,
+          'isotype': isotype,
+          'consensus': position5_feature,
+          'freqs': freqs[isotype][position],
+          'type': 'left',
+          'datatype': datatype
         })
         plot_data.append({
           'position': position,
           'isotype': isotype,
-          'consensus': position3_consensus,
+          'consensus': position3_feature,
           'freqs': freqs[isotype][position],
-          'type': 'right'
+          'type': 'right',
+          'datatype': datatype
         })
-  return plot_data
-
-def tilemap(request, clade_txid):
-  cons_qs = models.Consensus.objects.filter(taxid = clade_txid).exclude(isotype = 'All')
-  cons = cons_qs.values()
-  freqs = gather_tilemap_freqs(clade_txid)
-  plot_data = annotate_tiles(cons, freqs)
+        
   return JsonResponse(plot_data, safe = False)
 
 def reconstruct_clade_group_info(clade_txids):

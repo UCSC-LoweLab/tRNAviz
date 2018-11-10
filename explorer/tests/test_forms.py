@@ -176,7 +176,6 @@ class CompareFormTests(TestCase):
     form = forms.CompareForm(data = form_data)
     self.assertFalse(form.is_valid())
 
-  @tag('current')
   def test_compare_form_no_domain(self):
     form_data = {'name': 'test-name', 'fasta': '', 'clade': '4930', 'isotype': 'All', 'use_fasta': 'True'}
     form = forms.CompareForm(data = form_data)

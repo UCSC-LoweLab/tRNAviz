@@ -310,15 +310,7 @@ var draw_base_distro = function(freq_data, plot_type) {
         .range([base_distro_height, 0]);
       var base_freq_axis = d3.axisLeft(isotype_base_freq_scale);
     } else {
-      if (isotype == 'All') {
-        var max_freq = d3.sum(Object.values(coord['freqs']));
-      }
-      else {
-        var max_freq = d3.max(freq_data
-          .filter(d => d['isotype'] == isotype)
-          .map(d => d3.sum(Object.values(d['freqs'])))
-        );
-      }
+      var max_freq = d3.sum(Object.values(coord['freqs']));
       var base_freq_scale = d3.scaleLinear()
         .domain([0, max_freq])
         .range([base_distro_height, 0]);
@@ -448,8 +440,14 @@ var draw_tilemap = function(tilemap_data) {
       }
     })
     .attr('height', tile_width)
-    .attr('stroke', '#666666')
-    .attr('stroke-width', '1.5')
+    .attr('stroke', d => {
+      if (d['datatype'] == 'Consensus') return '#666666';
+      else return '#999999';
+    })
+    .attr('stroke-width', d => {
+      if (d['datatype'] == 'Consensus') return 1.5;
+      else return 1;
+    })
     .attr('data-consensus', d => d['consensus'])
     .style('fill', d => {
       if (d['consensus'] != '') {
@@ -458,7 +456,7 @@ var draw_tilemap = function(tilemap_data) {
         return '#ffffff';
       }
     }).style('fill-opacity', d => {
-      if (d['type'] == 'block') return 0;
+      if (d['datatype'] == 'Consensus') return 1;
       else return 0.7;
     }).on('mouseover', d => d3.select('#tilemap').attr('locked') ? '' : highlight(d))
     .on('mouseout', d => d3.select('#tilemap').attr('locked') ? '' : dehighlight(d))
@@ -473,7 +471,7 @@ var draw_tilemap = function(tilemap_data) {
     });
   function highlight(d) {
     d3.selectAll('#tile-' + d['isotype'] + '-' + d['position'].replace(':', '-'))
-      .attr('class', 'tile-focus')
+      .classed('tile-focus', true)
       .attr('stroke', '#ff0000')
       .attr('stroke-width', '2.5');
     d3.select('#tick-' + d['isotype'].replace(':', '-'))
@@ -482,10 +480,19 @@ var draw_tilemap = function(tilemap_data) {
       .attr('class', 'axis-focus');
     update_base_distro(d, 'tilemap', d['isotype']);
   }
-  function dehighlight() {
+  function dehighlight(d) {
     d3.selectAll('.tile-focus')
-      .attr('stroke', '#666666')
-      .attr('stroke-width', '1.5');
+      .classed('tile-focus', false)
+      .attr('stroke', d => {
+        if (d['datatype'] == 'Consensus') return '#666666';
+        else return '#999999';
+      }).attr('stroke-width', d => {
+        if (d['datatype'] == 'Consensus') return 1.5;
+        else return 1;
+      }).style('fill-opacity', d => {
+        if (d['datatype'] == 'Consensus') return 1;
+        else return 0.7;
+      });
     d3.selectAll('.axis-focus')
       .attr('class', 'axis-text');
   }

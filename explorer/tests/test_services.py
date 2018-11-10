@@ -75,8 +75,6 @@ class SummaryServicesTests(TestCase):
   def test_services_cloverleaf(self):
     json_response = services.cloverleaf(self.request, self.clade_txid, self.isotype)
     plot_data = json.loads(json_response.content.decode('utf8'))
-    import pdb
-    pdb.set_trace()
     self.assertEqual(len(plot_data), 95)
 
   @tag('tilemap')
