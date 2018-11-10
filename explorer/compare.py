@@ -203,7 +203,7 @@ def align_trnas_collect_bit_scores(trna_fasta, num_model, ref_model):
   return bits
 
 def get_cons_bits(ref_taxid, ref_isotype):
-  ref_cons_qs = models.Consensus.objects.filter(taxid = ref_taxid, isotype = ref_isotype).values()
+  ref_cons_qs = models.Consensus.objects.filter(taxid = ref_taxid, isotype = ref_isotype, datatype = 'Consensus').values()
   ref_cons = read_frame(ref_cons_qs).drop(['id', 'taxid', 'isotype'], axis = 1).stack().unstack(0).reset_index()
   ref_cons.columns = ['position', 'feature']
   ref_cons.position = ref_cons.position.apply(lambda x: x[1:].replace('_', ':'))

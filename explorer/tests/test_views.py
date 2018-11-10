@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.core.exceptions import ValidationError
 
 from explorer import views
+from explorer import models
 
 @tag('summary')
 class SummaryViewTests(TestCase):
@@ -169,13 +170,17 @@ class CompareViewTests(TestCase):
 class TaxonomyServicesTests(TestCase):
   def setUp(self):
     self.factory = RequestFactory() 
+    self.taxonomy_id = models.Taxonomy.objects.filter(name = 'Thermoplasmata').get().id
 
   def test_taxonomy_get(self):
     request = self.factory.get(reverse('explorer:taxonomy'))
     response = views.taxonomy(request)
     self.assertEqual(response.status_code, 200)
 
-  @tag('not-done')
-  def test_visualize_itol(self):
+  @tag('current')
+  def test_visualize_itol_broken_api(self):
     request = self.factory.get(reverse('explorer:visualize_itol_dynamic'))
-    response = views.visualize_itol(request, '8618')
+    response = views.visualize_itol(request, self.taxonomy_id)
+    self.assertContains(response, 'Something went wrong with the iTOL API.')
+    self.assertContains(response, 'Thermoplasmata')
+    self.assertContains(response, 'Ferroplasma')

@@ -88,16 +88,6 @@ class SummaryServicesTests(TestCase):
         self.assertEqual(len(isotype_freqs['3:70']), 25)
 
   @tag('tilemap')
-  def test_services_annotate_tiles(self):
-    plot_data = services.annotate_tiles(self.tilemap_cons, self.tilemap_freqs)
-    for tile_data in plot_data:
-      for key in ['isotype', 'type', 'consensus', 'position', 'freqs']:
-        with self.subTest(key = key):
-          self.assertIn(key, tile_data)
-          if key != 'freqs':
-            self.assertEqual(type(tile_data[key]), str)
-
-  @tag('tilemap')
   def test_services_tilemap(self):
     json_response = services.tilemap(self.request, self.clade_txid)
     plot_data = json.loads(json_response.content.decode('utf8'))
@@ -106,6 +96,13 @@ class SummaryServicesTests(TestCase):
     json_response = services.tilemap(self.request, '5204')
     plot_data = json.loads(json_response.content.decode('utf8'))
     self.assertEqual(len(plot_data), 1995) # 21 isotypes * 95 positions
+
+    for tile_data in plot_data:
+      for key in ['isotype', 'type', 'datatype', 'consensus', 'position', 'freqs']:
+        with self.subTest(key = key):
+          self.assertIn(key, tile_data)
+          if key != 'freqs':
+            self.assertEqual(type(tile_data[key]), str)
 
   @tag('taxonomy-summary')
   def test_taxonomy_summary(self):
@@ -261,7 +258,7 @@ class TaxonomyServicesTests(TestCase):
     self.client = Client()
     self.factory = RequestFactory()
     self.request = self.factory.get('')
-    self.taxonomy_id = '8668' # Thermoplasmata
+    self.taxonomy_id = models.Taxonomy.objects.filter(name = 'Thermoplasmatales')[0].id
 
   @tag('about')
   def test_genome_summary(self):
@@ -273,7 +270,7 @@ class TaxonomyServicesTests(TestCase):
 
     response = services.genome_summary(self.request, self.taxonomy_id)
     http = response.content.decode('utf8')
-    self.assertIn('Thermoplasmata', http)
+    self.assertIn('Thermoplasmatales', http)
     self.assertIn('Picrophilaceae', http)
     self.assertIn('Thermoplasmatales archaeon BRNA1', http)
     
@@ -298,6 +295,6 @@ class TaxonomyServicesTests(TestCase):
     self.assertIn('Total', http)
 
   def test_newick_tree(self):
-    tree = services.newick_tree('8618')
-    self.assertIn('Crenarchaeota', tree)
-    self.assertIn('Thermoprotei', tree)
+    tree = services.newick_tree(self.taxonomy_id)
+    self.assertIn('Picrophilaceae', tree)
+    self.assertIn('Thermoplasmata', tree)
