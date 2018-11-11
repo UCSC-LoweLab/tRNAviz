@@ -268,7 +268,6 @@ var draw_base_distro = function(freq_data, plot_type) {
     .call(base_feature_axis);
 
   base_distro.selectAll('.base-xaxis .tick text, .base-yaxis .tick text')  // select all the text elements for the xaxis
-    .attr('text-anchor', 'center')
     .attr('class', 'axis-text');
 
   update_base_distro = (coord, plot_type, isotype) => {
@@ -324,7 +323,6 @@ var draw_base_distro = function(freq_data, plot_type) {
       .call(base_freq_axis);
 
     base_distro.selectAll('.base-xaxis .tick text, .base-yaxis .tick text')  // select all the text elements for the xaxis
-      .attr('text-anchor', 'center')
       .attr('class', 'axis-text');
 
     var rects = base_distro.append('g')
@@ -405,12 +403,13 @@ var draw_tilemap = function(tilemap_data) {
   tilemap.append('g')
     .attr('class', 'yaxis')
     .attr('transform', 'translate(45, 7)')
-    // .attr('text-anchor', 'right')
     .call(isotype_axis);
 
   tilemap.selectAll('.xaxis text')  // select all the text elements for the xaxis
     .attr('text-anchor', 'end')
-    .attr('transform', function(d) { return 'translate(-' + this.getBBox().height + ', ' + (this.getBBox().height) + ') rotate(-90)'; });
+    .attr('transform', function(d) { return 'translate(-' + this.getBBox().height + ', ' + (this.getBBox().height) + ') rotate(-90)'; })
+    // .insert('g');
+    // .attr('transform', 'rotate(-90)');
 
   // Give each tick a unique identifier for bolding on mouseover
   tilemap.selectAll('.xaxis .tick text')
