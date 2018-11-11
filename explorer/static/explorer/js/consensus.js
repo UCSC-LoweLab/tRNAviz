@@ -72,7 +72,8 @@ var draw_cloverleaf = function(cloverleaf_data, isotype) {
     .attr('height', cloverleaf_area_height)
 
   // append dummy rect to listen for click events, for unlocking selections
-  cloverleaf.append('rect')
+  d3.select('#cloverleaf-area svg')
+    .append('rect')
     .attr('width', cloverleaf_area_width)
     .attr('height', cloverleaf_area_height)
     .attr('fill', 'white')

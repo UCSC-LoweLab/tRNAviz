@@ -156,8 +156,9 @@ def domain_features(request, clade_txid, isotype):
     tax = tax_qs.get()
     domain = models.Taxonomy.objects.filter(taxid = tax.domain).get()
     cols = ['taxid'] + ['p{}'.format(position.replace(':', '_')) for position in SINGLE_POSITIONS + PAIRED_POSITIONS]
-    cons_qs = models.Consensus.objects.filter(taxid__in = [clade_txid, domain.taxid], isotype = isotype, datatype = 'Consensus').values(*cols)
-    df = read_frame(cons_qs)
+    near_cons_qs = models.Consensus.objects.filter(taxid = domain.taxid, isotype = isotype, datatype = 'Near-consensus').values(*cols)
+    cons_qs = models.Consensus.objects.filter(taxid = clade_txid, isotype = isotype, datatype = 'Consensus').values(*cols)
+    df = pd.concat([read_frame(cons_qs), read_frame(near_cons_qs)])
     df = df.set_index('taxid').fillna('')
     df.columns = [col[1:].replace('_', ':') for col in df.columns]
     if df.index[0] != domain.taxid: df.iloc[::-1]
@@ -168,8 +169,9 @@ def domain_features(request, clade_txid, isotype):
       df['clade'] = domain.name
       table_data = [{'position': col, 'domain': df[col][0], 'clade': df[col][0]} for col in df.columns]  
     else:
-      df.loc[clade_txid] = [LABELS[feature] for feature in df.loc[clade_txid]]  
-      df['clade'] = [domain.name, tax.name]
+      df.loc[clade_txid] = [LABELS[feature] for feature in df.loc[clade_txid]]
+      df = df.sort_index()
+      df['clade'] = [domain.name + " (Near-consensus)", tax.name + " (Consensus)"]
       table_data = [{'position': col, 'domain': df[col][0], 'clade': df[col][1]} for col in df.columns]
 
     return JsonResponse(table_data, safe = False)

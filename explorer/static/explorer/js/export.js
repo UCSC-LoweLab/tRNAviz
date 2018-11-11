@@ -32,6 +32,7 @@ var download_pdf = function(id) {
   selector = $('#' + id);
   svg_selector = selector.clone();
   svg_selector.children().each(function() {
+    if (this.id != '') $(this).css($('#' + this.id).getStyleObject());
     $(this).find('*').each(function() {
       if (this.id != '') $(this).css($('#' + this.id).getStyleObject());
     })
