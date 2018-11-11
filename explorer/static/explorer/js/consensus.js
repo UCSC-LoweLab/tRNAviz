@@ -395,21 +395,27 @@ var draw_tilemap = function(tilemap_data) {
     .ticks(isotypes.length)
     .tickFormat(d => isotypes[d]);
 
-  tilemap.append('g')
-    .attr('class', 'xaxis')
-    .attr('transform', 'translate(7, 368)')
-    .call(position_axis);
 
   tilemap.append('g')
     .attr('class', 'yaxis')
     .attr('transform', 'translate(45, 7)')
     .call(isotype_axis);
 
-  tilemap.selectAll('.xaxis text')  // select all the text elements for the xaxis
-    .attr('text-anchor', 'end')
-    .attr('transform', function(d) { return 'translate(-' + this.getBBox().height + ', ' + (this.getBBox().height) + ') rotate(-90)'; })
-    // .insert('g');
-    // .attr('transform', 'rotate(-90)');
+  tilemap.append('g')
+    .attr('class', 'xaxis')
+    .attr('transform', 'translate(7, 368)')
+    .call(position_axis)
+    .selectAll('.xaxis text')
+    .attr('text-anchor', 'end');
+
+  tilemap.selectAll('.xaxis g')
+    .append('g')
+    .attr('class', 'xaxis-text')
+    .attr('transform', 'rotate(-90) translate(-10, -13)');
+
+  $(d3.selectAll('.xaxis text').nodes()).each(function() {
+    this.nextSibling.append(this);
+  })
 
   // Give each tick a unique identifier for bolding on mouseover
   tilemap.selectAll('.xaxis .tick text')
