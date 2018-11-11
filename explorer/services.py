@@ -162,17 +162,16 @@ def domain_features(request, clade_txid, isotype):
     df = df.set_index('taxid').fillna('')
     df.columns = [col[1:].replace('_', ':') for col in df.columns]
     if df.index[0] != domain.taxid: df.iloc[::-1]
-    df.loc[domain.taxid] = [LABELS[feature] for feature in df.loc[domain.taxid]]
+    df = df.apply(lambda x: [LABELS[feature] for feature in x])
     df = df[sorted(df.columns, key = position_sort_key)]
     # If user selected a domain, continue as if it were a different clade
     if domain.taxid == clade_txid:
-      df['clade'] = domain.name
-      table_data = [{'position': col, 'domain': df[col][0], 'clade': df[col][0]} for col in df.columns]  
+      df['clade'] = [domain.name + " (Consensus)", domain.name + " (Near-consensus)"]
+      df = df.reset_index(drop = True)
     else:
-      df.loc[clade_txid] = [LABELS[feature] for feature in df.loc[clade_txid]]
       df = df.sort_index()
       df['clade'] = [domain.name + " (Near-consensus)", tax.name + " (Consensus)"]
-      table_data = [{'position': col, 'domain': df[col][0], 'clade': df[col][1]} for col in df.columns]
+    table_data = [{'position': col, 'domain': df[col][0], 'clade': df[col][1]} for col in df.columns]
 
     return JsonResponse(table_data, safe = False)
 
