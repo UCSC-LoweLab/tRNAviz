@@ -368,6 +368,7 @@ var draw_tilemap = function(tilemap_data) {
   
   // append dummy rect to listen for click events, for unlocking selections
   tilemap.append('rect')
+    .attr('class', 'dummy')
     .attr('width', tilemap_area_width)
     .attr('height', tilemap_area_height)
     .attr('fill', 'white')
@@ -426,7 +427,7 @@ var draw_tilemap = function(tilemap_data) {
     .attr('class', 'axis-text')
     .attr('id', d => 'tick-' + isotypes[d].replace(':', '-'));
 
-  var tiles = tilemap.selectAll('rect')
+  var tiles = tilemap.selectAll('rect:not(.dummy)')
     .data(tilemap_data)
     .enter()
     .append('rect')
