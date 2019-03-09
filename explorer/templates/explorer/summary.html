@@ -86,7 +86,7 @@ tRNAviz | Summary
 {% endblock %}
 
 {% block description %}
-Consensus sequence features and frequency distributions at a glance. <sup><small><a href="{% url 'explorer:about' %}" target="_blank">[?]</a></small></sup>
+Consensus sequence features and frequency distributions at a glance <sup><small><a href="{% url 'explorer:about' %}" target="_blank">[?]</a></small></sup>
 {% endblock %}
 
 {% block filter %}
@@ -202,56 +202,6 @@ Consensus sequence features and frequency distributions at a glance. <sup><small
 </div>
 
 <div class="col-12 plotbox-row-title summary-sticky-bar">
-	<h5 class='text-center'>Context</h5>
-</div>
-
-<div class="plotbox-row d-flex justify-content-center flex-wrap">
-	<div class="col-12 col-sm-auto">
-		<div class="plotbox-outer">
-			<div class="plotbox-header">
-				<h5>Taxonomy summary</h5>
-			</div>
-			<div class="table-inner" id="taxonomy-summary-area">
-				<div class="loading-overlay"></div>
-			</div>
-		</div>
-	</div>
-
-	<div class="col-12 col-sm-auto">
-		<div class="plotbox-outer">
-			<div class="plotbox-header">
-				<h5>Domain-specific features</h5>
-			</div>
-			<div class="table-inner" id="domain-features-area">
-				<div class="loading-overlay"></div>
-			</div>
-		</div>
-	</div>
-
-	<div class="col-12 col-sm-auto">
-		<div class="plotbox-outer">
-			<div class="plotbox-header">
-				<h5>Anticodon counts</h5>
-			</div>
-			<div class="table-inner" id="anticodon-counts-area">
-				<div class="loading-overlay"></div>
-			</div>
-		</div>
-	</div>
-
-	<div class="col-12">
-		<div class="plotbox-outer">
-			<div class="plotbox-header">
-				<h5>Isotype discrepancies</h5>
-			</div>
-			<div class="table-inner" id="isotype-discrepancies-area">
-				<div class="loading-overlay"></div>
-			</div>
-		</div>
-	</div>
-</div>
-
-<div class="col-12 plotbox-row-title summary-sticky-bar">
 	<h5 class='text-center'>Isotype-specific consensus features</h5>
 </div>
 
@@ -289,6 +239,57 @@ Consensus sequence features and frequency distributions at a glance. <sup><small
 			</div>
 		</div>
 	</div>
+</div>
+
+<div class="col-12 plotbox-row-title summary-sticky-bar">
+        <h5 class='text-center'>Context</h5>
+</div>
+
+<div class="plotbox-row d-flex justify-content-center flex-wrap">
+        <div class="col-12 col-sm-auto">
+                <div class="plotbox-outer">
+                        <div class="plotbox-header">
+                                <h5>Taxonomy summary</h5>
+                        </div>
+                        <div class="table-inner" id="taxonomy-summary-area">
+                                <div class="loading-overlay"></div>
+                        </div>
+                </div>
+        </div>
+
+        <div class="col-12 col-sm-auto">
+                <div class="plotbox-outer">
+                        <div class="plotbox-header">
+                                <h5>Domain-specific features</h5>
+                        </div>
+                        <div class="table-inner" id="domain-features-area">
+                                <div class="loading-overlay"></div>
+                        </div>
+                </div>
+        </div>
+
+        <div class="col-12 col-sm-auto">
+                <div class="plotbox-outer">
+                        <div class="plotbox-header">
+                                <h5>tRNA gene counts by anticodon</h5>
+                        </div>
+                        <div class="table-inner" id="anticodon-counts-area">
+                                <div class="loading-overlay"></div>
+                        </div>
+                </div>
+        </div>
+{% comment %}
+        <div class="col-12">
+                <div class="plotbox-outer">
+                        <div class="plotbox-header">
+                                <h5>Isotype discrepancies</h5>
+                        </div>
+                        <div class="table-inner" id="isotype-discrepancies-area">
+                                <div class="loading-overlay"></div>
+                        </div>
+                </div>
+        </div>
+{% endcomment %}
 </div>
 
 {% endblock %}

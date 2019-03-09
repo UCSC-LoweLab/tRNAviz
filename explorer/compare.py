@@ -16,6 +16,8 @@ from django_pandas.io import read_frame
 from . import models
 from . import choices
 
+INFERNAL_BIN = '/www/bin/'
+
 SINGLE_FEATURES = {'A': 'A', 'C': 'C', 'G': 'G', 'U': 'U', 'absent': '-'}
 PAIRED_FEATURES = {
   'AU': 'A:U', 'UA': 'U:A', 'GC': 'G:C', 'CG': 'C:G', 'GU': 'G:U', 'UG': 'U:G', 
@@ -53,7 +55,8 @@ def bitchart(request, formset_json):
   try:
     # get formset
     formset_data = json.loads(open(settings.MEDIA_ROOT + formset_json).read())
-    os.remove(settings.MEDIA_ROOT + formset_json)
+    if (formset_json.find('default') == -1):
+      os.remove(settings.MEDIA_ROOT + formset_json)
     seqs = read_all_trnas()
     trna_fasta_files = write_trnas_to_files(formset_data, seqs)
     ref_model_fh = build_reference_model(formset_data, trna_fasta_files)
@@ -138,10 +141,10 @@ def build_reference_model(formset_data, trna_fasta_files):
   ref_align_fh = NamedTemporaryFile()
   clade_tax = models.Taxonomy.objects.filter(taxid = formset_data[0]['clade'])[0]
   num_model = NUMBERING_MODELS[models.Taxonomy.objects.filter(taxid = clade_tax.domain).get().name]
-  cmd_cmalign = 'cmalign -g --notrunc --matchonly -o {} {} {} > /dev/null'.format(ref_align_fh.name, num_model, ref_fasta)
+  cmd_cmalign = INFERNAL_BIN + 'cmalign -g --notrunc --matchonly -o {} {} {} > /dev/null'.format(ref_align_fh.name, num_model, ref_fasta)
   res = subprocess.run(cmd_cmalign, shell = True)
   ref_model_fh = NamedTemporaryFile()
-  cmd_cmbuild = 'cmbuild --hand --enone -F {} {} > /dev/null'.format(ref_model_fh.name, ref_align_fh.name)
+  cmd_cmbuild = INFERNAL_BIN + 'cmbuild --hand --enone -F {} {} > /dev/null'.format(ref_model_fh.name, ref_align_fh.name)
   res = subprocess.run(cmd_cmbuild, shell = True)
   return ref_model_fh
 
@@ -152,19 +155,19 @@ def calculate_normalizing_scores(ref_model_fh):
   cons_align_fh = NamedTemporaryFile()
   cons_fasta_fh = NamedTemporaryFile()
   cons_parsetree_fh = NamedTemporaryFile('r+')
-  cmd_cmemit = 'cmemit --exp 5 -N 1000 -a {} > {}'.format(ref_model_fh.name, cons_align_fh.name)
+  cmd_cmemit = INFERNAL_BIN + 'cmemit --exp 5 -N 1000 -a {} > {}'.format(ref_model_fh.name, cons_align_fh.name)
   res = subprocess.run(cmd_cmemit, shell = True)
-  cmd_cmbuild = 'cmbuild --enone -F {} {} > /dev/null'.format(cons_model_fh.name, cons_align_fh.name)
+  cmd_cmbuild = INFERNAL_BIN + 'cmbuild --enone -F {} {} > /dev/null'.format(cons_model_fh.name, cons_align_fh.name)
   res = subprocess.run(cmd_cmbuild, shell = True)
 
   # Emit a consensus sequence and format
-  cmd_cmemit = 'cmemit -c {}'.format(cons_model_fh.name)
+  cmd_cmemit = INFERNAL_BIN + 'cmemit -c {}'.format(cons_model_fh.name)
   res = subprocess.run(cmd_cmemit, stdout = subprocess.PIPE, shell = True)
   cons_fasta_fh.write(res.stdout.upper())
   cons_fasta_fh.flush()
 
   # Align to reference model, and get normalizing bits
-  cmd_cmalign = 'cmalign -g --notrunc --matchonly --tfile {} {} {} > /dev/null'.format(cons_parsetree_fh.name, ref_model_fh.name, cons_fasta_fh.name)
+  cmd_cmalign = INFERNAL_BIN + 'cmalign -g --notrunc --matchonly --tfile {} {} {} > /dev/null'.format(cons_parsetree_fh.name, ref_model_fh.name, cons_fasta_fh.name)
   res = subprocess.run(cmd_cmalign, shell = True)
   ref_bits = pd.DataFrame(parse_parsetree(cons_parsetree_fh))
   ref_bits.group_name = 'Reference consensus'
@@ -178,7 +181,7 @@ def align_trnas_collect_bit_scores(trna_fasta, num_model, ref_model):
   parsetree_fh = NamedTemporaryFile('r+', buffering = 1)
 
   # Remove introns from all tRNAs (except reference). First, align to numbering model to purge insertions
-  cmd_cmalign = 'cmalign -g --notrunc --matchonly -o {} {} {} > /dev/null'.format(num_model_align_fh.name, num_model, trna_fasta)
+  cmd_cmalign = INFERNAL_BIN + 'cmalign -g --notrunc --matchonly -o {} {} {} > /dev/null'.format(num_model_align_fh.name, num_model, trna_fasta)
   res = subprocess.run(cmd_cmalign, shell = True)
 
   # remove introns using alignment and rewrite tRNAs to new file
@@ -189,7 +192,7 @@ def align_trnas_collect_bit_scores(trna_fasta, num_model, ref_model):
     processed_fasta_fh.write('>{}\n{}\n'.format(seqname, seq))
 
   # realign to reference model and parse parsetree output
-  cmd_cmalign = 'cmalign -g --notrunc --matchonly --tfile {} -o /dev/null {} {} > /dev/null'.format(parsetree_fh.name, ref_model, processed_fasta_fh.name)
+  cmd_cmalign = INFERNAL_BIN + 'cmalign -g --notrunc --matchonly --tfile {} -o /dev/null {} {} > /dev/null'.format(parsetree_fh.name, ref_model, processed_fasta_fh.name)
   res = subprocess.run(cmd_cmalign, shell = True)
   bits = pd.DataFrame(parse_parsetree(parsetree_fh))
   

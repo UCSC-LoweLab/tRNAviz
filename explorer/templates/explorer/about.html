@@ -65,7 +65,7 @@ var draw_legend = function() {
 {% endblock %}
 
 {% block banner %}tRNAviz{% endblock %}
-{% block description %}Explore and visualize tRNA sequence features across the tree of life.{% endblock %}
+{% block description %}Explore and visualize tRNA sequence features across the tree of life{% endblock %}
 
 {% block plots %}
 
@@ -89,7 +89,7 @@ var draw_legend = function() {
 		<h2 class='col-12 text-center text-lg-left hotlink mb-3' id='Data'>Data</h2>
 		<h4 class='col-12 text-center text-lg-left hotlink' id='tRNA-annotation'>tRNA annotation</h4>
 		<div class="col-lg-6">
-			<p>We ran <a href="http://lowelab.ucsc.edu/tRNAscan-SE/" target="_blank">tRNAscan-SE</a> on hundreds of assemblies. Many tRNAs were filtered out or marked as duplicate using a combination of the following criteria:</p>
+			<p>We ran <a href="http://trna.ucsc.edu/tRNAscan-SE/" target="_blank">tRNAscan-SE</a> on hundreds of genomes. Many tRNAs were filtered out or marked as duplicate using a combination of the following criteria:</p>
 
 			<ul>
 				<li>Low scoring tRNAs</li>
@@ -97,7 +97,7 @@ var draw_legend = function() {
 				<li>Identical copies of tRNA isodecoders</li>
 				<li>tRNA<sup>SeC</sup></li>
 				<li>Mitochondrial tRNAs</li>
-				<li><i>numts</i></li>
+				<li>Nuclear-encoded mitochondrial tRNAs (NUMT tRNAs)</li>
 			</ul>
 
 			<p>tRNAs were carefully filtered to remove obvious tRNA pseudogenes without removing tRNAs with potential for function. For example, high-scoring tRNAs with isotype prediction discrepancies based on their isotype-specific scores may still be used in translation or have regulatory roles.</p>
@@ -146,7 +146,7 @@ var draw_legend = function() {
 		<h2 class='col-12 text-center text-lg-left text-white hotlink' id='Visualizations'>Visualizations</h2>
 		<div class="col-lg-6 d-flex content-with-footnote text-lightgray mt-3">
 			<h4 class='text-center text-lg-left text-white hotlink' id='Distributions'>Distributions</h4>
-			<p>The <a href="{% url 'explorer:variation_distribution' %}" class="text-light" target="_blank">Variation</a> pages facilitate a deeper look at conservation patterns.</p>
+			<p>The <a href="{% url 'explorer:variation_distribution' %}" class="text-light" target="_blank">Compare</a> pages facilitate a deeper look at conservation patterns.</p>
 
 			<p><u><i>Clade groups</i></u> are arbitrary combinations of clades - any set of unique clades and species can be combined into a clade group. Clade groups can be used to visualize outgroup distributions<sup><a>3</a></sup>, but can also be used outside of taxonomic groups<sup><a>4</a></sup>. Both Variation pages use clade group queries.</p>
 
@@ -166,7 +166,7 @@ var draw_legend = function() {
 		
 		<div class="col-lg-6 d-flex text-lightgray content-with-footnote mt-3">
 			<h4 class='text-center text-lg-left text-white hotlink' id='Bitcharts'>Bitcharts</h4>
-			<p>The <a href="{% url 'explorer:compare' %}" class="text-light" target="_blank">Compare</a> pages facilitate a deeper look at conservation patterns. Its primary focus is to examine position-specific deviation from expected features in custom sets of tRNAs<sup><a>6</a></sup>. Input FASTA sequence is supported<sup><a>7</a></sup>.</p>
+			<p>The <a href="{% url 'explorer:compare' %}" class="text-light" target="_blank">Compare by Sequence</a> page facilitates a deeper look at conservation patterns. Its primary focus is to examine position-specific deviation from expected features in custom sets of tRNAs<sup><a>6</a></sup>. Input FASTA sequence is supported<sup><a>7</a></sup>.</p>
 
 			<p>Under the hood, tRNAviz undergoes a three step process:</p>
 			<ol>
@@ -190,20 +190,25 @@ var draw_legend = function() {
 	<div class="about-row row d-flex">
 		<h2 class='col-12 text-center text-lg-left hotlink' id='About'>About</h2>
 		<div class="col-lg-6 my-3">
-			<h5 class='text-center text-lg-left hotlink' id='Citation'>Citation</h5>
-			<p>If you use tRNAviz or its visualizations, please cite us via the <a href='#' target="_blank">bioRxiv submission</a>.</p>
-		</div>
-
-
-		<div class="col-lg-6 my-3">
-			<h5 class='text-center text-lg-left hotlink' id='Contact'>Contact</h5>
-			<p>For bug reports, issues, comments, or suggestions, send an email to <a href='#' target="_blank">bylin@ucsc.edu</a>.</p>
-		</div>
-
-		<div class="col-lg-6 my-3">
 			<h5 class='text-center text-lg-left hotlink' id='Code'>Code</h5>
-			<p>tRNAviz and all associated code are open source. The <a href='https://github.com/bylin/tRNAviz-data' target="_blank">data processing pipeline</a> and <a href='https://github.com/bylin/tRNAviz'>web application</a> is available on Github.</p>
+                        <p>tRNAviz is an open source web application under LGPLv3. The source code of the <a href='https://github.com/UCSC-LoweLab/tRNAviz-data' target="_blank">data processing pipeline</a> and <a href='https://github.com/UCSC-LoweLab/tRNAviz' target="_blank">web application</a> can be downloaded at the provided links.</p>
 		</div>
+
+                <div class="col-lg-6 my-3">
+                        <h5 class='text-center text-lg-left hotlink' id='Citation'>Citation</h5>
+                        <p>Lin BY, Chan PP and Lowe TM. tRNAviz: explore and visualize tRNA sequence features. (Under review at <i>Nucleic Acids Res.</i>)</p>
+                </div>
+
+                <div class="col-lg-6 my-3">
+                        <h5 class='text-center text-lg-left hotlink' id='Data'>Data</h5>
+                        <p>The source data are included in <a href='http://trna.ucsc.edu/download/tRNAviz/tRNAviz_data_1.0.tar.gz' target="_blank">tRNAviz_data_1.0.tar.gz</a> for download.</p>
+                </div>
+
+                <div class="col-lg-6 my-3">
+                        <h5 class='text-center text-lg-left hotlink' id='Contact'>Contact</h5>
+                        <p>For bug reports, issues, comments, or suggestions, send an email to <a href='#' target="_blank">trna@soe.ucsc.edu</a>.</p>
+                </div>
+
 	</div>
 
 </div>

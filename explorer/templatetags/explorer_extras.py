@@ -42,6 +42,10 @@ def foci_to_url_string(foci):
 def minus2(number):
   return number - 2
 
+@register.filter('subtract')
+def subtract(value, arg):
+    return value - arg
+
 @register.filter('parity_to_div_class')
 def parity_to_div_class(number):
   if number % 2 == 0: return 'select-bar-even'
@@ -73,6 +77,13 @@ def focus_value(focus, key):
     return '{} - {}'.format(focus['score_min'], focus['score_max'])
   return focus[key]
 
+@register.filter('compare_value')
+def compare_value(compare, key):
+  if key == 'clade':
+    for clade_taxid, clade in choices.CLADES:
+      if clade_taxid == compare[key]: return clade
+    return ''  
+  return compare[key]
 
 @register.filter('cast_bool')
 def cast_bool(string):

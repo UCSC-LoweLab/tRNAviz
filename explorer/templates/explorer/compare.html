@@ -11,10 +11,10 @@
 <script src="{% static 'explorer/js/export.js' %}"></script>
 {% endblock %}
 
-{% block title %}tRNAviz | Compare{% endblock %}
+{% block title %}tRNAviz | Compare by Sequence{% endblock %}
 
 {% block banner %}
-tRNAviz | Compare
+tRNAviz | Compare by Sequence
 {% endblock %}
 
 {% block description %}
@@ -366,19 +366,19 @@ d3.json("{% url 'explorer:coords' %}", function(coords) {
 <div class="data-select-table">
 	<table class="table sticky-top">
 		<tbody>
-			{% for form in formset.forms %}
+			{% for compare in compare_list %}
 			{% if forloop.counter == 1 %}
 			<tr>
 				<th scope="row">Reference</th>
-				<td>{{ form.clade.value|clade_lookup }}, {{ form.isotype.value }}</td>
+				<td>{{ compare|compare_value:'clade' }}, {{ compare|compare_value:'isotype' }}</td>
 			</tr>
-			{% elif forloop.counter > 2 %}
+			{% elif forloop.counter > 1 %}
 			<tr>
-				<th scope="row">Selection {{ forloop.counter|minus2 }}: {{ form.name.value }}</th>
-				{% if form.use_fasta.value == "True" %}
+				<th scope="row">Selection {{ forloop.counter|subtract:1 }}: {{ compare|compare_value:'name' }}</th>
+				{% if compare|compare_value:'use_fasta' == "True" %}
 				<td>User FASTA input</td>
 				{% else %}
-				<td>{{ form.clade.value|clade_lookup }}, {{ form.isotype.value }}</td>
+				<td>{{ compare|compare_value:'clade' }}, {{ compare|compare_value:'isotype' }}</td>
 				{% endif %}
 			</tr>
 			{% endif %}

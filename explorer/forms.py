@@ -19,7 +19,7 @@ class SummaryForm(forms.Form):
     initial = '4930')
   isotype = forms.ChoiceField(
     widget = forms.Select({'class': 'form-control multiselect isotype-select'}), 
-    initial = 'All',
+    initial = 'Ala',
     choices = choices.ISOTYPES,
     required = True)
 
@@ -302,6 +302,16 @@ class BaseCompareFormSet(DummyFormSet):
     for form in self.forms:
       form.empty_permitted = False
 
+  def get_compare_list(self):
+    compare_list = []
+    for i, form in enumerate(self.forms):
+      if i == 1: continue # skip first dummy row
+      compare = form.as_dict()
+      if compare['isotype'] == '' and compare['fasta'] == '':
+        continue
+      compare_list.append(compare)
+    return compare_list
+                                                                                            
   def clean(self):
     ref_form = self.forms[0]
     if ref_form.is_valid():

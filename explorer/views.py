@@ -17,7 +17,7 @@ from . import services
 def summary(request):
   clade = 'Saccharomyces (genus)'
   clade_txid = '4930'
-  isotype = 'All'
+  isotype = 'Ala'
   form = forms.SummaryForm()
   if request.method == 'POST':
     form = forms.SummaryForm(request.POST)
@@ -69,8 +69,8 @@ def variation_distribution(request):
 def variation_species(request):
   clade_groups = [['4930', '4895'], ['5204']]
   clade_group_names = [['Saccharomyces (genus)', 'Schizosaccharomyces (genus)'], ['Basidiomycota (phylum)']]
-  foci = [{'position': '3:70', 'isotype': 'Gly', 'anticodon': 'All', 'score_min': '16.5', 'score_max': '100.1'}, 
-      {'position': '3:70', 'isotype': 'Asn', 'anticodon': 'All', 'score_min': '16.5', 'score_max': '70.1'}]
+  foci = [{'position': '3:70', 'isotype': 'Gly', 'anticodon': 'All', 'score_min': '25', 'score_max': '100.1'}, 
+      {'position': '3:70', 'isotype': 'Asn', 'anticodon': 'All', 'score_min': '35', 'score_max': '110'}]
 
   clade_formset = forms.CladeGroupFormSet(prefix = 'clade')
   focus_formset = forms.FocusFormSet(prefix = 'focus')
@@ -95,11 +95,16 @@ def variation_species(request):
   })
 
 def compare(request):
+  compare_list = [{"fasta": "None", "clade": "2251", "isotype": "All", "domain": "None", "name": "None", "use_fasta": "False"}, 
+                  {"fasta": "", "clade": "2207", "isotype": "All", "domain": "Universal", "name": "", "use_fasta": "False"}]
+
   if request.method != 'POST':
+    formset = forms.CompareFormSet()
     return render(request, 'explorer/compare.html', {
-      'formset': forms.CompareFormSet(),
-      'valid_form': False,
-      'formset_json': 'none'
+      'formset': formset,
+      'valid_form': True,
+      'compare_list': compare_list,
+      'formset_json': '/default'
     })
 
   formset = forms.CompareFormSet(request.POST)
@@ -110,6 +115,7 @@ def compare(request):
     formset_json_fh.flush()
     copy(formset_json_fh.name, settings.MEDIA_ROOT + formset_json_fh.name)
     valid_form = True
+    compare_list = formset.get_compare_list()
   else:
     valid_form = False
 
@@ -118,6 +124,7 @@ def compare(request):
   return render(request, 'explorer/compare.html', {
     'formset': formset,
     'valid_form': valid_form,
+    'compare_list': compare_list,
     'formset_json': formset_json_fh.name
   })
 
@@ -132,7 +139,7 @@ def taxonomy(request):
 
 def visualize_itol(request, taxonomy_id):
   newick_tree = services.newick_tree(taxonomy_id)
-  tree_fh = NamedTemporaryFile('w')
+  tree_fh = NamedTemporaryFile(mode='w', suffix='.tree')
   tree_fh.write(newick_tree)
   tree_fh.flush()
 
@@ -143,8 +150,8 @@ def visualize_itol(request, taxonomy_id):
     status = itol_uploader.upload()
     assert status != False
     itol_page = itol_uploader.get_webpage()
-    redirect(itol_uploader.get_webpage())
+    return redirect(itol_uploader.get_webpage())
   except:
     return HttpResponse('Something went wrong with the iTOL API. Save the following Newick tree to a file and upload it to iTOL yourself to visualize the tree:\n{}'.format(newick_tree), content_type = "text/plain")
 
-  return HttpResponse(newick_tree)
+  '''return HttpResponse(newick_tree)'''

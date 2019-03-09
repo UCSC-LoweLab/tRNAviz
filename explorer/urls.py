@@ -9,7 +9,7 @@ app_name = 'explorer'
 
 
 def redirect_home(request):
-  return redirect('/summary/')
+  return redirect('summary/')
 
 urlpatterns = [
   path('', redirect_home),
@@ -24,12 +24,12 @@ urlpatterns = [
   path('api/cloverleaf/<str:clade_txid>/<str:isotype>/', services.cloverleaf, name = 'cloverleaf'),
   path('api/tilemap/<str:clade_txid>/', services.tilemap, name = 'tilemap'),
 
-  path('variation/distribution', views.variation_distribution, name = 'variation_distribution'),
-  path('variation/species', views.variation_species, name = 'variation_species'),
-  path('api/distribution/<str:clade_txids>/<str:isotypes>/<str:positions>/', services.distribution, name = 'distribution'),
+  path('compare/by_clade', views.variation_distribution, name = 'variation_distribution'),
+  path('compare/by_species', views.variation_species, name = 'variation_species'),
+  path('api/clade/<str:clade_txids>/<str:isotypes>/<str:positions>/', services.distribution, name = 'distribution'),
   path('api/species/<str:clade_txids>/<str:foci>/', services.species_distribution, name = 'species_distribution'),
 
-  path('compare/', views.compare, name = 'compare'),
+  path('compare/by_sequence', views.compare, name = 'compare'),
   re_path('api/bitchart/(?P<formset_json>.+)', compare.bitchart, name = 'bitchart'),
 
   path('about/', views.about, name = 'about'),

@@ -10,14 +10,12 @@
 				<a class="nav-link" href="{% url 'explorer:summary' %}">Summary</a>
 			</li>
 			<li class="nav-item dropdown">
-				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Variation</a>
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Compare</a>
 				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-					<a class="dropdown-item" href="{% url 'explorer:variation_distribution' %}">Distributions</a>
-					<a class="dropdown-item" href="{% url 'explorer:variation_species' %}">Species</a>
+					<a class="dropdown-item" href="{% url 'explorer:variation_distribution' %}">By Clade</a>
+					<a class="dropdown-item" href="{% url 'explorer:variation_species' %}">By Species</a>
+					<a class="dropdown-item" href="{% url 'explorer:compare' %}">By Sequence</a>
 				</div>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="{% url 'explorer:compare' %}">Compare</a>
 			</li>
 			<li class="nav-item">
 				<a class="nav-link" href="{% url 'explorer:taxonomy' %}">Taxonomy</a>
