@@ -77,7 +77,52 @@ $(document).ready(function() {
 	$.get('{% url "explorer:isotype_discrepancies" clade_txid=clade_txid isotype=isotype %}')
 	  .done(function(response) { $('#isotype-discrepancies-area').html(response); });
 
+	draw_legend();
 });
+
+var draw_legend = function() {
+	d3.select('#feature-colors-area .loading-overlay').style('display', 'none');
+
+  var feature_legend_scale = d3.scaleOrdinal()
+	  .domain(['A', 'C', 'G', 'U', 
+			'Purine', 'Pyrimidine', 'Weak (A/U)', 'Strong (C/G)', 'Amino (A/C)', 'Keto (G/U)', 'B (C/G/U)', 'D (A/G/U)', 'H (A/C/U)', 'V (A/C/G)',
+	    'A:U', 'U:A', 'G:C', 'C:G', 'G:U', 'U:G', 'A:G', 'G:A', 'C:U', 'U:C', 'A:C', 'C:A', 'A:A', 'C:C', 'G:G', 'U:U', 
+	    'Paired', 'High mismatch rate', 'Absent (- or -:-)', 'Malformed (N:- or -:N)'])
+	  .range(['#ffd92f', '#4daf4a', '#e41a1c', '#377eb8', 
+	  	'#ff8300', '#66c2a5', '#b3de69', '#fb72b2', '#c1764a', '#b26cbd', '#e5c494','#ccebd5', '#ffa79d', '#a6cdea',
+	    '#17b3cf', '#9ed0e5', '#ff7f0e', '#ffbb78', '#a067bc', '#ceafd5', '#2fc69e', '#8be4cf', '#e377c2', '#f7b6d2', '#c47b70', '#f0a994', '#e7cb94', '#cedb9c', '#e7969c', '#9ca8de',
+	    '#ffffcc', '#b3b3b3', '#7f7f7f', '#333333'])
+
+  var svg = d3.select('#feature-colors-area')
+  	.append('svg')
+  	.attr('id', 'feature-colors')
+  	.attr('width', 310)
+  	.attr('height', 300)
+
+	var legend = svg.append('g')
+    .attr('id', 'legend')
+  
+  legend.selectAll('rect')
+    .data(feature_legend_scale.domain())
+    .enter()
+    .append('rect')
+    .attr('class', 'legend-rect')
+    .attr('x', (d, i) => i < 28 ? 100 * Math.floor(i / 14) : 160)
+    .attr('y', (d, i) => (18 * i) % 252 + 2 * (i % 14))
+    .attr("width", 18)
+    .attr("height", 18)
+    .style('fill', d => feature_legend_scale(d));
+  
+  legend.selectAll('text')
+    .data(feature_legend_scale.domain())
+    .enter()
+    .append('text')
+    .attr('class', 'legend-label')
+    .attr('x', (d, i) => i < 28 ? 100 * Math.floor(i / 14) + 22 : 182)
+    .attr('y', (d, i) => (18 * i) % 252 + 2 * (i % 14) + 13)
+    .text(d => d);
+}
+
 </script>
 {% endblock %}
 
@@ -239,6 +284,17 @@ Consensus sequence features and frequency distributions at a glance <sup><small>
 			</div>
 		</div>
 	</div>
+	<div class="col-12 col-md-auto">
+		<div class="plotbox-outer">
+			<div class="plotbox-header">
+				<h5>Feature colors</h5>
+			</div>
+			<div class="plotbox-inner" id="feature-colors-area">
+				<div class="loading-overlay" style='margin-left: 14em; margin-right: 14em'></div>
+			</div>
+		</div>
+	</div>
+
 </div>
 
 <div class="col-12 plotbox-row-title summary-sticky-bar">
