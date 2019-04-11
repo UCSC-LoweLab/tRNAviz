@@ -12,6 +12,12 @@
 {% block filterjs %}
 <!-- js for working with clade groups -->
 <script type="text/javascript">
+var clade_sorter = function(context, results) {
+	var query = context.$element.parent().find('.select2-search__field').val().toLowerCase();
+  return results.sort(function(a, b) {
+  	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
+	});
+};
 $(document).ready(function() {
 	// Initialize clade group select2 fields
 	for (var i = 1, form_rows = $('.clade-form-row'); i <= form_rows.length; i++) {
@@ -24,12 +30,7 @@ $(document).ready(function() {
 		  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
 	    	dataType: 'json'
 	  	},
-	  	sorter: function(context, results) {
-	  		var query = context.$element.parent().find('.select2-search__field').val().toLowerCase();
-	      return results.sort(function(a, b) {
-	      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
-	    	});
-	    }
+	  	sorter: clade_sorter
 		});
 	};
 });
@@ -38,7 +39,6 @@ $(document).ready(function() {
 $(document).on('click', '.add-clade-group', function(e){
   e.preventDefault();
   var clade_select;
-
   var add_clade_group = function () {
   	var new_form = $('.clade-form-row-dummy').clone(true).removeClass().addClass('clade-form-row').css('display', 'block');
   	var form_index = $('#id_clade-TOTAL_FORMS').val();
@@ -62,19 +62,13 @@ $(document).on('click', '.add-clade-group', function(e){
 				url: "{% url 'explorer:search' search_type='taxonomy' %}",
 	    	dataType: 'json'
 	  	},
-	  	sorter: function(context, results) {
-	  		var query = context.$element.parent().find('.select2-search__field').val().toLowerCase();
-	      return results.sort(function(a, b) {
-	      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
-	    	});
-	    }
+	  	sorter: clade_sorter
 		});
   });
 });
 
 $(document).on('click', '.remove-clade-group', function(e){
   e.preventDefault();
-
   var form_number = parseInt($('#id_clade-TOTAL_FORMS').val());
   $(this).closest('.clade-form-row').remove();
   $('#id_clade-TOTAL_FORMS').val(--form_number);
@@ -97,12 +91,7 @@ $(document).on('click', '.remove-clade-group', function(e){
 		  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
 	    	dataType: 'json'
 	  	},
-	  	sorter: function(context, results) {
-	  		var query = context.$element.parent().find('.select2-search__field').val().toLowerCase();
-	      return results.sort(function(a, b) {
-	      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
-	    	});
-	    }
+	  	sorter: clade_sorter
 		});
   }
 });

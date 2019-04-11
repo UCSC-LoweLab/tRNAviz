@@ -31,13 +31,19 @@ var codon_table = {
 	'fMet': ['CAT'],
 	'iMet': ['CAT']
 }
-
+var select2_sorter = function(context, results) {
+	var query = $('.select2-search__field').val().toLowerCase();
+  return results.sort(function(a, b) {
+  	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
+	});
+};
 $(document).ready(function() {
 	// initialize select2 fields
+
 	for (var i = 1, form_rows = $('.focus-form-row'); i <= form_rows.length; i++) {
-		$('#id_focus-' + i + '-isotype').select2({width: "100%", allowClear: false, placeholder: "Select isotype"});
-	  $('#id_focus-' + i + '-position').select2({width: "100%", allowClear: true, placeholder: "Select position"});
-	  $('#id_focus-' + i + '-anticodon').select2({width: "100%", allowClear: false, placeholder: "Select anticodon"});
+		$('#id_focus-' + i + '-isotype').select2({width: "100%", allowClear: false, placeholder: "Select isotype", sorter: select2_sorter});
+	  $('#id_focus-' + i + '-position').select2({width: "100%", allowClear: true, placeholder: "Select position", sorter: select2_sorter});
+	  $('#id_focus-' + i + '-anticodon').select2({width: "100%", allowClear: false, placeholder: "Select anticodon", sorter: select2_sorter});
 
 	  $('select#id_focus-' + i + '-isotype').on('change.select2', init_anticodon_updates);
 		init_slider(i)();
@@ -115,9 +121,9 @@ $(document).on('click', '.add-focus', function(e){
   };
 
   $.when(add_focus_row()).done( function() {
-  	position_select.select2({width: "100%", allowClear: true, placeholder: "Select position"});
-  	isotype_select.select2({width: "100%", allowClear: false, placeholder: "Select isotype"});
-  	anticodon_select.select2({width: "100%", allowClear: false, placeholder: "Select anticodon"});
+  	position_select.select2({width: "100%", allowClear: true, placeholder: "Select position", sorter: select2_sorter});
+  	isotype_select.select2({width: "100%", allowClear: false, placeholder: "Select isotype", sorter: select2_sorter});
+  	anticodon_select.select2({width: "100%", allowClear: false, placeholder: "Select anticodon", sorter: select2_sorter});
 
   	init_slider($('#id_focus-TOTAL_FORMS').val() - 1)();
 	  $('select#id_focus-' + ($('#id_focus-TOTAL_FORMS').val() - 1) + '-isotype').on('change.select2', init_anticodon_updates);

@@ -13,6 +13,13 @@
 {% block filterjs %}
 <script>	
 $(document).ready(function() {
+	var select2_sorter = function(context, results) {
+		var query = $('.select2-search__field').val().toLowerCase();
+    return results.sort(function(a, b) {
+    	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
+  	});
+  };
+
 	$('#id_clade').select2({
 		width: "100%", 
 		allowClear: true, 
@@ -22,14 +29,14 @@ $(document).ready(function() {
 	  	url: "{% url 'explorer:search' search_type='clade' %}",
     	dataType: 'json'
   	},
-  	sorter: function(context, results) {
-  		var query = $('.select2-search__field').val().toLowerCase();
-      return results.sort(function(a, b) {
-      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
-    	});
-    }
+  	sorter: select2_sorter
 	});
-	$('#id_isotype').select2({width: "100%", allowClear: true, placeholder: "Select an isotype (required)"});
+	$('#id_isotype').select2({
+		width: "100%", 
+		allowClear: true, 
+		placeholder: "Select an isotype (required)",
+  	sorter: select2_sorter
+	})
 })
 </script>
 {% endblock %}

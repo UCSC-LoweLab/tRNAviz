@@ -24,6 +24,12 @@ Calculate position-specific conservation between groups of tRNAs. <sup><small><a
 {% block filterjs %}
 <script type='text/javascript'>
 $(document).ready(function() {
+	var select2_sorter = function(context, results) {
+		var query = $('.select2-search__field').val().toLowerCase();
+    return results.sort(function(a, b) {
+    	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
+  	});
+  };
 	$('#clade-select-0').select2({
 			width: "100%", 
 			allowClear: true, 
@@ -33,14 +39,9 @@ $(document).ready(function() {
 		  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
 	    	dataType: 'json'
 	  	},
-	  	sorter: function(context, results) {
-	  		var query = $('.select2-search__field').val().toLowerCase();
-	      return results.sort(function(a, b) {
-	      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
-	    	});
-	    }
+	  	sorter: select2_sorter
 		});
-	$('#id_form-0-isotype').select2({width: "100%", allowClear: true, placeholder: "Select reference isotype"});
+	$('#id_form-0-isotype').select2({width: "100%", allowClear: true, placeholder: "Select reference isotype", sorter: select2_sorter});
 	for (var i = 2, form_rows = $('.form-row'); i < form_rows.length + 2; i++) {
 		$('#clade-select-' + i).select2({
 			width: "100%", 
@@ -51,18 +52,12 @@ $(document).ready(function() {
 		  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
 	    	dataType: 'json'
 	  	},
-	  	sorter: function(context, results) {
-	  		var query = $('.select2-search__field').val().toLowerCase();
-	      return results.sort(function(a, b) {
-	      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
-	    	});
-	    }
+	  	sorter: select2_sorter
 		});
-		$('#id_form-' + i + '-isotype').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
+		$('#id_form-' + i + '-isotype').select2({width: "100%", allowClear: true, placeholder: "Select isotype", sorter: select2_sorter});
 	}
 })
 
-var adata;
 $(document).on('click', '.use-fasta-toggle', function(e) {
 	e.preventDefault();
   
@@ -88,7 +83,12 @@ $(document).on('click', '.use-fasta-toggle', function(e) {
 $(document).on('click', '.add-form-row', function(e){
   e.preventDefault();
   var clade_select, isotype_select, fasta_input, use_fasta_toggle;
-
+	var select2_sorter = function(context, results) {
+		var query = $('.select2-search__field').val().toLowerCase();
+    return results.sort(function(a, b) {
+    	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
+  	});
+  };
   var addFormRow = function () {
   	var new_form = $('.form-row-dummy').clone(true).removeClass().addClass('form-row d-block');
   	var form_index = $('#id_form-TOTAL_FORMS').val();
@@ -131,14 +131,9 @@ $(document).on('click', '.add-form-row', function(e){
 				url: "{% url 'explorer:search' search_type='taxonomy' %}",
 	    	dataType: 'json'
 	  	},
-	  	sorter: function(context, results) {
-	  		var query = $('.select2-search__field').val().toLowerCase();
-	      return results.sort(function(a, b) {
-	      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
-	    	});
-	    }
+	  	sorter: select2_sorter
 		});
-  	isotype_select.select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
+  	isotype_select.select2({width: "100%", allowClear: true, placeholder: "Select isotype", sorter: select2_sorter});
   });
 });
 
@@ -146,6 +141,13 @@ var select2_placeholders = {'name': 'Group name (required)', 'clade': 'Select cl
 
 $(document).on('click', '.remove-form-row', function(e){
   e.preventDefault();
+	var select2_sorter = function(context, results) {
+		var query = $('.select2-search__field').val().toLowerCase();
+    return results.sort(function(a, b) {
+    	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
+  	});
+  };
+
   var form_number = parseInt($('#id_form-TOTAL_FORMS').val());
   $(this).closest('.form-row').remove();
   $('#id_form-TOTAL_FORMS').val(--form_number);
@@ -174,16 +176,11 @@ $(document).on('click', '.remove-form-row', function(e){
 				  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
 			    	dataType: 'json'
 			  	},
-			  	sorter: function(context, results) {
-			  		var query = $('.select2-search__field').val().toLowerCase();
-			      return results.sort(function(a, b) {
-			      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
-			    	});
-			    }
+			  	sorter: select2_sorter
 				});
       }
       else {
-      	$(this).select2({width: "100%", allowClear: true, placeholder: select2_placeholders[field]});
+      	$(this).select2({width: "100%", allowClear: true, placeholder: select2_placeholders[field], sorter: select2_sorter});
       }
     });
   }

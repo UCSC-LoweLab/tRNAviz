@@ -8,8 +8,18 @@
 <script type="text/javascript">
 $(document).ready(function() {
 	// Initialize select2 fields
-	$('#id_isotypes').select2({width: "100%", allowClear: true, placeholder: "Select isotype(s)"});
-	$('#id_positions').select2({width: "100%", allowClear: true, placeholder: "Select position(s)"});
+
+	var select2_sorter = function(context, results) {
+		var query = $('.select2-search__field').val().toLowerCase();
+    return results.sort(function(a, b) {
+    	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
+  	});
+  };
+
+	$('#id_isotypes').select2({
+		width: "100%", allowClear: true, placeholder: "Select isotype(s)", sorter: select2_sorter});
+
+	$('#id_positions').select2({width: "100%", allowClear: true, placeholder: "Select position(s)", sorter: select2_sorter});
 })
 </script>
 {% endblock %}
