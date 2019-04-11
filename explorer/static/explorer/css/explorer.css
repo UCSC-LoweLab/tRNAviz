@@ -98,6 +98,12 @@ text.axis-text {
   font-size: 1.2em;
   fill: #000000;
 }
+
+text.yaxis-label {
+  font-size: 1.4em;
+  fill: #000000;
+}
+
 text.axis-focus {
   font-size: 1.5em;
   font-weight: bold;

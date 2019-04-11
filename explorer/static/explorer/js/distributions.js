@@ -29,7 +29,7 @@ var draw_distribution = function(plot_data) {
   var legend_height = 80;
   var legend_width = 400;
   var x_axis_buffer = 40;
-  var y_axis_buffer = 60;
+  var y_axis_buffer = 75;
   var plot_width = Math.max(450, y_axis_buffer + (facet_width * isotypes.length) + 20);
   var plot_height = x_axis_buffer + (facet_height * positions.length) + legend_height;
 
@@ -58,7 +58,7 @@ var draw_distribution = function(plot_data) {
     .attr('transform', 'translate(' + y_axis_buffer + ', 20)')
     .call(isotype_axis);
 
-  svg.append('g')
+  var yaxis = svg.append('g')
     .attr('class', 'yaxis')
     .attr('transform', 'translate(' + y_axis_buffer + ', 20)')
     .call(position_axis);
@@ -70,6 +70,16 @@ var draw_distribution = function(plot_data) {
   svg.selectAll('.yaxis text')
     .attr('class', 'axis-text')
     .attr('id', d => 'tick-' + d.replace(':', '-'))
+
+  yaxis.append('g')
+    .attr('transform', 'translate(-' + (y_axis_buffer - 10) + ', ' + ((plot_height - legend_height) / 2) + ')')
+    .attr('font-size', '14px')
+    .attr('font-family', 'sans-serif')
+    .attr('text-anchor', 'middle')
+    .attr('fill', '#000000')
+    .append('text')
+    .attr('transform', 'rotate(-90)')
+    .text('Frequency');
 
   // create legend
   var legend = svg.append('g')
@@ -231,7 +241,7 @@ var draw_species_distribution = function(plot_data) {
   var x_axis_buffer = 30 + 6 * assemblies.reduce(function (a, b) { return a.length > b.length ? a : b; }).length;
   var legend_height = 80;
   var legend_width = 400;
-  var y_axis_buffer = 140;
+  var y_axis_buffer = 150;
   var plot_width = Math.max(600, y_axis_buffer + 15 * assemblies.length + 15 * (groups.length - 1) + 20);
   var plot_height = legend_height + x_axis_buffer + facet_height * foci.length;
   
@@ -337,16 +347,27 @@ var draw_species_distribution = function(plot_data) {
       return 1;
     })
 
-  svg.append('g')
+  var yaxis = svg.append('g')
     .attr('class', 'yaxis')
     .attr('transform', 'translate(' + y_axis_buffer + ', 0)')
     .call(focus_axis)
-    .selectAll('.tick text')
+  
+  yaxis.selectAll('.tick text')
     .call(wrapAxisText);
 
   svg.selectAll('.yaxis text')
     .attr('class', 'axis-text')
     .attr('id', d => 'tick-' + d.replace(':', '-'))
+
+  yaxis.append('g')
+    .attr('transform', 'translate(-' + (y_axis_buffer - 10) + ', ' + (facet_height * foci.length / 2) + ')')
+    .attr('font-size', '14px')
+    .attr('font-family', 'sans-serif')
+    .attr('text-anchor', 'middle')
+    .attr('fill', '#000000')
+    .append('text')
+    .attr('transform', 'rotate(-90)')
+    .text('Frequency');
 
   // create legend
   var legend = svg.append('g')

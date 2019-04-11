@@ -212,9 +212,9 @@ var draw_cloverleaf = function(cloverleaf_data, isotype) {
 
 var update_base_distro;
 var draw_base_distro = function(freq_data, plot_type) {
-  var base_distro_area_width = 750,
+  var base_distro_area_width = 765,
       base_distro_area_height = 375,    
-      base_distro_width = 700,
+      base_distro_width = 710,
       base_distro_height = 325;
 
   var base_distro = d3.select('#' + plot_type + '-base-distro-area')
@@ -238,7 +238,7 @@ var draw_base_distro = function(freq_data, plot_type) {
     base_distro.append('g')
       .attr('id', plot_type + '-base-yaxis')
       .attr('class', 'base-yaxis')
-      .attr('transform', 'translate(46, 10)')
+      .attr('transform', 'translate(63, 10)')
       .call(base_freq_axis);
   } else {
     var isotype_max_freq = d3.max(Object.values(freq_data).map(d => d3.sum(Object.values(d['freqs']))));
@@ -247,12 +247,13 @@ var draw_base_distro = function(freq_data, plot_type) {
       .range([base_distro_height, 0]);
     var isotype_base_freq_axis = d3.axisLeft(isotype_base_freq_scale);
     base_distro.append('g')
-      .attr('id', plot_type + 'base-yaxis')
+      .attr('id', plot_type + '-base-yaxis')
       .attr('class', 'base-yaxis')
-      .attr('transform', 'translate(46, 10)')
+      .attr('transform', 'translate(70, 10)')
       .call(isotype_base_freq_axis);
   }
   
+
   var base_feature_scale = d3.scaleBand()
     .domain(['A', 'C', 'G', 'U', 'Absent'])
     .range([0, base_distro_width / 2])
@@ -265,11 +266,12 @@ var draw_base_distro = function(freq_data, plot_type) {
   base_distro.append('g')
     .attr('id', plot_type + '-base-xaxis')
     .attr('class', 'base-xaxis')
-    .attr('transform', 'translate(53, ' + (base_distro_height + 15) + ')')
+    .attr('transform', 'translate(70, ' + (base_distro_height + 15) + ')')
     .call(base_feature_axis);
 
   base_distro.selectAll('.base-xaxis .tick text, .base-yaxis .tick text')  // select all the text elements for the xaxis
     .attr('class', 'axis-text');
+
 
   update_base_distro = (coord, plot_type, isotype) => {
     var base_distro_width = 700,
@@ -296,7 +298,7 @@ var draw_base_distro = function(freq_data, plot_type) {
     base_distro.append('g')
       .attr('id', plot_type + '-base-xaxis')
       .attr('class', 'base-xaxis')
-      .attr('transform', 'translate(53, ' + (base_distro_height + 15) + ')')
+      .attr('transform', 'translate(70, ' + (base_distro_height + 15) + ')')
       .call(base_feature_axis);
 
     // update freqs for y axis
@@ -317,18 +319,30 @@ var draw_base_distro = function(freq_data, plot_type) {
       var base_freq_axis = d3.axisLeft(base_freq_scale);
     }
 
-    base_distro.append('g')
+    var base_yaxis = base_distro.append('g')
       .attr('class', 'base-yaxis')
       .attr('id', plot_type + '-base-yaxis')
-      .attr('transform', 'translate(46, 10)')
+      .attr('transform', 'translate(63, 10)')
       .call(base_freq_axis);
+
+
+    base_yaxis.append('g')
+      .attr('transform', 'translate(-63, -20)')
+      .append('text')
+      .attr('class', 'yaxis-label')
+      .attr('transform', 'rotate(-90)')
+      .attr('y', 0)
+      .attr('x', 0 - (base_distro_area_height / 2))
+      .attr('dy', '1em')
+      .style('text-anchor', 'middle')
+      .text('Counts');
 
     base_distro.selectAll('.base-xaxis .tick text, .base-yaxis .tick text')  // select all the text elements for the xaxis
       .attr('class', 'axis-text');
 
     var rects = base_distro.append('g')
       .attr('class', 'rects')
-      .attr('transform', 'translate(53, 10)')
+      .attr('transform', 'translate(70, 10)')
       .selectAll('rect')
       .data(d3.entries(coord['freqs']))
       .enter()
