@@ -34,7 +34,7 @@ $(document).ready(function() {
 	    	dataType: 'json'
 	  	},
 	  	sorter: function(context, results) {
-	  		var query = context.$element.parent().find('.select2-search__field').val().toLowerCase();
+	  		var query = $('.select2-search__field').val().toLowerCase();
 	      return results.sort(function(a, b) {
 	      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
 	    	});
@@ -52,7 +52,7 @@ $(document).ready(function() {
 	    	dataType: 'json'
 	  	},
 	  	sorter: function(context, results) {
-	  		var query = context.$element.parent().find('.select2-search__field').val().toLowerCase();
+	  		var query = $('.select2-search__field').val().toLowerCase();
 	      return results.sort(function(a, b) {
 	      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
 	    	});
@@ -132,7 +132,7 @@ $(document).on('click', '.add-form-row', function(e){
 	    	dataType: 'json'
 	  	},
 	  	sorter: function(context, results) {
-	  		var query = context.$element.parent().find('.select2-search__field').val().toLowerCase();
+	  		var query = $('.select2-search__field').val().toLowerCase();
 	      return results.sort(function(a, b) {
 	      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
 	    	});
@@ -175,7 +175,7 @@ $(document).on('click', '.remove-form-row', function(e){
 			    	dataType: 'json'
 			  	},
 			  	sorter: function(context, results) {
-			  		var query = context.$element.parent().find('.select2-search__field').val().toLowerCase();
+			  		var query = $('.select2-search__field').val().toLowerCase();
 			      return results.sort(function(a, b) {
 			      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
 			    	});

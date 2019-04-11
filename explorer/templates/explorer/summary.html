@@ -22,7 +22,7 @@ $(document).ready(function() {
 	  	url: "{% url 'explorer:search' search_type='clade' %}",
     	dataType: 'json'
   	},
-  	sorter: function(results) {
+  	sorter: function(context, results) {
   		var query = $('.select2-search__field').val().toLowerCase();
       return results.sort(function(a, b) {
       	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
