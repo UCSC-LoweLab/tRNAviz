@@ -21,7 +21,13 @@ $(document).ready(function() {
 	  ajax: {
 	  	url: "{% url 'explorer:search' search_type='clade' %}",
     	dataType: 'json'
-  	}
+  	},
+  	sorter: function(results) {
+  		var query = $('.select2-search__field').val().toLowerCase();
+      return results.sort(function(a, b) {
+      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
+    	});
+    }
 	});
 	$('#id_isotype').select2({width: "100%", allowClear: true, placeholder: "Select an isotype (required)"});
 })

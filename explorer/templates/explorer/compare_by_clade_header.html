@@ -23,7 +23,13 @@ $(document).ready(function() {
 		  ajax: {
 		  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
 	    	dataType: 'json'
-	  	}
+	  	},
+	  	sorter: function(context, results) {
+	  		var query = context.$element.parent().find('.select2-search__field').val().toLowerCase();
+	      return results.sort(function(a, b) {
+	      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
+	    	});
+	    }
 		});
 	};
 });
@@ -55,7 +61,13 @@ $(document).on('click', '.add-clade-group', function(e){
 		  ajax: {
 				url: "{% url 'explorer:search' search_type='taxonomy' %}",
 	    	dataType: 'json'
-	  	}
+	  	},
+			sorter: function(context, results) {
+	  		var query = context.$element.parent().find('.select2-search__field').val().toLowerCase();
+	      return results.sort(function(a, b) {
+	      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
+	    	});
+	    }
 		});
   });
 });
@@ -84,7 +96,13 @@ $(document).on('click', '.remove-clade-group', function(e){
 		  ajax: {
 		  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
 	    	dataType: 'json'
-	  	}
+	  	},
+	  	sorter: function(context, results) {
+	  		var query = context.$element.parent().find('.select2-search__field').val().toLowerCase();
+	      return results.sort(function(a, b) {
+	      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
+	    	});
+	    }
 		});
   }
 });

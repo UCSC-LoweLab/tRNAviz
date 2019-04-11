@@ -32,7 +32,13 @@ $(document).ready(function() {
 		  ajax: {
 		  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
 	    	dataType: 'json'
-	  	}
+	  	},
+	  	sorter: function(context, results) {
+	  		var query = context.$element.parent().find('.select2-search__field').val().toLowerCase();
+	      return results.sort(function(a, b) {
+	      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
+	    	});
+	    }
 		});
 	$('#id_form-0-isotype').select2({width: "100%", allowClear: true, placeholder: "Select reference isotype"});
 	for (var i = 2, form_rows = $('.form-row'); i < form_rows.length + 2; i++) {
@@ -44,7 +50,13 @@ $(document).ready(function() {
 		  ajax: {
 		  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
 	    	dataType: 'json'
-	  	}
+	  	},
+	  	sorter: function(context, results) {
+	  		var query = context.$element.parent().find('.select2-search__field').val().toLowerCase();
+	      return results.sort(function(a, b) {
+	      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
+	    	});
+	    }
 		});
 		$('#id_form-' + i + '-isotype').select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
 	}
@@ -118,7 +130,13 @@ $(document).on('click', '.add-form-row', function(e){
 		  ajax: {
 				url: "{% url 'explorer:search' search_type='taxonomy' %}",
 	    	dataType: 'json'
-	  	}
+	  	},
+	  	sorter: function(context, results) {
+	  		var query = context.$element.parent().find('.select2-search__field').val().toLowerCase();
+	      return results.sort(function(a, b) {
+	      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
+	    	});
+	    }
 		});
   	isotype_select.select2({width: "100%", allowClear: true, placeholder: "Select isotype"});
   });
@@ -155,7 +173,13 @@ $(document).on('click', '.remove-form-row', function(e){
 				  ajax: {
 				  	url: "{% url 'explorer:search' search_type='taxonomy' %}",
 			    	dataType: 'json'
-			  	}
+			  	},
+			  	sorter: function(context, results) {
+			  		var query = context.$element.parent().find('.select2-search__field').val().toLowerCase();
+			      return results.sort(function(a, b) {
+			      	return a.text.toLowerCase().indexOf(query) - b.text.toLowerCase().indexOf(query);
+			    	});
+			    }
 				});
       }
       else {

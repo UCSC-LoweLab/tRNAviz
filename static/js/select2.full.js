@@ -932,7 +932,7 @@ S2.define('select2/results',[
   Results.prototype.sort = function (data) {
     var sorter = this.options.get('sorter');
 
-    return sorter(data);
+    return sorter(this, data);
   };
 
   Results.prototype.highlightFirstItem = function () {
