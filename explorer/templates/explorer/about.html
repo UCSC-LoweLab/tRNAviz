@@ -178,7 +178,7 @@ var draw_legend = function() {
 
 			<p>This process is computationally intensive. With smaller queries, bitcharts are generated in less than a minute, but with extremely large queries, it may take up to ten minutes.</p>
 
-			<p>Position-specific scores for each query selection are normalized by subtracting the expected score for the highest probability feature<sup><a>8</a></sup>. These are derived by aligning the reference model against the tRNAs used to build the reference model. Thus, normalized position-specific scores have a maximum of 0.</p>
+			<p>Position-specific scores for each query selection are normalized by subtracting the expected score for the highest probability feature<sup><a>8</a></sup>. These are derived by aligning the reference model against the tRNAs used to build the reference model. In cases where the selected query sequence is highly dissimilar from the selected reference sequence model, it could display a single nucleotide where a tRNA base pair is expected, a gap nucleotide “-“, or gap pair “-:-“. This is due to the query and reference not aligning at that position, meaning that an insert/gap scores more favorably than forcing an alignment between the query and reference model. Thus, normalized position-specific scores have a maximum of 0.</p>
 
 			<div class="footnotes">
 				<p><span class="footnote">This approach can be easily used to find closely related tRNAs, summarize distributions, and ranking isotypes and clades similar to a given tRNA. However, we recommend that you use the most appropriate tool for the job - for example, use BLAST to find closely related tRNAs.</span></p>
