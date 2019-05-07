@@ -89,18 +89,16 @@ var draw_legend = function() {
 		<h2 class='col-12 text-center text-lg-left hotlink mb-3' id='Data'>Data</h2>
 		<h4 class='col-12 text-center text-lg-left hotlink' id='tRNA-annotation'>tRNA annotation</h4>
 		<div class="col-lg-6">
-			<p>We ran <a href="http://trna.ucsc.edu/tRNAscan-SE/" target="_blank">tRNAscan-SE</a> on hundreds of genomes. Many tRNAs were filtered out or marked as duplicate using a combination of the following criteria:</p>
+			<p>tRNA genes predicted by <a href="http://trna.ucsc.edu/tRNAscan-SE/" target="_blank">tRNAscan-SE</a> that decode the standard twenty amino acids were used as the data source of tRNAviz. Additional filtering criteria were applied to remove tRNA-derived SINEs, pseudogenes, and other sequences that we judged unlikely to be involved in bacterial, archaeal or eukaryotic cytosolic ribosome translation. These include:</p>
 
 			<ul>
-				<li>Low scoring tRNAs</li>
-				<li>tRNAscan-SE's high confidence annotation</li>
-				<li>Identical copies of tRNA isodecoders</li>
-				<li>tRNA<sup>SeC</sup></li>
-				<li>Mitochondrial tRNAs</li>
-				<li>Nuclear-encoded mitochondrial tRNAs (NUMT tRNAs)</li>
+				<li>tRNAs in phylum Chordata that do not belong to the high confidence gene set</li>
+				<li>tRNAs that are predicted as pseudogenes</li>
+				<li>genes with predicted truncation</li>
+				<li>fungal tRNA genes with scores below 50 bits</li>
+				<li>all other tRNA genes with a score below 25 bits</li>
+				<li>predicted mitochondrial-origin tRNAs in nuclear mitochondrial DNA sequences (NUMTs)</li>
 			</ul>
-
-			<p>tRNAs were carefully filtered to remove obvious tRNA pseudogenes without removing tRNAs with potential for function. For example, high-scoring tRNAs with isotype prediction discrepancies based on their isotype-specific scores may still be used in translation or have regulatory roles.</p>
 
 			<p>All tRNAs are tagged with its source assembly, clade, isotype, anticodon, score, best-scoring isotype-specific model and score, isotype-specific score from the anticodon model, intron length, G/C content, number of indels, and loop sizes.</p>
 		</div>
@@ -178,7 +176,7 @@ var draw_legend = function() {
 
 			<p>This process is computationally intensive. With smaller queries, bitcharts are generated in less than a minute, but with extremely large queries, it may take up to ten minutes.</p>
 
-			<p>Position-specific scores for each query selection are normalized by subtracting the expected score for the highest probability feature<sup><a>8</a></sup>. These are derived by aligning the reference model against the tRNAs used to build the reference model. In cases where the selected query sequence is highly dissimilar from the selected reference sequence model, it could display a single nucleotide where a tRNA base pair is expected, a gap nucleotide “-“, or gap pair “-:-“. This is due to the query and reference not aligning at that position, meaning that an insert/gap scores more favorably than forcing an alignment between the query and reference model. Thus, normalized position-specific scores have a maximum of 0.</p>
+			<p>Position-specific scores for each query selection are normalized by subtracting the expected score for the highest probability feature<sup><a>8</a></sup>. These are derived by aligning the reference model against the tRNAs used to build the reference model. In cases where the selected query sequence is highly dissimilar from the selected reference sequence model, it could display a single nucleotide where a tRNA base pair is expected, a gap nucleotide “-“, or gap pair “-:-“. This is due to the query and reference not aligning at that position, meaning that an insert/gap scores more favorably than forcing an alignment between the query and reference model. Thus, the highest penalty score a query tRNA position can receive is zero if it is equal to the reference.</p>
 
 			<div class="footnotes">
 				<p><span class="footnote">This approach can be easily used to find closely related tRNAs, summarize distributions, and ranking isotypes and clades similar to a given tRNA. However, we recommend that you use the most appropriate tool for the job - for example, use BLAST to find closely related tRNAs.</span></p>
