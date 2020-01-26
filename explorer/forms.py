@@ -187,7 +187,7 @@ FocusFormSet = formset_factory(FocusForm, formset = BaseFocusFormSet, extra = 3)
 
 class CompareForm(forms.Form):
   name = forms.CharField(
-    widget = forms.TextInput({'class': 'form-control name-input', 'placeholder': 'Group name'}), 
+    widget = forms.TextInput({'class': 'form-control name-input', 'placeholder': 'Fill in your selection label'}), 
     max_length = 20, 
     required = False)
   fasta = forms.CharField(
