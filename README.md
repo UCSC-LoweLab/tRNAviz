@@ -3,12 +3,13 @@
 
 ## Dependencies
 
-* Python 3.5
+* Python 3.5 or above
 * Django 2
 * Django REST Framework
 * Boottrap
 * D3
 * jQuery
+* Postgresql 10 or above
 * Additional python packages are listed in requirements.txt
 
 For security reason, settings.py is not provided in the source code.
