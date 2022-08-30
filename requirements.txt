@@ -28,7 +28,7 @@ Jinja2==2.10.3
 markdown2==2.3.10
 MarkupPy==1.14
 MarkupSafe==1.1.1
-mod-wsgi==4.7.0
+mod-wsgi==4.9.3
 nose==1.3.7
 numpy==1.18.1
 odfpy==1.4.1
