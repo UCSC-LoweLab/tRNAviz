@@ -6,4 +6,5 @@
 *.fa
 *__pycache__*
 tRNAviz/settings.py
+tRNAviz/settings_dev.py
 secretkey.txt
