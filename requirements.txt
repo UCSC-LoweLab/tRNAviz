@@ -24,7 +24,7 @@ et-xmlfile==1.0.1
 idna==2.8
 itolapi==4.0.0
 jdcal==1.4.1
-Jinja2==2.10.3
+Jinja2==2.11.3
 markdown2==2.3.10
 MarkupPy==1.14
 MarkupSafe==1.1.1
