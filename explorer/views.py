@@ -157,5 +157,3 @@ def visualize_itol(request, taxonomy_id):
   except Exception:
     logger.exception('Error uploading to iTOL API')
     return HttpResponse('Something went wrong with the iTOL API. Save the following Newick tree to a file and upload it to iTOL yourself to visualize the tree:\n{}'.format(newick_tree), content_type = "text/plain")
-
-  '''return HttpResponse(newick_tree)'''

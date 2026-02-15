@@ -8,7 +8,8 @@ import logging
 from collections import defaultdict
 from django.db.models import Q, Count, F
 import warnings
-warnings.filterwarnings('ignore')
+warnings.filterwarnings('ignore', category=FutureWarning, module='pandas')
+warnings.filterwarnings('ignore', message='.*SettingWithCopyWarning.*')
 import pandas as pd
 from numpy import median, mean
 from django_pandas.io import read_frame
