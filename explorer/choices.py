@@ -1,6 +1,9 @@
 from . import models
 
-CLADES = tuple([(clade.taxid, '{} ({})'.format(clade.name, clade.rank)) for clade in models.Taxonomy.objects.order_by('name')])
+try:
+  CLADES = tuple([(clade.taxid, '{} ({})'.format(clade.name, clade.rank)) for clade in models.Taxonomy.objects.order_by('name')])
+except Exception:
+  CLADES = ()
 
 ISOTYPES = (
   ('All', 'All isotypes'),

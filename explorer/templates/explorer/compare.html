@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static from staticfiles %}
+{% load static %}
 {% load explorer_extras %}
 
 {% block static %}
@@ -247,7 +247,7 @@ d3.json("{% url 'explorer:coords' %}", function(coords) {
 		  	{% endif %}
 		  	<ul>
 		  		{% for error in errorlist %}
-					<li>{{ error|safe }}</li>
+					<li>{{ error|escape }}</li>
 					{% endfor %}
 				</ul>
 				{% endif %}

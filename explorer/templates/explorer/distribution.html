@@ -1,5 +1,5 @@
 {% extends "explorer/compare_by_clade_header.html" %}
-{% load static from staticfiles %}
+{% load static %}
 {% load explorer_extras %}
 
 {% block filterjs %}
@@ -63,7 +63,7 @@ d3.json('{% url "explorer:distribution" clade_txids=clade_groups|clade_groups_to
 			  	{% if errorlist and forloop.parentloop.counter0 != 0 %}
 			  	<ul>
 			  		{% for error in errorlist %}
-						<li>{{ error|safe }}</li>
+						<li>{{ error|escape }}</li>
 						{% endfor %}
 					</ul>
 					{% endif %}

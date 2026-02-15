@@ -18,8 +18,8 @@ from django.urls import path, include
 from django.conf import settings
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('explorer.urls', namespace = 'explorer'))
+    path('tRNAviz/admin/', admin.site.urls),
+    path('tRNAviz/', include('explorer.urls', namespace = 'explorer'))
 ]
 
 if settings.DEBUG:

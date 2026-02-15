@@ -53,10 +53,14 @@ NUMBERING_MODELS = {'Universal': '{}/all-num.cm'.format(settings.ENGINE_DIR),
 
 def bitchart(request, formset_json):
   try:
+    # Validate formset_json to prevent path traversal
+    if not re.match(r'^[a-zA-Z0-9_-]+$', formset_json):
+      return JsonResponse({'server_error': 'Invalid request'}, status=400)
     # get formset
-    formset_data = json.loads(open(settings.MEDIA_ROOT + formset_json).read())
-    if (formset_json.find('default') == -1):
-      os.remove(settings.MEDIA_ROOT + formset_json)
+    formset_path = os.path.join(settings.MEDIA_ROOT, formset_json)
+    formset_data = json.loads(open(formset_path).read())
+    if formset_json != 'default':
+      os.remove(formset_path)
     seqs = read_all_trnas()
     trna_fasta_files = write_trnas_to_files(formset_data, seqs)
     ref_model_fh = build_reference_model(formset_data, trna_fasta_files)
@@ -141,11 +145,13 @@ def build_reference_model(formset_data, trna_fasta_files):
   ref_align_fh = NamedTemporaryFile()
   clade_tax = models.Taxonomy.objects.filter(taxid = formset_data[0]['clade'])[0]
   num_model = NUMBERING_MODELS[models.Taxonomy.objects.filter(taxid = clade_tax.domain).get().name]
-  cmd_cmalign = INFERNAL_BIN + 'cmalign -g --notrunc --matchonly -o {} {} {} > /dev/null'.format(ref_align_fh.name, num_model, ref_fasta)
-  res = subprocess.run(cmd_cmalign, shell = True)
+  res = subprocess.run(
+    [os.path.join(INFERNAL_BIN, 'cmalign'), '-g', '--notrunc', '--matchonly', '-o', ref_align_fh.name, num_model, ref_fasta],
+    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
   ref_model_fh = NamedTemporaryFile()
-  cmd_cmbuild = INFERNAL_BIN + 'cmbuild --hand --enone -F {} {} > /dev/null'.format(ref_model_fh.name, ref_align_fh.name)
-  res = subprocess.run(cmd_cmbuild, shell = True)
+  res = subprocess.run(
+    [os.path.join(INFERNAL_BIN, 'cmbuild'), '--hand', '--enone', '-F', ref_model_fh.name, ref_align_fh.name],
+    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
   return ref_model_fh
 
 def calculate_normalizing_scores(ref_model_fh):
@@ -155,20 +161,25 @@ def calculate_normalizing_scores(ref_model_fh):
   cons_align_fh = NamedTemporaryFile()
   cons_fasta_fh = NamedTemporaryFile()
   cons_parsetree_fh = NamedTemporaryFile('r+')
-  cmd_cmemit = INFERNAL_BIN + 'cmemit --exp 5 -N 1000 -a {} > {}'.format(ref_model_fh.name, cons_align_fh.name)
-  res = subprocess.run(cmd_cmemit, shell = True)
-  cmd_cmbuild = INFERNAL_BIN + 'cmbuild --enone -F {} {} > /dev/null'.format(cons_model_fh.name, cons_align_fh.name)
-  res = subprocess.run(cmd_cmbuild, shell = True)
+  with open(cons_align_fh.name, 'w') as stdout_file:
+    res = subprocess.run(
+      [os.path.join(INFERNAL_BIN, 'cmemit'), '--exp', '5', '-N', '1000', '-a', ref_model_fh.name],
+      stdout=stdout_file, stderr=subprocess.DEVNULL)
+  res = subprocess.run(
+    [os.path.join(INFERNAL_BIN, 'cmbuild'), '--enone', '-F', cons_model_fh.name, cons_align_fh.name],
+    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
   # Emit a consensus sequence and format
-  cmd_cmemit = INFERNAL_BIN + 'cmemit -c {}'.format(cons_model_fh.name)
-  res = subprocess.run(cmd_cmemit, stdout = subprocess.PIPE, shell = True)
+  res = subprocess.run(
+    [os.path.join(INFERNAL_BIN, 'cmemit'), '-c', cons_model_fh.name],
+    stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
   cons_fasta_fh.write(res.stdout.upper())
   cons_fasta_fh.flush()
 
   # Align to reference model, and get normalizing bits
-  cmd_cmalign = INFERNAL_BIN + 'cmalign -g --notrunc --matchonly --tfile {} {} {} > /dev/null'.format(cons_parsetree_fh.name, ref_model_fh.name, cons_fasta_fh.name)
-  res = subprocess.run(cmd_cmalign, shell = True)
+  res = subprocess.run(
+    [os.path.join(INFERNAL_BIN, 'cmalign'), '-g', '--notrunc', '--matchonly', '--tfile', cons_parsetree_fh.name, ref_model_fh.name, cons_fasta_fh.name],
+    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
   ref_bits = pd.DataFrame(parse_parsetree(cons_parsetree_fh))
   ref_bits.group_name = 'Reference consensus'
   ref_bits.group = 'ref-cons'
@@ -181,8 +192,9 @@ def align_trnas_collect_bit_scores(trna_fasta, num_model, ref_model):
   parsetree_fh = NamedTemporaryFile('r+', buffering = 1)
 
   # Remove introns from all tRNAs (except reference). First, align to numbering model to purge insertions
-  cmd_cmalign = INFERNAL_BIN + 'cmalign -g --notrunc --matchonly -o {} {} {} > /dev/null'.format(num_model_align_fh.name, num_model, trna_fasta)
-  res = subprocess.run(cmd_cmalign, shell = True)
+  res = subprocess.run(
+    [os.path.join(INFERNAL_BIN, 'cmalign'), '-g', '--notrunc', '--matchonly', '-o', num_model_align_fh.name, num_model, trna_fasta],
+    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
   # remove introns using alignment and rewrite tRNAs to new file
   for line in num_model_align_fh:
@@ -192,8 +204,9 @@ def align_trnas_collect_bit_scores(trna_fasta, num_model, ref_model):
     processed_fasta_fh.write('>{}\n{}\n'.format(seqname, seq))
 
   # realign to reference model and parse parsetree output
-  cmd_cmalign = INFERNAL_BIN + 'cmalign -g --notrunc --matchonly --tfile {} -o /dev/null {} {} > /dev/null'.format(parsetree_fh.name, ref_model, processed_fasta_fh.name)
-  res = subprocess.run(cmd_cmalign, shell = True)
+  res = subprocess.run(
+    [os.path.join(INFERNAL_BIN, 'cmalign'), '-g', '--notrunc', '--matchonly', '--tfile', parsetree_fh.name, '-o', os.devnull, ref_model, processed_fasta_fh.name],
+    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
   bits = pd.DataFrame(parse_parsetree(parsetree_fh))
   
   # For selections with mutliple tRNAs, summarize by average score and modal feature

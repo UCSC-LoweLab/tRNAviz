@@ -30,7 +30,7 @@ urlpatterns = [
   path('api/species/<str:clade_txids>/<str:foci>/', services.species_distribution, name = 'species_distribution'),
 
   path('compare/by_sequence', views.compare, name = 'compare'),
-  re_path('api/bitchart/(?P<formset_json>.+)', compare.bitchart, name = 'bitchart'),
+  re_path(r'api/bitchart/(?P<formset_json>[a-zA-Z0-9_-]+)$', compare.bitchart, name = 'bitchart'),
 
   path('about/', views.about, name = 'about'),
   path('api/genome_summary/', services.genome_summary, name = 'genome_summary_dynamic'),

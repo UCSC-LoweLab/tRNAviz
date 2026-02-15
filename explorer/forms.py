@@ -1,8 +1,6 @@
 from django import forms
 from django.forms import formset_factory
-from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
-from django.utils.html import escape
 from django.db.models import Max, Min
 
 import re
@@ -12,16 +10,21 @@ from . import compare
 from . import models
 
 class SummaryForm(forms.Form):
-  clade = forms.ChoiceField(
+  clade = forms.CharField(
     widget = forms.Select({'class': 'form-control multiselect clade-select'}),
-    choices = choices.CLADES,
     required = True,
     initial = '4930')
   isotype = forms.ChoiceField(
-    widget = forms.Select({'class': 'form-control multiselect isotype-select'}), 
+    widget = forms.Select({'class': 'form-control multiselect isotype-select'}),
     initial = 'Ala',
     choices = choices.ISOTYPES,
     required = True)
+
+  def clean_clade(self):
+    taxid = self.cleaned_data['clade']
+    if not models.Taxonomy.objects.filter(taxid=taxid).exists():
+      raise ValidationError('Select a valid clade.')
+    return taxid
 
 class DummyFormSet(forms.BaseFormSet):
   def __init__(self, dummy_form_index = 1, *args, **kwargs):
@@ -148,10 +151,13 @@ class FocusForm(forms.Form):
     initial = 'All',
     choices = choices.ANTICODONS,
     required = True)
+  try:
+    _score_initial = '{} - {}'.format(models.tRNA.objects.aggregate(Min('score'))['score__min'], models.tRNA.objects.aggregate(Max('score'))['score__max'])
+  except Exception:
+    _score_initial = '0 - 100'
   score = forms.CharField(
-    initial = '{} - {}'.format(models.tRNA.objects.aggregate(Min('score'))['score__min'], models.tRNA.objects.aggregate(Max('score'))['score__max'],
+    initial = _score_initial,
     required = True)
-  )
 
   def as_dict(self):
     score_min, score_max = self['score'].value().split(' - ')
@@ -196,9 +202,9 @@ class CompareForm(forms.Form):
       'placeholder': 'Paste tRNAs in FASTA format'
     }), 
     required = False)
-  clade = forms.ChoiceField(choices = choices.CLADES, required = False)
+  clade = forms.CharField(required = False)
   isotype = forms.ChoiceField(
-    widget = forms.Select({'class': 'form-control multiselect isotype-select'}), 
+    widget = forms.Select({'class': 'form-control multiselect isotype-select'}),
     initial = 'All',
     choices = choices.ISOTYPES,
     required = False)
@@ -291,8 +297,8 @@ class CompareForm(forms.Form):
         raise ValidationError('Detected empty sequence for: {}'.format(description))
       bad_chars = re.findall('[^agctuAGCTU]', seq)
       if len(bad_chars) != 0:
-        bad_char_html = ', '.join(['<code>{}</code>'.format(escape(letter)) for letter in sorted(list(set(bad_chars)))])
-        raise ValidationError('Input sequence may not contain the following characters: {}'.format(bad_char_html))
+        bad_char_str = ', '.join(sorted(set(bad_chars)))
+        raise ValidationError('Input sequence may not contain the following characters: {}'.format(bad_char_str))
       if not line:
         return True
 

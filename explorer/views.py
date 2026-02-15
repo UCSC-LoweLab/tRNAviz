@@ -5,8 +5,9 @@ from django.conf import settings
 from django.http import HttpResponse
 
 import json
+import os
+import uuid
 from tempfile import NamedTemporaryFile
-from shutil import copy
 
 from . import models
 from . import forms
@@ -95,7 +96,7 @@ def variation_species(request):
   })
 
 def compare(request):
-  compare_list = [{"fasta": "None", "clade": "2251", "isotype": "All", "domain": "None", "name": "None", "use_fasta": "False"}, 
+  compare_list = [{"fasta": "None", "clade": "2251", "isotype": "All", "domain": "None", "name": "None", "use_fasta": "False"},
                   {"fasta": "", "clade": "2207", "isotype": "All", "domain": "Universal", "name": "", "use_fasta": "False"}]
 
   if request.method != 'POST':
@@ -104,28 +105,27 @@ def compare(request):
       'formset': formset,
       'valid_form': True,
       'compare_list': compare_list,
-      'formset_json': '/default'
+      'formset_json': 'default'
     })
 
   formset = forms.CompareFormSet(request.POST)
-  formset_json_fh = NamedTemporaryFile('w')
-  
+  formset_json_name = str(uuid.uuid4())
+  valid_form = False
+
   if formset.is_valid():
-    formset_json_fh.write(json.dumps([form.as_dict() for form in formset]))
-    formset_json_fh.flush()
-    copy(formset_json_fh.name, settings.MEDIA_ROOT + formset_json_fh.name)
+    formset_json_path = os.path.join(settings.MEDIA_ROOT, formset_json_name)
+    os.makedirs(os.path.dirname(formset_json_path), exist_ok=True)
+    with open(formset_json_path, 'w') as f:
+      f.write(json.dumps([form.as_dict() for form in formset]))
     valid_form = True
     compare_list = formset.get_compare_list()
-  else:
-    valid_form = False
 
-  formset_json_fh.close()
   formset.formset_wide_errors = formset._non_form_errors
   return render(request, 'explorer/compare.html', {
     'formset': formset,
     'valid_form': valid_form,
     'compare_list': compare_list,
-    'formset_json': formset_json_fh.name
+    'formset_json': formset_json_name
   })
 
 def about(request):
