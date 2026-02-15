@@ -1,6 +1,6 @@
 from django.contrib import admin
 from import_export import resources
-from import_export.admin import ImportExportModelAdmin
+from import_export.admin import ExportMixin
 from import_export.fields import Field
 from .models import Taxonomy, tRNA, Consensus, Freq, Coord
 
@@ -328,19 +328,19 @@ class CoordResource(resources.ModelResource):
     model = Coord
     import_id_fields = ('position', )
 
-class TaxonomyAdmin(ImportExportModelAdmin):
+class TaxonomyAdmin(ExportMixin, admin.ModelAdmin):
   resource_class = TaxonomyResource
 
-class tRNAAdmin(ImportExportModelAdmin):
+class tRNAAdmin(ExportMixin, admin.ModelAdmin):
   resource_class = tRNAResource
 
-class ConsensusAdmin(ImportExportModelAdmin):
+class ConsensusAdmin(ExportMixin, admin.ModelAdmin):
   resource_class = ConsensusResource
 
-class FreqAdmin(ImportExportModelAdmin):
+class FreqAdmin(ExportMixin, admin.ModelAdmin):
   resource_class = FreqResource
 
-class CoordAdmin(ImportExportModelAdmin):
+class CoordAdmin(ExportMixin, admin.ModelAdmin):
   resource_class = CoordResource
 
 

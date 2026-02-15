@@ -4,6 +4,7 @@ from . import choices
 from . import tree
 from django.http import JsonResponse, HttpResponse
 import json
+import logging
 from collections import defaultdict
 from django.db.models import Q, Count, F
 import warnings
@@ -11,6 +12,8 @@ warnings.filterwarnings('ignore')
 import pandas as pd
 from numpy import median, mean
 from django_pandas.io import read_frame
+
+logger = logging.getLogger(__name__)
 
 SINGLE_POSITIONS = ['8', '9', '14', '15', '16', '17', '17a', '18', '19', '20', '20a', '20b', '21', '26', 
 '32', '33', '34', '35', '36', '37', '38', '44', '45', '46', '47', '48', '54', '55', '56', '57', '58', '59', '60', '73']
@@ -125,7 +128,8 @@ def cloverleaf(request, clade_txid, isotype):
 
   except IndexError:
     return JsonResponse({'server_error': 'Server error - most likely, tRNAs for your selection do not exist in the tRNAviz database. Try a different selection.'})
-  except Exception as e:
+  except Exception:
+    logger.exception('Error in cloverleaf view')
     return JsonResponse({'server_error': 'Unknown server error'})
 
 def taxonomy_summary(request, clade_txid, isotype):
@@ -146,8 +150,9 @@ def taxonomy_summary(request, clade_txid, isotype):
 
     return JsonResponse(counts, safe = False)
 
-  except Exception as e:
-    return JsonResponse({'server_error': 'Unknown server error'})    
+  except Exception:
+    logger.exception('Error in taxonomy_summary view')
+    return JsonResponse({'server_error': 'Unknown server error'})
 
 def domain_features(request, clade_txid, isotype):
   try:
@@ -175,8 +180,9 @@ def domain_features(request, clade_txid, isotype):
 
     return JsonResponse(table_data, safe = False)
 
-  except Exception as e:
-    return JsonResponse({'server_error': 'Unknown server error'})  
+  except Exception:
+    logger.exception('Error in domain_features view')
+    return JsonResponse({'server_error': 'Unknown server error'})
 
 def anticodon_counts(request, clade_txid, isotype):
   try:
@@ -204,9 +210,10 @@ def anticodon_counts(request, clade_txid, isotype):
     counts = counts.set_index(['Isotype', 'Anticodon'])
     counts.index.names = [None, None]
 
-    return HttpResponse(counts.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, na_rep = '0', sparsify = True))
-  
-  except:
+    return HttpResponse(counts.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, na_rep = '0', sparsify = True, escape = True))
+
+  except Exception:
+    logger.exception('Error in anticodon_counts view')
     return HttpResponse('Unknown server error')
 
 def isotype_discrepancies(request, clade_txid, isotype):
@@ -223,9 +230,10 @@ def isotype_discrepancies(request, clade_txid, isotype):
     ipds.columns = ['Species', 'tRNAscan-SE ID', 'Score', 'Anticodon', 'Anticodon isotype', 'Anticodon model score', 'Best model', 'Best model score']
     species_names = read_frame(models.Taxonomy.objects.filter(taxid__in = ipds['Species']).values('name', 'taxid')).set_index('taxid').to_dict()['name']
     ipds['Species'] = [species_names[taxid] for taxid in ipds['Species']]
-    return HttpResponse(ipds.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, na_rep = '', index = False))
-  
-  except:
+    return HttpResponse(ipds.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, na_rep = '', index = False, escape = True))
+
+  except Exception:
+    logger.exception('Error in isotype_discrepancies view')
     return HttpResponse('Unknown server error')
 
 def gather_tilemap_freqs(clade_txid):
@@ -398,7 +406,8 @@ def distribution(request, clade_txids, isotypes, positions):
   
   except AttributeError:
     return JsonResponse({'server_error': 'Server error - most likely, tRNAs for your selection do not exist in the tRNAviz database. Try a different selection.'})
-  except Exception as e:
+  except Exception:
+    logger.exception('Error in distribution view')
     return JsonResponse({'server_error': 'Unknown server error'})
 
 def query_trnas_for_species_distribution(clade_groups, clade_info, foci):
@@ -462,8 +471,9 @@ def species_distribution(request, clade_txids, foci):
   except AttributeError:
     return JsonResponse({'error': 'Server error - most likely, tRNAs for your selection do not exist in the tRNAviz database. Try a different selection.'})
   except Exception as e:
-    if str(e) == 'No tRNAs found. Most likely, tRNAs for your selection do not exist in the tRNAviz database (e.g., fMet in eukaryotes). Try a different selection.': 
+    if str(e) == 'No tRNAs found. Most likely, tRNAs for your selection do not exist in the tRNAviz database (e.g., fMet in eukaryotes). Try a different selection.':
       return JsonResponse({'error': str(e)})
+    logger.exception('Error in species_distribution view')
     return JsonResponse({'error': 'Unknown server error'})
 
 def genome_summary(request, taxonomy_id):
@@ -485,13 +495,14 @@ def genome_summary(request, taxonomy_id):
         'tRNAs': '{:,}'.format(models.tRNA.objects.filter(Q(**{rank: subtax.taxid})).count())
       })
     counts = pd.DataFrame(counts)
-    counts = counts.append({
+    totals = pd.DataFrame([{
       'name': 'Total',
       'Subclades': '{:,}'.format(counts.Subclades.apply(lambda x: int(x.replace(',', ''))).sum()),
       'Species': '{:,}'.format(counts.Species.apply(lambda x: int(x.replace(',', ''))).sum()),
       'Assemblies': '{:,}'.format(counts.Assemblies.apply(lambda x: int(x.replace(',', ''))).sum()),
       'tRNAs': '{:,}'.format(counts.tRNAs.apply(lambda x: int(x.replace(',', ''))).sum())
-      }, ignore_index = True)
+      }])
+    counts = pd.concat([counts, totals], ignore_index = True)
     counts = counts.set_index('name')
     counts.index.name = None
     if taxonomy_id != 'root': 
@@ -500,16 +511,17 @@ def genome_summary(request, taxonomy_id):
 
     if taxonomy_id == 'root':
       counts = counts[['Subclades', 'Species', 'tRNAs']]
-      return HttpResponse(counts.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, na_rep = '0', sparsify = True))
+      return HttpResponse(counts.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, na_rep = '0', sparsify = True, escape = True))
     elif tax.rank == 'genus':
       counts = counts[[str(tax), 'Species', 'Assemblies', 'tRNAs']]
     elif tax.rank == 'species':
       counts = counts[[str(tax), 'Assemblies', 'tRNAs']]
     else:
       counts = counts[[str(tax), 'Subclades', 'Species', 'tRNAs']]
-    return HttpResponse(counts.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, index = False, na_rep = '0', sparsify = True))
-  
-  except:
+    return HttpResponse(counts.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, index = False, na_rep = '0', sparsify = True, escape = True))
+
+  except Exception:
+    logger.exception('Error in genome_summary view')
     return HttpResponse('Unknown server error')
 
 def get_score_summary_taxonomy_dict(name, trna_qs):
@@ -553,10 +565,11 @@ def score_summary_taxonomy(request, taxonomy_id):
       scores = scores.reset_index()
 
     if taxonomy_id != 'root':
-      return HttpResponse(scores.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, index = False, na_rep = '0', sparsify = True))
-    return HttpResponse(scores.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, na_rep = '0', sparsify = True))
+      return HttpResponse(scores.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, index = False, na_rep = '0', sparsify = True, escape = True))
+    return HttpResponse(scores.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, na_rep = '0', sparsify = True, escape = True))
 
-  except:
+  except Exception:
+    logger.exception('Error in score_summary_taxonomy view')
     return HttpResponse('Unknown server error')
 
 def score_summary_isotype(request, taxonomy_id):
@@ -573,7 +586,7 @@ def score_summary_isotype(request, taxonomy_id):
     isotype_totals = trnas.groupby(['isotype']).agg({'score': ['median', 'count'], 'isoscore': ['median']})
     isotype_totals['anticodon'] = 'Total'
     isotype_totals = isotype_totals.reset_index().set_index(['isotype', 'anticodon'])
-    scores = scores.append(isotype_totals).sort_index().sort_index(axis = 1)
+    scores = pd.concat([scores, isotype_totals]).sort_index().sort_index(axis = 1)
     scores.columns = ['Isotype model score (median)', '# tRNAs', 'Score (median)']
     scores['# tRNAs'] = scores['# tRNAs'].apply(lambda x: '{:,}'.format(x))
     scores['Score (median)'] = scores['Score (median)'].apply(lambda x: '{:.2f}'.format(x))
@@ -581,9 +594,10 @@ def score_summary_isotype(request, taxonomy_id):
     scores.index.names = [None, None]
     scores = scores[['Score (median)', 'Isotype model score (median)', '# tRNAs']]
 
-    return HttpResponse(scores.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, na_rep = '0', sparsify = True))
+    return HttpResponse(scores.to_html(classes = 'table', border = 0, justify = 'left', bold_rows = False, na_rep = '0', sparsify = True, escape = True))
 
-  except:
+  except Exception:
+    logger.exception('Error in score_summary_isotype view')
     return HttpResponse('Unknown server error')
 
 def newick_tree(taxonomy_id):

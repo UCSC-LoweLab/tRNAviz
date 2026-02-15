@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 import os
 import re
 import json
+import logging
 import subprocess
 from collections import defaultdict
 from tempfile import NamedTemporaryFile
@@ -15,6 +16,8 @@ from django_pandas.io import read_frame
 
 from . import models
 from . import choices
+
+logger = logging.getLogger(__name__)
 
 INFERNAL_BIN = settings.INFERNAL_DIR
 
@@ -77,7 +80,7 @@ def bitchart(request, formset_json):
       current_bits = align_trnas_collect_bit_scores(trna_fasta_fh.name, num_model, ref_model_fh.name)
       current_bits['group_name'] = formset_data[i + 2]['name']
       current_bits['group'] = 'group-{}'.format(i)
-      bits = bits.append(current_bits)
+      bits = pd.concat([bits, current_bits])
 
     # Normalize bits against reference bits
     bits['score'] = round(bits.apply(lambda x: x['score'] - ref_bits[ref_bits.position == x['position']]['score'].values[0], axis = 1), 2)
@@ -93,8 +96,8 @@ def bitchart(request, formset_json):
     plot_data = format_bits_for_viz(bits)
     return JsonResponse(plot_data, safe = False)
   
-  except Exception as e:
-    print(e)
+  except Exception:
+    logger.exception('Error in bitchart view')
     return JsonResponse({'server_error': 'Unknown error'})
 
 def read_all_trnas():

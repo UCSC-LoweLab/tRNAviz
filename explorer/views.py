@@ -5,9 +5,12 @@ from django.conf import settings
 from django.http import HttpResponse
 
 import json
+import logging
 import os
 import uuid
 from tempfile import NamedTemporaryFile
+
+logger = logging.getLogger(__name__)
 
 from . import models
 from . import forms
@@ -151,7 +154,8 @@ def visualize_itol(request, taxonomy_id):
     assert status != False
     itol_page = itol_uploader.get_webpage()
     return redirect(itol_uploader.get_webpage())
-  except:
+  except Exception:
+    logger.exception('Error uploading to iTOL API')
     return HttpResponse('Something went wrong with the iTOL API. Save the following Newick tree to a file and upload it to iTOL yourself to visualize the tree:\n{}'.format(newick_tree), content_type = "text/plain")
 
   '''return HttpResponse(newick_tree)'''
