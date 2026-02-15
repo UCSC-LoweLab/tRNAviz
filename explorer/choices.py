@@ -1,9 +1,36 @@
 from . import models
 
-try:
-  CLADES = tuple([(clade.taxid, '{} ({})'.format(clade.name, clade.rank)) for clade in models.Taxonomy.objects.order_by('name')])
-except Exception:
-  CLADES = ()
+
+class _LazyCLADES:
+  """Lazy proxy for CLADES that re-queries the DB on each access.
+
+  This allows newly added species to appear without a server restart.
+  """
+
+  def _fetch(self):
+    try:
+      return [(clade.taxid, '{} ({})'.format(clade.name, clade.rank))
+              for clade in models.Taxonomy.objects.order_by('name')]
+    except Exception:
+      return []
+
+  def __iter__(self):
+    return iter(self._fetch())
+
+  def __len__(self):
+    return len(self._fetch())
+
+  def __getitem__(self, index):
+    return self._fetch()[index]
+
+  def __contains__(self, item):
+    return item in self._fetch()
+
+  def __bool__(self):
+    return bool(self._fetch())
+
+
+CLADES = _LazyCLADES()
 
 ISOTYPES = (
   ('All', 'All isotypes'),

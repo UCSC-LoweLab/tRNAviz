@@ -77,8 +77,19 @@ class Tree(object):
           parent = current_node
 
 
-# compile taxonomy tree now, so we don't have to calculate it for every /taxonomy/ request
-full_tree = Tree()
+class _LazyTree:
+  """Lazy proxy for Tree that rebuilds on each .root access.
+
+  This allows newly added species to appear in the taxonomy tree
+  without a server restart.
+  """
+
+  @property
+  def root(self):
+    return Tree().root
+
+
+full_tree = _LazyTree()
 
 
 def convertNewick(newick, node):

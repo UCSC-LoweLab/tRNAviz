@@ -434,9 +434,9 @@ def query_trnas_for_species_distribution(clade_groups, clade_info, foci):
       trna_qs = trna_qs.values(query_position, 'assembly')
       df = read_frame(trna_qs)
       df.columns = ['feature', 'assembly']
-      taxes = read_frame(models.Taxonomy.objects.filter(*(query_filter_args,), rank = 'assembly').values('taxid', 'name'))
-      taxes = taxes.set_index('taxid').to_dict()['name']
-      df['assembly'] = df['assembly'].apply(lambda x: taxes[x])
+      assembly_taxids = df['assembly'].unique().tolist()
+      taxes = {t.taxid: t.name for t in models.Taxonomy.objects.filter(taxid__in=assembly_taxids)}
+      df['assembly'] = df['assembly'].apply(lambda x: taxes.get(x, x))
       df['position'] = focus['position']
       df['isotype'] = focus['isotype']
       df['anticodon'] = focus['anticodon']
