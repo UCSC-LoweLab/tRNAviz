@@ -2,6 +2,7 @@ from django import forms
 from django.forms import formset_factory
 from django.core.exceptions import ValidationError
 from django.db.models import Max, Min
+from django.utils.translation import ngettext
 
 import re
 
