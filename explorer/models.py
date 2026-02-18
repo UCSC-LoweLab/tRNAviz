@@ -1,9 +1,9 @@
 from django.db import models
 
 class Taxonomy(models.Model):
-  name = models.CharField(max_length = 150)
-  rank = models.CharField(max_length = 20)
-  taxid = models.CharField(max_length = 10)
+  name = models.CharField(max_length = 150, db_index = True)
+  rank = models.CharField(max_length = 20, db_index = True)
+  taxid = models.CharField(max_length = 10, db_index = True)
   domain = models.CharField(max_length = 20)
   kingdom = models.CharField(max_length = 10, blank = True, null = True)
   subkingdom = models.CharField(max_length = 10, blank = True, null = True)
@@ -30,26 +30,26 @@ class Taxonomy(models.Model):
 
 class tRNA(models.Model):
   seqname = models.CharField(primary_key = True, max_length = 200)
-  isotype = models.CharField(max_length = 5)
-  anticodon = models.CharField(max_length = 3)
-  score = models.FloatField()
+  isotype = models.CharField(max_length = 5, db_index = True)
+  anticodon = models.CharField(max_length = 3, db_index = True)
+  score = models.FloatField(db_index = True)
   primary = models.BooleanField()
-  best_model = models.CharField(max_length = 5)
+  best_model = models.CharField(max_length = 5, db_index = True)
   isoscore = models.FloatField()
   isoscore_ac = models.FloatField()
   dbname = models.CharField(max_length = 150)
-  domain = models.CharField(max_length = 20)
-  kingdom = models.CharField(max_length = 10, blank = True, null = True)
+  domain = models.CharField(max_length = 20, db_index = True)
+  kingdom = models.CharField(max_length = 10, blank = True, null = True, db_index = True)
   subkingdom = models.CharField(max_length = 10, blank = True, null = True)
-  phylum = models.CharField(max_length = 10, blank = True, null = True)
+  phylum = models.CharField(max_length = 10, blank = True, null = True, db_index = True)
   subphylum = models.CharField(max_length = 10, blank = True, null = True)
-  taxclass = models.CharField('class', db_column = 'class', max_length = 10, blank = True, null = True)
+  taxclass = models.CharField('class', db_column = 'class', max_length = 10, blank = True, null = True, db_index = True)
   subclass = models.CharField(max_length = 10, blank = True, null = True)
-  order = models.CharField(max_length = 10, blank = True, null = True)
-  family = models.CharField(max_length = 10, blank = True, null = True)
-  genus = models.CharField(max_length = 10, blank = True, null = True)
-  species = models.CharField(max_length = 10, blank = True, null = True)
-  assembly = models.CharField(max_length = 10, blank = True, null = True)
+  order = models.CharField(max_length = 10, blank = True, null = True, db_index = True)
+  family = models.CharField(max_length = 10, blank = True, null = True, db_index = True)
+  genus = models.CharField(max_length = 10, blank = True, null = True, db_index = True)
+  species = models.CharField(max_length = 10, blank = True, null = True, db_index = True)
+  assembly = models.CharField(max_length = 10, blank = True, null = True, db_index = True)
 
   GCcontent = models.FloatField()
   insertions = models.IntegerField()
@@ -207,6 +207,11 @@ class Consensus(models.Model):
   isotype = models.CharField(max_length = 5)
   datatype = models.CharField(max_length = 15)
 
+  class Meta:
+    indexes = [
+      models.Index(fields=['taxid', 'isotype', 'datatype'], name='idx_consensus_taxid_iso_dt'),
+    ]
+
   p1_72 = models.CharField('1:72', default = '', max_length = 20, blank = True, null = True)
   p1 = models.CharField('1', default = '', max_length = 20, blank = True, null = True)
   p2_71 = models.CharField('2:71', default = '', max_length = 20, blank = True, null = True)
@@ -348,6 +353,11 @@ class Freq(models.Model):
   taxid = models.CharField(max_length = 10)
   isotype = models.CharField(max_length = 5)
   position = models.CharField(max_length = 10)
+
+  class Meta:
+    indexes = [
+      models.Index(fields=['taxid', 'isotype'], name='idx_freq_taxid_isotype'),
+    ]
   total = models.IntegerField(default = 0)
   A = models.IntegerField(default = 0)
   C = models.IntegerField(default = 0)
