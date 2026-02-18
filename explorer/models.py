@@ -28,6 +28,9 @@ class Taxonomy(models.Model):
     if type(other) == str: return True
     return self.taxid != other.taxid
 
+  def __hash__(self):
+    return hash(self.taxid)
+
 class tRNA(models.Model):
   seqname = models.CharField(primary_key = True, max_length = 200)
   isotype = models.CharField(max_length = 5, db_index = True)
