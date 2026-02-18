@@ -26,8 +26,7 @@ numpy~=1.26.0
 odfpy==1.4.1
 openpyxl==3.1.2
 pandas~=2.1.0
-psycopg2==2.9.9
-psycopg2-binary==2.9.9
+mysqlclient>=2.2.0
 python-dateutil==2.9.0
 python-memcached==1.62
 python-slugify==8.0.3

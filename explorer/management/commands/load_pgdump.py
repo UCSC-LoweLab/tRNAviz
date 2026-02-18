@@ -46,7 +46,7 @@ BATCH_SIZE = 10000
 
 
 class Command(BaseCommand):
-  help = 'Load data from a PostgreSQL pg_dump file into the SQLite database'
+  help = 'Load data from a PostgreSQL pg_dump file into the MySQL database'
 
   def add_arguments(self, parser):
     parser.add_argument('dumpfile', help='Path to the pg_dump SQL file')
@@ -96,8 +96,8 @@ class Command(BaseCommand):
     for table in reversed(LOAD_ORDER):
       if table in tables:
         self.stdout.write('Clearing {}...'.format(table))
-        cursor.execute('DELETE FROM "{}"'.format(table))
-        self.stdout.write('  Deleted {:,} rows'.format(cursor.rowcount))
+        cursor.execute('TRUNCATE TABLE `{}`'.format(table))
+        self.stdout.write('  Truncated {}'.format(table))
 
   def _stream_load(self, cursor, dumpfile, tables, dry_run):
     loaded = set()
@@ -119,9 +119,9 @@ class Command(BaseCommand):
         columns = [c.strip().strip('"') for c in match.group(2).split(',')]
         types = COLUMN_TYPES.get(table_name, {})
 
-        quoted_cols = ', '.join('"{}"'.format(c) for c in columns)
-        placeholders = ', '.join(['?'] * len(columns))
-        insert_sql = 'INSERT INTO "{}" ({}) VALUES ({})'.format(table_name, quoted_cols, placeholders)
+        quoted_cols = ', '.join('`{}`'.format(c) for c in columns)
+        placeholders = ', '.join(['%s'] * len(columns))
+        insert_sql = 'INSERT INTO `{}` ({}) VALUES ({})'.format(table_name, quoted_cols, placeholders)
 
         self.stdout.write('Loading {} ({} columns)...'.format(table_name, len(columns)))
         start = time.time()
@@ -173,11 +173,11 @@ class Command(BaseCommand):
 
   def _update_sequences(self, cursor, loaded):
     for table in AUTO_INCREMENT_TABLES & loaded:
-      cursor.execute('SELECT MAX(id) FROM "{}"'.format(table))
+      cursor.execute('SELECT MAX(id) FROM `{}`'.format(table))
       max_id = cursor.fetchone()[0]
       if max_id is not None:
         cursor.execute(
-          'INSERT OR REPLACE INTO sqlite_sequence (name, seq) VALUES (?, ?)',
-          [table, max_id]
+          'ALTER TABLE `{}` AUTO_INCREMENT = %s'.format(table),
+          [max_id + 1]
         )
-        self.stdout.write('Updated sequence for {} to {}'.format(table, max_id))
+        self.stdout.write('Updated auto_increment for {} to {}'.format(table, max_id + 1))

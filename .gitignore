@@ -8,3 +8,19 @@
 tRNAviz/settings.py
 tRNAviz/settings_dev.py
 secretkey.txt
+
+# Virtual environment
+venv/
+env/
+
+# Database
+*.sqlite3
+*.db
+
+# Backup files
+*~
+
+# Large data archives
+*.tar
+*.tar.gz
+*.zip
