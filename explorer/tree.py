@@ -98,5 +98,6 @@ def convertNewick(newick, node):
     for child in node.children:
       children_newick.append(convertNewick(newick, child))
     if len(children_newick) > 0:
-      return('(' + ','.join(children_newick) + ')' + node.tax.name)
+      label = node.tax.name if node.tax != 'root' else ''
+      return('(' + ','.join(children_newick) + ')' + label)
   return(node.tax.name)

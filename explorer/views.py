@@ -8,7 +8,6 @@ import json
 import logging
 import os
 import uuid
-from tempfile import NamedTemporaryFile
 
 logger = logging.getLogger(__name__)
 
@@ -142,18 +141,8 @@ def taxonomy(request):
 
 def visualize_itol(request, taxonomy_id):
   newick_tree = services.newick_tree(taxonomy_id)
-  tree_fh = NamedTemporaryFile(mode='w', suffix='.tree')
-  tree_fh.write(newick_tree)
-  tree_fh.flush()
-
-  try:
-    from itolapi import Itol
-    itol_uploader = Itol()
-    itol_uploader.add_file(tree_fh.name)
-    status = itol_uploader.upload()
-    assert status != False
-    itol_page = itol_uploader.get_webpage()
-    return redirect(itol_uploader.get_webpage())
-  except Exception:
-    logger.exception('Error uploading to iTOL API')
-    return HttpResponse('Something went wrong with the iTOL API. Save the following Newick tree to a file and upload it to iTOL yourself to visualize the tree:\n{}'.format(newick_tree), content_type = "text/plain")
+  if not newick_tree.endswith(';'):
+    newick_tree += ';'
+  return render(request, 'explorer/itol_redirect.html', {
+    'newick_tree': newick_tree,
+  })

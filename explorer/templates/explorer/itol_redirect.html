@@ -1,0 +1,11 @@
+<!doctype html>
+<html>
+<head><title>Redirecting to iTOL...</title></head>
+<body>
+  <p>Uploading tree to iTOL, please wait...</p>
+  <form id="itol-form" method="POST" action="https://itol.embl.de/upload.cgi" enctype="multipart/form-data">
+    <textarea name="ttext" style="display:none">{{ newick_tree }}</textarea>
+  </form>
+  <script>document.getElementById('itol-form').submit();</script>
+</body>
+</html>
