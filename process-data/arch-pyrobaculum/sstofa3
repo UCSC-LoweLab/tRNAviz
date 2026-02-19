@@ -1,0 +1,115 @@
+#! /usr/bin/perl
+
+
+if ($#ARGV < 0) {
+ die "\nConvert secondary structure file to fasta format\n",
+	"\nUsage: sstofa <sec struct file> <genome name> <mature tRNA flag: 0 or 1> <mask anticodons with Ns: 0 or 1> \n\n";
+}
+
+$ss_file = $ARGV[0];
+$org_name = "";
+$mature = 0;
+$mask_ac = 0;
+if (scalar(@ARGV) > 1) {
+ $org_name = $ARGV[1];
+}
+if (scalar(@ARGV) > 2) {
+ $mature = $ARGV[2];
+}
+if (scalar(@ARGV) > 3) {
+ $mask_ac = $ARGV[3];
+}
+
+open (SSFILE, $ss_file) || die "Couldn't find $ss_file\n";
+*SEQFILE = *STDOUT;
+
+$intron_start = 0;
+$intron_end = 0;
+
+while ($line = <SSFILE>) {
+ if ($line =~ /^(\S+)\s+(\((\d+\-\d+,?)+\))\s+Length:\s(\d+)\sbp/) {
+		$SeqName = $1;
+		$bounds = $2;
+		$SeqLen = $3;
+ }
+ elsif ($line =~ /^Type:\s(\S+)\s+Anticodon:\s(\S+) at (\d+)-(\d+).+Score:\s(\S+)/) {
+		$isotype = $1;
+		$ac = $2;
+		$ac_start = $3;
+		$ac_end = $4;
+		$SeqName .= "-".$isotype.$ac;
+		$score = $5;
+ }
+ elsif ($line =~ /pseudogene/) {
+		$SeqDescription .= " Pseudo";
+ }
+	elsif ($line =~ /^Possible intron: (\d+)-(\d+)/) {
+		$intron_start = $1;
+		$intron_end = $2;
+	}
+ elsif ($line =~ /^Seq:\s(\S+)$/) {
+		$Seq = $1;
+
+		$line = <SSFILE>;
+		$line = <SSFILE>;
+		if ($mask_ac) {
+			$Seq = substr($Seq, 0, $ac_start - 1) . "NNN" . substr($Seq, $ac_end);
+		}
+		if (!$mature) {
+			if ($line =~ /^Pre:\s([\S\[\]]+)$/) {
+				$Seq = $1;
+			}
+			$Seq =~ s/\[//g;
+			$Seq =~ s/\]//g;
+			if ($mask_ac) {
+				$Seq = substr($Seq, 0, $ac_start - 1) . "NNN" . substr($Seq, $ac_end);
+			}
+			$SeqLen = length($Seq);
+		}
+		else {
+			if ($line =~ /^Pre:\s([\S\[\]]+)$/) {
+				$SeqLen = length($Seq)
+			}
+			elsif ($intron_start > 0) {
+				$Seq = substr($Seq, 0, $intron_start - 1) . substr($Seq, $intron_end);
+				$SeqLen = length($Seq);
+			}
+			# Strip non-canonical intron bases (lowercase chars in Seq line)
+			$Seq =~ s/[a-z]//g;
+			$SeqLen = length($Seq);
+		}
+		$SeqDescription = "$bounds $isotype ($ac) $SeqLen bp Sc: $score";
+		if ($org_name ne "") {
+			$SeqName = $org_name."_".$SeqName;
+		}
+		&write_fasta($SeqName,$SeqDescription,length($Seq),
+		 uc($Seq),SEQFILE);
+		$SeqName = "";
+		$bounds = "";
+		$intron_start = 0;
+		$intron_end = 0;
+		$SeqLen = 0;
+		$isotype = "";
+		$ac = "";
+		$score = 0.0;
+		$SeqDescription = "";
+		$Seq = "";
+ }
+}
+
+
+
+# End Main
+
+sub write_fasta {
+ local($name, $description, $length, $sequence,*FAHANDLE) = @_;
+ local($pos, $line);
+
+ print FAHANDLE ">$name $description\n";
+ for ($pos = 0; $pos < $length; $pos += 60)
+ {
+		$line = substr($sequence,$pos,60);
+		print FAHANDLE $line, "\n";
+ }
+ 1;
+}
