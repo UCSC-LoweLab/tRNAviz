@@ -1,4 +1,3 @@
-.gitignore
 *.tsv
 ._*
 *.pyc
@@ -16,6 +15,7 @@ env/
 # Database
 *.sqlite3
 *.db
+*.sql
 
 # Backup files
 *~
@@ -24,3 +24,9 @@ env/
 *.tar
 *.tar.gz
 *.zip
+
+# Deployment copy (lives on shared storage)
+webapp
+
+# Claude local settings
+.claude/

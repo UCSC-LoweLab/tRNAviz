@@ -1,0 +1,658 @@
+# STOCKHOLM 1.0
+#=GF AU Infernal 1.1.5
+
+pyrAer1_chr.trna1-ProCGG              GGGGCCGUAGUCUAGCC-GGU--AGGAUGCGCGGUUCGGGUCCGCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCCCCA---
+#=GR pyrAer1_chr.trna1-ProCGG      PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyrAer1_chr.trna2-GluTTC              GCCCCGGUAGUCUAGCCCGGACAAGGAUGUGGGCCUUUCGAGCCCAUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCACCA
+#=GR pyrAer1_chr.trna2-GluTTC      PP ************************************************........................................................*.**.*******...********.........************
+pyrAer1_chr.trna3-MetCAT              GCC--GGUUGCUCAGCC-GGC--GGAGUA---GCCUCAUAAGC---GG-------...........................-----..........-------G-CC.CGGGUUC...AAAUUCCG.........GCCGGGGCACCA
+#=GR pyrAer1_chr.trna3-MetCAT      PP ***..************.***..*****5...888******96...87........................................................8.**.*******...********.........************
+pyrAer1_chr.trna4-Ile2CAT             GGGCCCGUAGCUUAGCCAGGU--AGAGCGCCCGGCUCAUAACCGGGCG-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCGGGCCCA---
+#=GR pyrAer1_chr.trna4-Ile2CAT     PP *********************..*************************........................................................****.*******...********.........*********...
+pyrAer1_chr.trna5-ValCAC              GGGCCCGUAGUCUAGC--GGU--AUGAUGCCCGCCUCACGCGCGGGUG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGGCCCA---
+#=GR pyrAer1_chr.trna5-ValCAC      PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyrAer1_chr.trna6-LeuCAG              GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUCAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR pyrAer1_chr.trna6-LeuCAG      PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........************
+pyrAer1_chr.trna7-MetCAT              GCCGCCGUAGCUCAGCCUGGA--AGAGCGCUCGGCUCAUAACCGGGUU-------...........................-----..........-------GCCC.CGGGUUC...AAAUCCCG.........GCGGCGGCA---
+#=GR pyrAer1_chr.trna7-MetCAT      PP *********************..*************************........................................................****.*******...********.........*********...
+pyrAer1_chr.trna8-ThrTGT              GCCCCGGUAGCUCAGCCCGGUC-GGAGCGCCCGCCUUGUAAGCGGGAG-------...........................-----..........-------GUCC.CGGGUUC...GAAUCCCG.........GCCGGGGCUCCA
+#=GR pyrAer1_chr.trna8-ThrTGT      PP **********************.*************************........................................................****.*******...********.........************
+pyrAer1_chr.trna9-GlnTTG              AGCCCGGUCGUCUAGC--GGC--AGGAUGCGGGGCUUUGGACCCCGUG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGCUACCA
+#=GR pyrAer1_chr.trna9-GlnTTG      PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyrAer1_chr.trna10-LeuGAG             GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUGAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR pyrAer1_chr.trna10-LeuGAG     PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........************
+pyrAer1_chr.trna11-IleGAT             GGGCCCGUGGCUUAGCC-GGU--AGAGCGCCCGGCUGAUAACCGGGAG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGGCCCA---
+#=GR pyrAer1_chr.trna11-IleGAT     PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyrAer1_chr.trna12-AlaTGC             GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCCUUGCACGCGGGUG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGGUCCACCA
+#=GR pyrAer1_chr.trna12-AlaTGC     PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyrAer1_chr.trna13-iMetCAT            AGCGGGGUAGGCCAGCCUGGU--AGGCCGCGGGGCUCAUAACCCCGAG-------...........................-----..........-------GUCC.CCGGUUC...AAAUCCGG.........GCCCCGCUA---
+#=GR pyrAer1_chr.trna13-iMetCAT    PP *********************..*************************........................................................****.*******...********.........*********...
+pyrAer1_chr.trna14-GlyTCC             GCGGCGGUAGUCUAGCC-GGU--AGGAUGGCGGCCUUCCAAGCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGCCGCA---
+#=GR pyrAer1_chr.trna14-GlyTCC     PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyrAer1_chr.trna15-ProGGG             GGGGCCGUAGUCUAGCC-GGC--AGGAUGCCGGCCUGGGGCGCCGGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCCCCA---
+#=GR pyrAer1_chr.trna15-ProGGG     PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyrAer1_chr.trna16-LysCTT             GGGCCCGUAGCUCAGCC-GGU--AGAGCGGCGGGCUCUUAACCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...GAAUCCCA.........CCGGGCCCG---
+#=GR pyrAer1_chr.trna16-LysCTT     PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyrAer1_chr.trna17-GlyGCC             GCGGCGGUAGUCUAGCC-GGU--AGGAUGGCGGCCUGCCAAGCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGCCGCACCA
+#=GR pyrAer1_chr.trna17-GlyGCC     PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyrAer1_chr.trna18-ArgCCG             GGGCCCGUAGCUCAGCCUGGAC-AGAGCGGCGGCCUCCGGAGCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...GAAUCCCA.........CCGGGCCCGCCA
+#=GR pyrAer1_chr.trna18-ArgCCG     PP **********************.*************************........................................................****.*******...********.........************
+pyrAer1_chr.trna19-TrpCCA             GGGGCCGUAGCUCAGCC-GGC--AGAGCGGCGGGCUCCAGACCCGUAG-------...........................-----..........-------G-CG.GGGGUUC...AAAUCCCU.........CCGGCCCCACCA
+#=GR pyrAer1_chr.trna19-TrpCCA     PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyrAer1_chr.trna20-LeuTAA             GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGCUUAAGACCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR pyrAer1_chr.trna20-LeuTAA     PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........************
+pyrAer1_chr.trna21-SerGGA             GCCGGGGUGGCCGAGC--GGC--AAGGCGCGGGACUGGAGAUCCCGUC----CCC...........................GUCU-..........GGG----G-CC.CGGGUUC...AAAUCCCG.........GCCCCGGCG---
+#=GR pyrAer1_chr.trna21-SerGGA     PP ****************..***..************************7....555...........................9999...........555....7.**.*******...********.........*********...
+pyrAer1_chr.trna22-SerGCT             GCCGGGGUGGCCGAGUU-GGU--AAGGCGCGGGCCUGCUAAGCCCGUC----CCC...........................AUAC-..........GGG----G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCG---
+#=GR pyrAer1_chr.trna22-SerGCT     PP *****************.***..************************6....555...........................8888...........665....6.**.*******...********.........*********...
+pyrAer1_chr.trna23-LeuTAG             GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUUAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR pyrAer1_chr.trna23-LeuTAG     PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........************
+pyrAer1_chr.trna24-CysGCA             GCCCCGGUAGCUCAGUCCGGC--AGAGCGGCGGGCUGCAGACCCGUAG-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCCGGGGCUCCA
+#=GR pyrAer1_chr.trna24-CysGCA     PP *********************..*************************........................................................****.*******...********.........************
+pyrAer1_chr.trna25-ThrCGT             GCCCCGGUAGCUCAGCCCGGUC-GGAGCGCCCGCCUCGUAAGCGGGAG-------...........................-----..........-------GUCC.CGGGUUC...GAAUCCCG.........GCCGGGGCU---
+#=GR pyrAer1_chr.trna25-ThrCGT     PP **********************.*************************........................................................****.*******...********.........*********...
+pyrAer1_chr.trna26-AsnGTT             GCCGCCGUAGCUCAGCC-GGU--AGAGCGGCGGGCUGUUAACCCGUAG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGCGGCG---
+#=GR pyrAer1_chr.trna26-AsnGTT     PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyrAer1_chr.trna27-GlyCCC             GCGGCGGUAGUCUAGCC-GGU--AGGAUGGCGGCCUCCCAAGCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGCCGCA---
+#=GR pyrAer1_chr.trna27-GlyCCC     PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyrAer1_chr.trna28-AlaGGC             GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCUUGGCGUGCGGGAG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGGUCCA---
+#=GR pyrAer1_chr.trna28-AlaGGC     PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyrAer1_chr.trna29-LysTTT             GGGCCCGUAGCUCAGCC-GGU--AGAGCGGCGGGCUUUUAACCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...GAAUCCCA.........CCGGGCCCGCCA
+#=GR pyrAer1_chr.trna29-LysTTT     PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyrAer1_chr.trna30-ProTGG             GGGGCCGUAGUCUAGCC-GGU--AGGAUGCGUGGCUUGGGCCCACGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCCCCA---
+#=GR pyrAer1_chr.trna30-ProTGG     PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyrAer1_chr.trna31-ValTAC             GGGCCCGUAGUCUAGC--GGU--AUGAUGCCCGCCUUACACGCGGGUG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCGGGCCCA---
+#=GR pyrAer1_chr.trna31-ValTAC     PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyrAer1_chr.trna32-ValGAC             GGGCCCGUAGUCUAGC--GGU--AGGAUGCCCGCCUGACGCGCGGGUG-------...........................-----..........-------AUCC.CGGGUUC...AAAUCCCG.........GCGGGCCCA---
+#=GR pyrAer1_chr.trna32-ValGAC     PP ****************..***..*************************........................................................****.*******...********.........*********...
+pyrAer1_chr.trna33-GlnCTG             AGCCCGGUCGUCUAGC--GGCCAAGGAUGCGGGGCUCUGGACCCCGUG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGCUA---
+#=GR pyrAer1_chr.trna33-GlnCTG     PP ****************..******************************........................................................*.**.*******...********.........*********...
+pyrAer1_chr.trna34-ThrGGT             GCCCCGGUAGCUCAGCCUGGU--GGAGCGCCUCACUGGUAAUGAGGAG-------...........................-----..........-------GUCC.CGGGUUC...GAAUCCCG.........GCCGGGGCUCCA
+#=GR pyrAer1_chr.trna34-ThrGGT     PP *********************..*************************........................................................****.*******...********.........************
+pyrAer1_chr.trna35-PheGAA             GCGGCCGUAGCUCAGC--GGG--AGAGCGCCCGGCUGAAGACCGGGCG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGCCGCACCA
+#=GR pyrAer1_chr.trna35-PheGAA     PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyrAer1_chr.trna36-ArgCCT             GGGCCCGUAGCUCAGUCAGGAU-AGAGCGGCGGCCUCCUAAGCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...GAAUCCCA.........CCGGGCCCGCCA
+#=GR pyrAer1_chr.trna36-ArgCCT     PP **********************.*************************........................................................****.*******...********.........************
+pyrAer1_chr.trna37-AspGTC             GCCCCGGUAGUAUAGCCCGGACUAGUAUGCGGGCCUGUCGAGCCCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCGCCA
+#=GR pyrAer1_chr.trna37-AspGTC     PP ************************************************........................................................*.**.*******...********.........************
+pyrAer1_chr.trna38-ArgTCG             GGGCCCGUGGCUCAGCC-GGU--AGAGCGGCGGCCUUCGGAGCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...AAAUCCCA.........CCGGGCCCGCCA
+#=GR pyrAer1_chr.trna38-ArgTCG     PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyrAer1_chr.trna39-SerTGA             GCCGGGGUGGCCGAGC--GGC--AAGGCGCGGGACUUGAGAUCCCGUC----CCC...........................GUCC-..........GGG----G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCGCCA
+#=GR pyrAer1_chr.trna39-SerTGA     PP ****************..***..************************6....555...........................***9...........555....6.**.*******...********.........************
+pyrAer1_chr.trna40-GluCTC             GCCCCGGUAGUCUAGCCCGGACAAGGAUGCGGGCCUCUCGAGCCCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCA---
+#=GR pyrAer1_chr.trna40-GluCTC     PP ************************************************........................................................*.**.*******...********.........*********...
+pyrAer1_chr.trna41-LeuCAA             GCGGGGGUGCCCGAGCC-GGC--AAGGGGCAGGGCUCAAGACCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR pyrAer1_chr.trna41-LeuCAA     PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........************
+pyrAer1_chr.trna42-ArgTCT             GGGCCCGUAGCUCAGCC-GGA--AGAGCGGCGGCCUUCUAAGCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...AAAUCCCA.........UCGGGCCCGCCA
+#=GR pyrAer1_chr.trna42-ArgTCT     PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyrAer1_chr.trna43-TyrGTA             CGGGCCGUAGCUCAGC--GGUCGAGAGCGCCCGGCUGUAGACCGGGCG-------...........................-----..........-------GUCC.CGGGUUC...GAAUCCCG.........GCGGCCCGA---
+#=GR pyrAer1_chr.trna43-TyrGTA     PP ****************..******************************........................................................****.*******...********.........*********...
+pyrAer1_chr.trna44-ArgGCG             GGGCCCGUAGCUCAGCCUGGAU-GGAGCGGCGGCCUGCGGAGCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...AAAUCCCA.........CCGGGCCCGCCA
+#=GR pyrAer1_chr.trna44-ArgGCG     PP **********************.*************************........................................................****.*******...********.........************
+pyrAer1_chr.trna45-SerCGA             GCCGGGGUGGCCGAGC--GGC--AAGGCGCGGGACUCGAGAUCCCGUC----CCC...........................GUCC-..........GGG----G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCG---
+#=GR pyrAer1_chr.trna45-SerCGA     PP ****************..***..************************6....555...........................***9...........555....6.**.*******...********.........*********...
+pyrAer1_chr.trna46-AlaCGC             GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCCUCGCGCGCGGGAG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGGUCCACCA
+#=GR pyrAer1_chr.trna46-AlaCGC     PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyrAer1_chr.trna47-HisGTG             GCCGCCGUAGUCUAGC--GGUU-AGGAUGGCGGGUUGUGGUCCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCGGCCCCA
+#=GR pyrAer1_chr.trna47-HisGTG     PP ****************..****.*************************........................................................*.**.*******...********.........************
+pyroArse1_chr.trna1-ArgGCG            GGGCCCGUAGCUCAGCCUGGAU-GGAGCGGCGGCCUGCGGAGCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...AAAUCCCA.........CCGGGCCCGCCA
+#=GR pyroArse1_chr.trna1-ArgGCG    PP **********************.*************************........................................................****.*******...********.........************
+pyroArse1_chr.trna2-Ile2CAT           GGGCCCGUAGCUUAGCUAGGU--AGAGCGCCCGGCUCAUAACCGGGAG-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCGGGCCCA---
+#=GR pyroArse1_chr.trna2-Ile2CAT   PP *********************..*************************........................................................****.*******...********.........*********...
+pyroArse1_chr.trna3-ValCAC            GGGCCCGUAGUCUAGC--GGU--AUGAUGCCCGCCUCACGCGCGGGUG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGGCCCA---
+#=GR pyroArse1_chr.trna3-ValCAC    PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyroArse1_chr.trna4-SerTGA            GCCGGGGUGGCCGAGC--GGC--AAGGCGCGGGACUUGAGAUCCCGUC----CCC...........................GUUC-..........GGG----G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCGCCA
+#=GR pyroArse1_chr.trna4-SerTGA    PP ****************..***..************************6....555...........................***9...........555....7.**.*******...********.........************
+pyroArse1_chr.trna5-AlaCGC            GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCCUCGCGCGCGGGAG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGGUCCA---
+#=GR pyroArse1_chr.trna5-AlaCGC    PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyroArse1_chr.trna6-ProGGG            GGGGCCGUAGUCUAGCC-GGC--AGGAUGCCGGCCUGGGGCGCCGGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCCCCA---
+#=GR pyroArse1_chr.trna6-ProGGG    PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroArse1_chr.trna7-GlnCTG            AGCCCGGUGGUCUAGC--GGC--AGGAUGCGGGGCUCUGGACCCCGUG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGCUA---
+#=GR pyroArse1_chr.trna7-GlnCTG    PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyroArse1_chr.trna8-LeuTAG            GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUUAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCA---
+#=GR pyroArse1_chr.trna8-LeuTAG    PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........*********...
+pyroArse1_chr.trna9-SerGGA            GCCGGGGUGGCCGAGC--GGC--AAGGCGCGGGACUGGAGAUCCCGUC----CCC...........................GUUC-..........GGG----G-CC.CGGGUUC...AAAUCCCG.........GCCCCGGCG---
+#=GR pyroArse1_chr.trna9-SerGGA    PP ****************..***..************************6....555...........................***9...........555....7.**.*******...********.........*********...
+pyroArse1_chr.trna10-SerGCT           GCCGGGGUGGCCGAGUU-GGU--AAGGCGCGGGCCUGCUAAGCCCGUC----CCC...........................GUUC-..........GGG----G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCG---
+#=GR pyroArse1_chr.trna10-SerGCT   PP *****************.***..************************6....555...........................***9...........555....7.**.*******...********.........*********...
+pyroArse1_chr.trna11-ProTGG           GGGGCCGUAGUCUAGCC-GGC--AGGAUGCGUGGCUUGGGCCCACGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCCCCA---
+#=GR pyroArse1_chr.trna11-ProTGG   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroArse1_chr.trna12-AsnGTT           GCCGCCGUAGCUCAGCC-GGU--AGAGCGGCGGGCUGUUAACCCGUAG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGCGGCG---
+#=GR pyroArse1_chr.trna12-AsnGTT   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroArse1_chr.trna13-MetCAT           GCCGCCGUAGCUCAGCCUGGA--AGAGCGCUCGGCUCAUAACCGGGUU-------...........................-----..........-------GCCC.CGGGUUC...AAAUCCCG.........GCGGCGGCA---
+#=GR pyroArse1_chr.trna13-MetCAT   PP *********************..*************************........................................................****.*******...********.........*********...
+pyroArse1_chr.trna14-ProCGG           GGGGCCGUAGUCUAGCC-GGC--AGGAUGCGCGGUUCGGGUCCGCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCCCCA---
+#=GR pyroArse1_chr.trna14-ProCGG   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroArse1_chr.trna15-SerCGA           GCCGGGGUGGCCGAGC--GGC--AAGGCGCGGGACUCGAGAUCCCGUC----CCC...........................GUCC-..........GGG----G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCGCCA
+#=GR pyroArse1_chr.trna15-SerCGA   PP ****************..***..************************6....555...........................***9...........555....6.**.*******...********.........************
+pyroArse1_chr.trna16-LeuCAG           GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUCAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR pyroArse1_chr.trna16-LeuCAG   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........************
+pyroArse1_chr.trna17-ArgTCG           GGGCCCGUGGCUCAGCCUGGU--AGAGCGGCGGCCUUCGGAGCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...AAAUCCCA.........CCGGGCCCGCCA
+#=GR pyroArse1_chr.trna17-ArgTCG   PP *********************..*************************........................................................****.*******...********.........************
+pyroArse1_chr.trna18-AspGTC           GCCCCGGUAGUAUAGCCCGGACUAGUAUGCGGGCCUGUCGAGCCCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCGCCA
+#=GR pyroArse1_chr.trna18-AspGTC   PP ************************************************........................................................*.**.*******...********.........************
+pyroArse1_chr.trna19-ThrCGT           GCCCCGGUAGCUCAGCCCGGUC-GGAGCGCCCGCCUCGUAAGCGGGAG-------...........................-----..........-------GUCC.CGGGUUC...GAAUCCCG.........GCCGGGGCU---
+#=GR pyroArse1_chr.trna19-ThrCGT   PP **********************.*************************........................................................****.*******...********.........*********...
+pyroArse1_chr.trna20-CysGCA           GCCCCGGUAGCUCAGUCCGGC--AGAGCGGCGGGCUGCAGACCCGUAG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCU---
+#=GR pyroArse1_chr.trna20-CysGCA   PP *********************..*************************........................................................*.**.*******...********.........*********...
+pyroArse1_chr.trna21-AlaGGC           GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCUUGGCGUGCGGGAG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGGUCCACCA
+#=GR pyroArse1_chr.trna21-AlaGGC   PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyroArse1_chr.trna22-LysTTT           GGGCCCGUAGCUCAGCC-GGU--AGAGCGGCGGGCUUUUAACCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...GAAUCCCA.........CCGGGCCCGCCA
+#=GR pyroArse1_chr.trna22-LysTTT   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroArse1_chr.trna23-ValTAC           GGGCCCGUAGUCUAGC--GGU--AGGAUGCCCGCCUUACACGCGGGUG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCGGGCCCA---
+#=GR pyroArse1_chr.trna23-ValTAC   PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyroArse1_chr.trna24-ThrTGT           GCCCCGGUAGCUCAGCCCGGUC-GGAGCGCCCGCCUUGUAAGCGGGAG-------...........................-----..........-------GUCC.CGGGUUC...GAAUCCCG.........GCCGGGGCU---
+#=GR pyroArse1_chr.trna24-ThrTGT   PP **********************.*************************........................................................****.*******...********.........*********...
+pyroArse1_chr.trna25-TrpCCA           GGGCCCGUAGCUCAGCC-GGC--AGAGCGGCGGGCUCCAGACCCGUAG-------...........................-----..........-------G-CG.GGGGUUC...AAAUCCCU.........CCGGGCCCACCA
+#=GR pyroArse1_chr.trna25-TrpCCA   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroArse1_chr.trna26-GlyCCC           GCGGCGGUAGUCUAGCC-GGU--AGGAUGGCGGCCUCCCAAGCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGCCGCA---
+#=GR pyroArse1_chr.trna26-GlyCCC   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroArse1_chr.trna27-LeuTAA           GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGCUUAAGACCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...GAAUCCCA.........CCCCCCGCA---
+#=GR pyroArse1_chr.trna27-LeuTAA   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........*********...
+pyroArse1_chr.trna28-LysCTT           GGGCCCGUAGCUCAGCC-GGU--AGAGCGGCGGGCUCUUAACCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...GAAUCCCA.........CCGGGCCCGCCA
+#=GR pyroArse1_chr.trna28-LysCTT   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroArse1_chr.trna29-ValGAC           GGGCCCGUAGUCUAGC--GGU--AGGAUGCCCGCCUGACGCGCGGGUG-------...........................-----..........-------AUCC.CGGGUUC...AAAUCCCG.........GCGGGCCCA---
+#=GR pyroArse1_chr.trna29-ValGAC   PP ****************..***..*************************........................................................****.*******...********.........*********...
+pyroArse1_chr.trna30-ArgCCG           GGGCCCGUAGCUCAGCC-GGA--AGAGCGGCGGCCUCCGGAGCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...GAAUCCCA.........CCGGGCCCGCCA
+#=GR pyroArse1_chr.trna30-ArgCCG   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroArse1_chr.trna31-GlyGCC           GCGGCGGUAGUCUAGCCUGGUUUAGGAUGGCGGCCUGCCAAGCCGUUG-------...........................-----..........-------AUCC.CGGGUUC...AAAUCCCG.........GCCGCCGCACCA
+#=GR pyroArse1_chr.trna31-GlyGCC   PP ************************************************........................................................****.*******...********.........************
+pyroArse1_chr.trna32-IleGAT           GGGCCCGUGGCUUAGCC-GGU--AGAGCGCCCGGCUGAUAACCGGGAG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGGCCCA---
+#=GR pyroArse1_chr.trna32-IleGAT   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroArse1_chr.trna33-AlaTGC           GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCCUUGCACGCGGGUG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGGUCCA---
+#=GR pyroArse1_chr.trna33-AlaTGC   PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyroArse1_chr.trna34-GlnTTG           AGCCCGGUGGUCUAGC--GGC--AGGAUGCGGGGCUUUGGACCCCGUG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGCUA---
+#=GR pyroArse1_chr.trna34-GlnTTG   PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyroArse1_chr.trna35-LeuGAG           GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUGAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR pyroArse1_chr.trna35-LeuGAG   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........************
+pyroArse1_chr.trna36-ThrGGT           GCCCCGGUAGCUCAGCC-GGU--GGAGCGCCUCACUGGUACUGAGGAG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCU---
+#=GR pyroArse1_chr.trna36-ThrGGT   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroArse1_chr.trna37-HisGTG           GCCGCCGUAGUCUAGC--GGU--AGGAUGGCGGGUUGUGGUCCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCGGCC---
+#=GR pyroArse1_chr.trna37-HisGTG   PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyroArse1_chr.trna38-GlyTCC           GCGGCGGUAGUCUAGCC-GGU--AGGAUGGCGGCCUUCCAAGCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGCCGCA---
+#=GR pyroArse1_chr.trna38-GlyTCC   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroArse1_chr.trna39-PheGAA           GCGGCCGUAGCUCAGC--GGG--AGAGCGCCCGGCUGAAGACCGGGCG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGCCGCACCA
+#=GR pyroArse1_chr.trna39-PheGAA   PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyroArse1_chr.trna40-iMetCAT          AGCGGGGUAGGCCAGCCUGGU--AGGCCGCGGGGCUCAUAACCCCGAG-------...........................-----..........-------GUCC.CCGGUUC...AAAUCCGG.........GCCCCGCUA---
+#=GR pyroArse1_chr.trna40-iMetCAT  PP *********************..*************************........................................................****.*******...********.........*********...
+pyroArse1_chr.trna41-ArgCCT           GGGCCCGUAGCUCAGCC-GGA--AGAGCGGCGGCCUCCUAAGCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...GAAUCCCA.........CCGGGCCCGCCA
+#=GR pyroArse1_chr.trna41-ArgCCT   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroArse1_chr.trna42-GluCTC           GCCCCGGUAGUCUAGCCCGGUCAAGGAUGCGGGCCUCUCGAGCCCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCA---
+#=GR pyroArse1_chr.trna42-GluCTC   PP ************************************************........................................................*.**.*******...********.........*********...
+pyroArse1_chr.trna43-LeuCAA           GCGGGGGUGCCCGAGCC-GGC--AAGGGGCAGGGCUCAAGACCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR pyroArse1_chr.trna43-LeuCAA   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........************
+pyroArse1_chr.trna44-TyrGTA           CGGCCCGUAGCUCAGC--GGUCCAGAGCGCCCGGCUGUAGACCGGGCG-------...........................-----..........-------GUCC.CGGGUUC...GAAUCCCG.........GCGGGCCGA---
+#=GR pyroArse1_chr.trna44-TyrGTA   PP ****************..******************************........................................................****.*******...********.........*********...
+pyroArse1_chr.trna45-ArgTCT           GGGCCCGUAGCUCAGCC-GGA--AGAGCGGCGGCCUUCUAAGCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...AAAUCCCA.........UCGGGCCCGCCA
+#=GR pyroArse1_chr.trna45-ArgTCT   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroArse1_chr.trna46-GluTTC           GCCCCGGUAGUCUAGCCCGGUCAAGGAUGUGGGCCUUUCGAGCCCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCA---
+#=GR pyroArse1_chr.trna46-GluTTC   PP ************************************************........................................................*.**.*******...********.........*********...
+pyroCali1_chr.trna1-ArgGCG            GGGCCCGUAGCUCAGCCUGGAU-AGAGCGGCGGCCUGCGGAGCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...AAAUCCCA.........UCGGGCCCGCCA
+#=GR pyroCali1_chr.trna1-ArgGCG    PP **********************.*************************........................................................****.*******...********.........************
+pyroCali1_chr.trna2-AspGTC            GCCCCGGUAGUAUAGCCCGGACUAGUAUGCGGGCCUGUCGAGCCCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCG---
+#=GR pyroCali1_chr.trna2-AspGTC    PP ************************************************........................................................*.**.*******...********.........*********...
+pyroCali1_chr.trna3-MetCAT            GCGGCGGUAGCUCAGCCUGGUU-GGAGCGCCCGGCUCAUAACCGGGAG-------...........................-----..........-------GACC.CGGGUUC...AAAUCCCG.........GCCGCCGCA---
+#=GR pyroCali1_chr.trna3-MetCAT    PP **********************.*************************........................................................****.*******...********.........*********...
+pyroCali1_chr.trna4-LeuCAG            GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUCAGGUCCCUGUG-GC----...........................GCAG-..........----GC-CUCG.UGGGUUC...AAAUCCCA.........CCCCCCGCA---
+#=GR pyroCali1_chr.trna4-LeuCAG    PP *****************.***..************************5.55...............................****...............55.55**.*******...********.........*********...
+pyroCali1_chr.trna5-ArgTCG            GGGCCCGUAGCUCAGUCAGGUU-AGAGCGGCGGCCUUCGGAGCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...AAAUCCCA.........CCGGGCCCGCCA
+#=GR pyroCali1_chr.trna5-ArgTCG    PP **********************.*************************........................................................****.*******...********.........************
+pyroCali1_chr.trna6-Ile2CAT           GGGCCCGUAGCUUAGCCCGGC--AGAGCGCCCGGCUCAUAACCGGGAA-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCGGGCCCACCA
+#=GR pyroCali1_chr.trna6-Ile2CAT   PP *********************..*************************........................................................****.*******...********.........************
+pyroCali1_chr.trna7-SerTGA            GCCGGGGUGGCCGAGC--GGC--AAGGCGCGGGACUUGAGAUCCCGUC----CCC...........................GUUC-..........GGG----G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCG---
+#=GR pyroCali1_chr.trna7-SerTGA    PP ****************..***..************************6....555...........................***9...........555....7.**.*******...********.........*********...
+pyroCali1_chr.trna8-ValCAC            GGGCCCGUAGUCUAGC--GGU--AGGAUGCCCGCCUCACGCGCGGGUG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCGGGCCCACCA
+#=GR pyroCali1_chr.trna8-ValCAC    PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyroCali1_chr.trna9-ValTAC            GGGCCCGUAGUCUAGC--GGU--AGGAUGCCCGCCUUACACGCGGGUG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCGGGCCCACCA
+#=GR pyroCali1_chr.trna9-ValTAC    PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyroCali1_chr.trna10-GluCTC           GCCCCGGUAGUCUAGCCCGGUCAAGGAUGCGGGCCUCUCGAGCCCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCACCA
+#=GR pyroCali1_chr.trna10-GluCTC   PP ************************************************........................................................*.**.*******...********.........************
+pyroCali1_chr.trna11-ArgCCT           GGGCCCGUAGCUCAGUCAGGAU-AGAGCGGCGGCCUCCUAAGCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...GAAUCCCA.........CCGGGCCCGCCA
+#=GR pyroCali1_chr.trna11-ArgCCT   PP **********************.*************************........................................................****.*******...********.........************
+pyroCali1_chr.trna12-AlaGGC           GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCUUGGCGUGCGGGAG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGGUCCACCA
+#=GR pyroCali1_chr.trna12-AlaGGC   PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyroCali1_chr.trna13-SerGGA           GCCGGGGUGGCCGAGC--GGC--AAGGCGCGGGACUGGAGAUCCCGUC----CCC...........................GUUC-..........GGG----G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCG---
+#=GR pyroCali1_chr.trna13-SerGGA   PP ****************..***..************************6....555...........................***9...........555....7.**.*******...********.........*********...
+pyroCali1_chr.trna14-LeuGAG           GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUGAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCA---
+#=GR pyroCali1_chr.trna14-LeuGAG   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........*********...
+pyroCali1_chr.trna15-ThrGGT           GCCCCGGUAGCUCAGCC-GGU--GGAGCGCCUCACUGGUAGUGAGGAG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGGCUCCA
+#=GR pyroCali1_chr.trna15-ThrGGT   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroCali1_chr.trna16-iMetCAT          AGCGGGGUAGGCCAGCCUGGU--AGGCCGCGGGGCUCAUAACCCCGAG-------...........................-----..........-------GUCC.CCGGUUC...AAAUCCGG.........GCCCCGCUA---
+#=GR pyroCali1_chr.trna16-iMetCAT  PP *********************..*************************........................................................****.*******...********.........*********...
+pyroCali1_chr.trna17-AlaCGC           GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCCUCGCGCGCGGGUG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGGUCCACCA
+#=GR pyroCali1_chr.trna17-AlaCGC   PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyroCali1_chr.trna18-ArgTCT           GGGCCCGUAGCUCAGCCUGGAU-AGAGCGGCGGCCUUCUAAGCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...AAAUCCCA.........UCGGGCCCGCCA
+#=GR pyroCali1_chr.trna18-ArgTCT   PP **********************.*************************........................................................****.*******...********.........************
+pyroCali1_chr.trna19-ArgCCG           GGGCCCGUAGCUCAGUCAGGAC-AGAGCGGCGGCCUCCGGAGCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...AAAUCCCA.........CCGGGCCCGCCA
+#=GR pyroCali1_chr.trna19-ArgCCG   PP **********************.*************************........................................................****.*******...********.........************
+pyroCali1_chr.trna20-ProTGG           GGGGCCGUAGUCUAGCC-GGU--AGGAUGCGUGGCUUGGGCCCACGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCCCCACCA
+#=GR pyroCali1_chr.trna20-ProTGG   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroCali1_chr.trna21-GlnTTG           AGCCCGGUCGUCUAGC--GGC--AGGAUGCGGGGCUUUGGACCCCGUG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGCUACCA
+#=GR pyroCali1_chr.trna21-GlnTTG   PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyroCali1_chr.trna22-GlyCCC           GCGGCGGUAGUCUAGCCUGGUUUAGGAUGGCGGCCUCCCAAGCCGUUG-------...........................-----..........-------AUCC.CGGGUUC...GAAUCCCG.........GCCGCCGCA---
+#=GR pyroCali1_chr.trna22-GlyCCC   PP ************************************************........................................................****.*******...********.........*********...
+pyroCali1_chr.trna23-GlyGCC           GCGGCGGUAGUCUAGCCUGGUUUAGGAUGGCGGCCUGCCAAGCCGUUG-------...........................-----..........-------AUCC.CGGGUUC...AAAUCCCG.........GCCGCCGCA---
+#=GR pyroCali1_chr.trna23-GlyGCC   PP ************************************************........................................................****.*******...********.........*********...
+pyroCali1_chr.trna24-LysCTT           GGGCCCGUAGCUCAGCCUGGU--AGAGCGGCGGGCUCUUAACCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...GAAUCCCA.........CCGGGCCCGCCA
+#=GR pyroCali1_chr.trna24-LysCTT   PP *********************..*************************........................................................****.*******...********.........************
+pyroCali1_chr.trna25-SerCGA           GCCGGGGUGGCCGAGC--GGC--AAGGCGCGGGACUCGAGAUCCCGUC----CCC...........................GUUC-..........GGG----G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCG---
+#=GR pyroCali1_chr.trna25-SerCGA   PP ****************..***..************************6....555...........................***9...........555....7.**.*******...********.........*********...
+pyroCali1_chr.trna26-HisGTG           GCCGCCGUAGUCUAGC--GGCU-AGGAUGGCGGGUUGUGGUCCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCGGCC---
+#=GR pyroCali1_chr.trna26-HisGTG   PP ****************..****.*************************........................................................*.**.*******...********.........*********...
+pyroCali1_chr.trna27-ProCGG           GGGGCCGUAGUCUAGCCUGGU--AGGAUGCGCGGUUCGGGUCCGCGUG-------...........................-----..........-------ACCC.CGGGUUC...AAAUCCCG.........GCGGCCCCACCA
+#=GR pyroCali1_chr.trna27-ProCGG   PP *********************..*************************........................................................****.*******...********.........************
+pyroCali1_chr.trna28-TrpCCA           GGGCCGUUAGCUCAGCCAGGC--AGAGCGGCGGGCUCCAGACCCGUAG-------...........................-----..........-------GCCA.GGGGUUC...AAAUCCCC.........UACGGCCCACCA
+#=GR pyroCali1_chr.trna28-TrpCCA   PP *********************..*************************........................................................****.*******...********.........************
+pyroCali1_chr.trna29-GlyTCC           GCGGCGGUAGUCUAGCC-GGU--AGGAUGGCGGCCUUCCAAGCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGCCGCA---
+#=GR pyroCali1_chr.trna29-GlyTCC   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroCali1_chr.trna30-PheGAA           GCGGCCGUAGCUCAGC--GGG--AGAGCGCCCGGCUGAAGACCGGGCG-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCGGCCGCA---
+#=GR pyroCali1_chr.trna30-PheGAA   PP ****************..***..*************************........................................................****.*******...********.........*********...
+pyroCali1_chr.trna31-LeuTAA           GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGCUUAAGACCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCA---
+#=GR pyroCali1_chr.trna31-LeuTAA   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........*********...
+pyroCali1_chr.trna32-ProGGG           GGGGCCGUAGUCUAGCC-GGC--AGGAUGCCGGCCUGGGGCGCCGGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCCCCACCA
+#=GR pyroCali1_chr.trna32-ProGGG   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroCali1_chr.trna33-TyrGTA           CGGCCCGUAGCUCAGC--GGUCCAGAGCGCCCGGCUGUAGACCGGGCG-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCGGGCCGACCA
+#=GR pyroCali1_chr.trna33-TyrGTA   PP ****************..******************************........................................................****.*******...********.........************
+pyroCali1_chr.trna34-AsnGTT           GCCGCCGUAGCUCAGCCCGGUC-AGAGCGGCGGGCUGUUAACCCGUAG-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCGGCGGCGCCA
+#=GR pyroCali1_chr.trna34-AsnGTT   PP **********************.*************************........................................................****.*******...********.........************
+pyroCali1_chr.trna35-ThrTGT           GCCCCGGUAGCUCAGCC-GGU--AGAGCGCCCGCCUUGUAAGCGGGCG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCUCCA
+#=GR pyroCali1_chr.trna35-ThrTGT   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroCali1_chr.trna36-ValGAC           GGGCCCGUAGUCUAGC--GGU--AGGAUGCCCGCCUGACGCGCGGGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGGCCCACCA
+#=GR pyroCali1_chr.trna36-ValGAC   PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyroCali1_chr.trna37-LysTTT           GGGCCCGUAGCUCAGCCCGGUU-AGAGCGGCGGGCUUUUAACCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...GAAUCCCA.........CCGGGCCCGCCA
+#=GR pyroCali1_chr.trna37-LysTTT   PP **********************.*************************........................................................****.*******...********.........************
+pyroCali1_chr.trna38-LeuCAA           GCGGGGGUGCCCGAGCC-GGC--AAGGGGCAGGGCUCAAGACCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCA---
+#=GR pyroCali1_chr.trna38-LeuCAA   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........*********...
+pyroCali1_chr.trna39-SerGCT           GCCGGGGUGGCCGAGUU-GGU--AAGGCGCGGGCCUGCUAAGCCCGUC----CCC...........................AUAC-..........GGG----G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCG---
+#=GR pyroCali1_chr.trna39-SerGCT   PP *****************.***..************************6....555...........................8888...........665....6.**.*******...********.........*********...
+pyroCali1_chr.trna40-IleGAT           GGGCCCGUGGCUUAGCCCGGUU-AGAGCGCCCGGCUGAUAACCGGGAG-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCGGGCCCACCA
+#=GR pyroCali1_chr.trna40-IleGAT   PP **********************.*************************........................................................****.*******...********.........************
+pyroCali1_chr.trna41-LeuTAG           GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUUAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCA---
+#=GR pyroCali1_chr.trna41-LeuTAG   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........*********...
+pyroCali1_chr.trna42-AlaTGC           GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCCUUGCACGCGGGUG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGGUCCACCA
+#=GR pyroCali1_chr.trna42-AlaTGC   PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyroCali1_chr.trna43-GlnCTG           AGCCCGGUCGUCUAGC--GGC--AGGAUGCGGGGCUCUGGACCCCGUG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGCUACCA
+#=GR pyroCali1_chr.trna43-GlnCTG   PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyroCali1_chr.trna44-ThrCGT           GCCCCGGUAGCUCAGCC-GGU--GGAGCGCCCGCCUCGUAAGCGGGAG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGGCUCCA
+#=GR pyroCali1_chr.trna44-ThrCGT   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroCali1_chr.trna45-CysGCA           GCCCCGGUAGCUCAGCGUGGUU-AGAGCGGCGGGCUGCAGACCCGUAG-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCCGGGGCU---
+#=GR pyroCali1_chr.trna45-CysGCA   PP ****************99****.*************************........................................................****.*******...********.........*********...
+pyroCali1_chr.trna46-GluTTC           GCCCCGGUAGUCUAGCCCGGUCAAGGAUGUGGGCCUUUCGAGCCCAUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCACCA
+#=GR pyroCali1_chr.trna46-GluTTC   PP ************************************************........................................................*.**.*******...********.........************
+pyroIsla1_chr.trna1-ProCGG            GGGGCCGUAGUCUAGCCUGGU--AGGAUGCGCGGUUCGGGUCCGCGUG-------...........................-----..........-------AUCC.CGGGUUC...AAAUCCCG.........GCGGCCCCACCA
+#=GR pyroIsla1_chr.trna1-ProCGG    PP *********************..*************************........................................................****.*******...********.........************
+pyroIsla1_chr.trna2-GlyTCC            GCGGCGGUAGUCUAGCC-GGU--AGGAUGGCGGCCUUCCAAGCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGCCGCA---
+#=GR pyroIsla1_chr.trna2-GlyTCC    PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroIsla1_chr.trna3-GlyCCC            GCGGCGGUAGUCUAGUCUGGUUUAGGAUGGCGGCCUCCCAAGCCGUUG-------...........................-----..........-------AUCC.CGGGUUC...AAAUCCCG.........GCCGCCGCA---
+#=GR pyroIsla1_chr.trna3-GlyCCC    PP ************************************************........................................................****.*******...********.........*********...
+pyroIsla1_chr.trna4-LeuTAA            GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGCUUAAGACCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR pyroIsla1_chr.trna4-LeuTAA    PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........************
+pyroIsla1_chr.trna5-SerGGA            GCCGGGGUGGCCGAGC--GGC--AAGGCGCGGGACUGGAGAUCCCGUC----CCC...........................GUCU-..........GGG----G-CC.CGGGUUC...AAAUCCCG.........GCCCCGGCGCCA
+#=GR pyroIsla1_chr.trna5-SerGGA    PP ****************..***..************************7....555...........................9999...........555....7.**.*******...********.........************
+pyroIsla1_chr.trna6-SerGCT            GCCGGGGUGGCCGAGUU-GGU--AAGGCGCGGGCCUGCUAAGCCCGUC----CCC...........................GUUC-..........GGG----G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCGCCA
+#=GR pyroIsla1_chr.trna6-SerGCT    PP *****************.***..************************6....555...........................***9...........555....7.**.*******...********.........************
+pyroIsla1_chr.trna7-LeuGAG            GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUGAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR pyroIsla1_chr.trna7-LeuGAG    PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........************
+pyroIsla1_chr.trna8-IleGAT            GGGCCCGUGGCUUAGCC-GGU--AGAGCGCCCGGCUGAUAACCGGGAG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGGCCCACCA
+#=GR pyroIsla1_chr.trna8-IleGAT    PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroIsla1_chr.trna9-SerCGA            GCCGGGGUGGCCGAGC--GGC--AAGGCGCGGGACUCGAGAUCCCGUC----CCC...........................GUCU-..........GGG----G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCGCCA
+#=GR pyroIsla1_chr.trna9-SerCGA    PP ****************..***..************************7....555...........................9999...........555....7.**.*******...********.........************
+pyroIsla1_chr.trna10-ArgCCT           GGGCCCGUAGCUCAGUCAGGAU-AGAGCGGCGGCCUCCUAAGCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...AAAUCCCA.........CCGGGCCCG---
+#=GR pyroIsla1_chr.trna10-ArgCCT   PP **********************.*************************........................................................****.*******...********.........*********...
+pyroIsla1_chr.trna11-ValTAC           GGGCCCGUAGUCUAGC--GGU--AUGAUGCCCGCCUUACACGCGGGUG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCGGGCCCACCA
+#=GR pyroIsla1_chr.trna11-ValTAC   PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyroIsla1_chr.trna12-ProTGG           GGGGCCGUAGUCUAGCC-GGU--AGGAUGCGUGGCUUGGGCCCACGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCCCCACCA
+#=GR pyroIsla1_chr.trna12-ProTGG   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroIsla1_chr.trna13-Ile2CAT          GGGCCCGUAGCUUAGCCCGGC--AGAGCGCCCGGCUCAUAACCGGGAA-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCGGGCCCA---
+#=GR pyroIsla1_chr.trna13-Ile2CAT  PP *********************..*************************........................................................****.*******...********.........*********...
+pyroIsla1_chr.trna14-iMetCAT          AGCGGGGUAGGCCAGCC-GGU--AGGCCGCGGGGCUCAUAACCCCGAG-------...........................-----..........-------G-CC.CCGGUUC...AAAUCCGG.........GCCCCGCUACCA
+#=GR pyroIsla1_chr.trna14-iMetCAT  PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroIsla1_chr.trna15-TyrGTA           CGGCCCGUAGCUCAGC--GGUCGAGAGCGCCCGGCUGUAGACCGGGCG-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCGGGCCGA---
+#=GR pyroIsla1_chr.trna15-TyrGTA   PP ****************..******************************........................................................****.*******...********.........*********...
+pyroIsla1_chr.trna16-ArgTCT           GGGCCCGUAGCUCAGCCUGGAU-AGAGCGGCGGCCUUCUAAGCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...AAAUCCCA.........UCGGGCCCGCCA
+#=GR pyroIsla1_chr.trna16-ArgTCT   PP **********************.*************************........................................................****.*******...********.........************
+pyroIsla1_chr.trna17-LeuCAG           GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUCAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCA---
+#=GR pyroIsla1_chr.trna17-LeuCAG   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........*********...
+pyroIsla1_chr.trna18-MetCAT           GCGGCGGUAGCUCAGCCUGGUU-AGAGCGCUCGGCUCAUAACCGGGAA-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCCGCCGCA---
+#=GR pyroIsla1_chr.trna18-MetCAT   PP **********************.*************************........................................................****.*******...********.........*********...
+pyroIsla1_chr.trna19-AspGTC           GCCCCGGUAGUAUAGCCCGGACUAGUAUGCGGGCCUGUCGAGCCCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCGCCA
+#=GR pyroIsla1_chr.trna19-AspGTC   PP ************************************************........................................................*.**.*******...********.........************
+pyroIsla1_chr.trna20-ThrTGT           GCCCCGGUAGCUCAGCC-GGU--GGAGCGCCCGCCUUGUAAGCGGGAG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGGCU---
+#=GR pyroIsla1_chr.trna20-ThrTGT   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroIsla1_chr.trna21-AlaTGC           GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCCUUGCACGCGGGUG-------...........................-----..........-------AUCC.CGGGUUC...GAAUCCCG.........GCCGGUCCACCA
+#=GR pyroIsla1_chr.trna21-AlaTGC   PP ****************..***..*************************........................................................****.*******...********.........************
+pyroIsla1_chr.trna22-GlnCTG           AGCCCGGUCGUCUAGC--GGCCAAGGAUGCGGGGCUCUGGACCCCGUG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGCUACCA
+#=GR pyroIsla1_chr.trna22-GlnCTG   PP ****************..******************************........................................................*.**.*******...********.........************
+pyroIsla1_chr.trna23-LeuTAG           GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUUAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR pyroIsla1_chr.trna23-LeuTAG   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........************
+pyroIsla1_chr.trna24-CysGCA           GCCCCGGUAGCUCAGUC-GGC--AGAGCGGCGGGCUGCAGACCCGUAG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCUCCA
+#=GR pyroIsla1_chr.trna24-CysGCA   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroIsla1_chr.trna25-ArgTCG           GGGCCCGUAGCUCAGUC-GGU--AGAGCGGCGGCCUUCGGAGCCGUAG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGGCCCGCCA
+#=GR pyroIsla1_chr.trna25-ArgTCG   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroIsla1_chr.trna26-ValCAC           GGGCCCGUAGUCUAGC--GGU--AUGAUGCCCGCCUCACGCGCGGGUG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGGCCCA---
+#=GR pyroIsla1_chr.trna26-ValCAC   PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyroIsla1_chr.trna27-SerTGA           GCCGGGGUGGCCGAGC--GGC--AAGGCGCGGGACUUGAGAUCCCGUC----CCC...........................GUCU-..........GGG----G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCGCCA
+#=GR pyroIsla1_chr.trna27-SerTGA   PP ****************..***..************************7....555...........................9999...........555....7.**.*******...********.........************
+pyroIsla1_chr.trna28-LeuCAA           GCGGGGGUGCCCGAGCC-GGC--AAGGGGCAGGGCUCAAGACCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCA---
+#=GR pyroIsla1_chr.trna28-LeuCAA   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........*********...
+pyroIsla1_chr.trna29-GluCTC           GCCCCGGUAGUCUAGCCCGGUCAAGGAUGCGGGCCUCUCGAGCCCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCACCA
+#=GR pyroIsla1_chr.trna29-GluCTC   PP ************************************************........................................................*.**.*******...********.........************
+pyroIsla1_chr.trna30-GluTTC           GCCCCGGUAGUCUAGCCCGGUCAAGGAUGUGGGCCUUUCGAGCCCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCACCA
+#=GR pyroIsla1_chr.trna30-GluTTC   PP ************************************************........................................................*.**.*******...********.........************
+pyroIsla1_chr.trna31-ArgGCG           GGGCCCGUAGCUCAGCCUGGAU-GGAGCGGCGGCCUGCGGAGCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...AAAUCCCA.........CCGGGCCCG---
+#=GR pyroIsla1_chr.trna31-ArgGCG   PP **********************.*************************........................................................****.*******...********.........*********...
+pyroIsla1_chr.trna32-ThrCGT           GCCCCGGUAGCUCAGCC-GGU--GGAGCGCCCGCCUCGUAAGCGGGAG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGGCU---
+#=GR pyroIsla1_chr.trna32-ThrCGT   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroIsla1_chr.trna33-LysTTT           GGGCCCGUAGCUCAGCCCGGUU-AGAGCGGCGGGCUUUUAACCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...GAAUCCCA.........CCGGGCCCGCCA
+#=GR pyroIsla1_chr.trna33-LysTTT   PP **********************.*************************........................................................****.*******...********.........************
+pyroIsla1_chr.trna34-AsnGTT           GCCGCCGUAGCUCAGCCCGGUU-AGAGCGGCGGGCUGUUAACCCGUAG-------...........................-----..........-------GUCC.CGGGUUC...GAAUCCCG.........GCGGCGGCG---
+#=GR pyroIsla1_chr.trna34-AsnGTT   PP **********************.*************************........................................................****.*******...********.........*********...
+pyroIsla1_chr.trna35-AlaGGC           GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCUUGGCGUGCGGGAG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGGUCCA---
+#=GR pyroIsla1_chr.trna35-AlaGGC   PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyroIsla1_chr.trna36-GlyGCC           GCGGCGGUAGUCUAGCCUGGUUUAGGAUGGCGGCCUGCCAAGCCGUUG-------...........................-----..........-------AUCC.CGGGUUC...AAAUCCCG.........GCCGCCGCACCA
+#=GR pyroIsla1_chr.trna36-GlyGCC   PP ************************************************........................................................****.*******...********.........************
+pyroIsla1_chr.trna37-ArgCCG           GGGCCCGUAGCUCAGUCAGGAU-AGAGCGGCGGCCUCCGGAGCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...AAAUCCCA.........CCGGGCCCGCCA
+#=GR pyroIsla1_chr.trna37-ArgCCG   PP **********************.*************************........................................................****.*******...********.........************
+pyroIsla1_chr.trna38-TrpCCA           GGGGCCGUAGCUCAGCC-GGC--AGAGCGGCGGGCUCCAGACCCGUAG-------...........................-----..........-------G-CG.GGGGUUC...AAAUCCCU.........CCGGCCCCACCA
+#=GR pyroIsla1_chr.trna38-TrpCCA   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroIsla1_chr.trna39-LysCTT           GGGCCCGUAGCUCAGCCUGGU--AGAGCGGCGGGCUCUUAACCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...GAAUCCCA.........CCGGGCCCG---
+#=GR pyroIsla1_chr.trna39-LysCTT   PP *********************..*************************........................................................****.*******...********.........*********...
+pyroIsla1_chr.trna40-ValGAC           GGGCCCGUAGUCUAGC--GGU--AGGAUGCCCGCCUGACGCGCGGGUG-------...........................-----..........-------AUCC.CGGGUUC...AAAUCCCG.........GCGGGCCCA---
+#=GR pyroIsla1_chr.trna40-ValGAC   PP ****************..***..*************************........................................................****.*******...********.........*********...
+pyroIsla1_chr.trna41-GlnTTG           AGCCCGGUCGUCUAGC--GGCCAAGGAUGCGGGGCUUUGGACCCCGUG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGCUACCA
+#=GR pyroIsla1_chr.trna41-GlnTTG   PP ****************..******************************........................................................*.**.*******...********.........************
+pyroIsla1_chr.trna42-ProGGG           GGGGCCGUAGUCUAGCC-GGC--AGGAUGCCGGCCUGGGGCGCCGGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCCCCA---
+#=GR pyroIsla1_chr.trna42-ProGGG   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroIsla1_chr.trna43-ThrGGT           GCCCCGGUAGCUCAGCC-GGU--GGAGCGCCUCACUGGUAAUGAGGAG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGGCU---
+#=GR pyroIsla1_chr.trna43-ThrGGT   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroIsla1_chr.trna44-PheGAA           GCGGCCGUAGCUCAGC--GGG--AGAGCGCCCGGCUGAAGACCGGGCG-------...........................-----..........-------GGCC.CGGGUUC...AAAUCCCG.........GCGGCCGCACCA
+#=GR pyroIsla1_chr.trna44-PheGAA   PP ****************..***..*************************........................................................****.*******...********.........************
+pyroIsla1_chr.trna45-AlaCGC           GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCCUCGCGCGCGGGUG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGGUCCA---
+#=GR pyroIsla1_chr.trna45-AlaCGC   PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyroIsla1_chr.trna46-HisGTG           GCCGCCGUAGUCUAGC--GGU--AGGAUGGCGGGUUGUGGUCCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCGGCC---
+#=GR pyroIsla1_chr.trna46-HisGTG   PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyroOgun2_chr.trna1-AspGTC            GCCCCGGUAGUAUAGCCCGGACUAGUAUGCGGGCCUGUCGAGCCCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCGCCA
+#=GR pyroOgun2_chr.trna1-AspGTC    PP ************************************************........................................................*.**.*******...********.........************
+pyroOgun2_chr.trna2-ThrCGT            GCCCCGGUAGCUCAGCCCGGUC-GGAGCGCCCGCCUCGUAAGCGGGAG-------...........................-----..........-------GUCC.CGGGUUC...GAAUCCCG.........GCCGGGGCU---
+#=GR pyroOgun2_chr.trna2-ThrCGT    PP **********************.*************************........................................................****.*******...********.........*********...
+pyroOgun2_chr.trna3-CysGCA            GCCCCGGUAGCUCAGUC-GGC--AGAGCGGCGGGCUGCAGACCCGUAG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCU---
+#=GR pyroOgun2_chr.trna3-CysGCA    PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroOgun2_chr.trna4-AlaGGC            GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCUUGGCGUGCGGGAG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGGUCCACCA
+#=GR pyroOgun2_chr.trna4-AlaGGC    PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyroOgun2_chr.trna5-LysTTT            GGGCCCGUAGCUCAGCC-GGU--AGAGCGGCGGGCUUUUAACCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...GAAUCCCA.........CCGGGCCCGCCA
+#=GR pyroOgun2_chr.trna5-LysTTT    PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroOgun2_chr.trna6-ValTAC            GGGCCCGUAGUCUAGC--GGU--AGGAUGCCCGCCUUACACGCGGGUG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCGGGCCCA---
+#=GR pyroOgun2_chr.trna6-ValTAC    PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyroOgun2_chr.trna7-ThrTGT            GCCCCGGUAGCUCAGCCCGGUC-GGAGCGCCCGCCUUGUAAGCGGGAG-------...........................-----..........-------GUCC.CGGGUUC...GAAUCCCG.........GCCGGGGCU---
+#=GR pyroOgun2_chr.trna7-ThrTGT    PP **********************.*************************........................................................****.*******...********.........*********...
+pyroOgun2_chr.trna8-TrpCCA            GGGCCCGUAGCUCAGCC-GGC--AGAGCGGCGGGCUCCAGACCCGUAG-------...........................-----..........-------G-CG.GGGGUUC...AAAUCCCU.........CCGGGCCCACCA
+#=GR pyroOgun2_chr.trna8-TrpCCA    PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroOgun2_chr.trna9-GlyCCC            GCGGCGGUAGUCUAGCC-GGU--AGGAUGGCGGCCUCCCAAGCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGCCGCA---
+#=GR pyroOgun2_chr.trna9-GlyCCC    PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroOgun2_chr.trna10-LeuTAA           GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGCUUAAGACCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...GAAUCCCA.........CCCCCCGCA---
+#=GR pyroOgun2_chr.trna10-LeuTAA   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........*********...
+pyroOgun2_chr.trna11-LysCTT           GGGCCCGUAGCUCAGCC-GGU--AGAGCGGCGGGCUCUUAACCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...GAAUCCCA.........CCGGGCCCGCCA
+#=GR pyroOgun2_chr.trna11-LysCTT   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroOgun2_chr.trna12-ValGAC           GGGCCCGUAGUCUAGC--GGU--AGGAUGCCCGCCUGACGCGCGGGUG-------...........................-----..........-------AUCC.CGGGUUC...AAAUCCCG.........GCGGGCCCA---
+#=GR pyroOgun2_chr.trna12-ValGAC   PP ****************..***..*************************........................................................****.*******...********.........*********...
+pyroOgun2_chr.trna13-ArgCCG           GGGCCCGUAGCUCAGCC-GGA--AGAGCGGCGGCCUCCGGAGCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...GAAUCCCA.........CCGGGCCCGCCA
+#=GR pyroOgun2_chr.trna13-ArgCCG   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroOgun2_chr.trna14-GlyGCC           GCGGCGGUAGUCUAGCCUGGUUUAGGAUGGCGGCCUGCCAAGCCGUUG-------...........................-----..........-------AUCC.CGGGUUC...AAAUCCCG.........GCCGCCGCACCA
+#=GR pyroOgun2_chr.trna14-GlyGCC   PP ************************************************........................................................****.*******...********.........************
+pyroOgun2_chr.trna15-IleGAT           GGGCCCGUGGCUUAGCC-GGU--AGAGCGCCCGGCUGAUAACCGGGAG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGGCCCA---
+#=GR pyroOgun2_chr.trna15-IleGAT   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroOgun2_chr.trna16-AlaTGC           GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCCUUGCACGCGGGUG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGGUCCA---
+#=GR pyroOgun2_chr.trna16-AlaTGC   PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyroOgun2_chr.trna17-GlnTTG           AGCCCGGUGGUCUAGC--GGC--AGGAUGCGGGGCUUUGGACCCCGUG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGCUA---
+#=GR pyroOgun2_chr.trna17-GlnTTG   PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyroOgun2_chr.trna18-LeuGAG           GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUGAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR pyroOgun2_chr.trna18-LeuGAG   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........************
+pyroOgun2_chr.trna19-ThrGGT           GCCCCGGUAGCUCAGCC-GGU--GGAGCGCCUCACUGGUACUGAGGAG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGGCU---
+#=GR pyroOgun2_chr.trna19-ThrGGT   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroOgun2_chr.trna20-PheGAA           GCGGCCGUAGCUCAGC--GGG--AGAGCGCCCGGCUGAAGACCGGGCG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGCCGCACCA
+#=GR pyroOgun2_chr.trna20-PheGAA   PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyroOgun2_chr.trna21-iMetCAT          AGCGGGGUAGGCCAGCCUGGU--AGGCCGCGGGGCUCAUAACCCCGAG-------...........................-----..........-------GUCC.CCGGUUC...AAAUCCGG.........GCCCCGCUACCA
+#=GR pyroOgun2_chr.trna21-iMetCAT  PP *********************..*************************........................................................****.*******...********.........************
+pyroOgun2_chr.trna22-ArgCCT           GGGCCCGUAGCUCAGCC-GGA--AGAGCGGCGGCCUCCUAAGCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...GAAUCCCA.........CCGGGCCCGCCA
+#=GR pyroOgun2_chr.trna22-ArgCCT   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroOgun2_chr.trna23-GluCTC           GCCCCGGUAGUCUAGCCCGGUCAAGGAUGCGGGCCUCUCGAGCCCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCA---
+#=GR pyroOgun2_chr.trna23-GluCTC   PP ************************************************........................................................*.**.*******...********.........*********...
+pyroOgun2_chr.trna24-LeuCAA           GCGGGGGUGCCCGAGCC-GGC--AAGGGGCAGGGCUCAAGACCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR pyroOgun2_chr.trna24-LeuCAA   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........************
+pyroOgun2_chr.trna25-GluTTC           GCCCCGGUAGUCUAGCCCGGUCAAGGAUGUGGGCCUUUCGAGCCCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCA---
+#=GR pyroOgun2_chr.trna25-GluTTC   PP ************************************************........................................................*.**.*******...********.........*********...
+pyroOgun2_chr.trna26-SerCGA           GCCGGGGUGGCCGAGC--GGCCCAAGGCGCGGGACUCGAGAUCCCGUC----CCC...........................GUACA..........GGG----GUCG.UGGGUUC...AAAUCCCA.........CCCCCGGCGCCA
+#=GR pyroOgun2_chr.trna26-SerCGA   PP ****************..*****************************6....555...........................****9..........555....77**.*******...********.........************
+pyroOgun2_chr.trna27-ProCGG           GGGGCCGUAGUCUAGCC-GGC--AGGAUGCGCGGUUCGGGUCCGCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCCCCA---
+#=GR pyroOgun2_chr.trna27-ProCGG   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroOgun2_chr.trna28-ValTAC           GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGCUUACGUCCCUGUUGG--U--...........................-----..........--AGGCCU-CG.UGGGUCC...AAAUCCCA.........CCCCUCGUACCA
+#=GR pyroOgun2_chr.trna28-ValTAC   PP *****************.***..*************************99..7..............................................779999.**.*******...********.........************
+pyroOgun2_chr.trna29-LeuCAG           GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUCAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR pyroOgun2_chr.trna29-LeuCAG   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........************
+pyroOgun2_chr.trna30-MetCAT           GCCGCCGUAGCUCAGCCUGGA--AGAGCGCUCGGCUCAUAACCGGGUU-------...........................-----..........-------GCCC.CGGGUUC...AAAUCCCG.........GCGGCGGCA---
+#=GR pyroOgun2_chr.trna30-MetCAT   PP *********************..*************************........................................................****.*******...********.........*********...
+pyroOgun2_chr.trna31-ArgGCG           GGGCCCGUAGCUCAGCCUGGAU-GGAGCGGCGGCCUGCGGAGCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...AAAUCCCA.........CCGGGCCCGCCA
+#=GR pyroOgun2_chr.trna31-ArgGCG   PP **********************.*************************........................................................****.*******...********.........************
+pyroOgun2_chr.trna32-Ile2CAT          GGGCCCGUAGCUUAGCUAGGU--AGAGCGCCCGGCUCAUAACCGGGAG-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCGGGCCCA---
+#=GR pyroOgun2_chr.trna32-Ile2CAT  PP *********************..*************************........................................................****.*******...********.........*********...
+pyroOgun2_chr.trna33-ArgTCT           GGGCCCGUAGCUCAGCC-GGA--AGAGCGGCGGCCUUCUAAGCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...AAAUCCCA.........UCGGGCCCGCCA
+#=GR pyroOgun2_chr.trna33-ArgTCT   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroOgun2_chr.trna34-ArgTCT           GGGCCCGUAGCUCAGCC-GGA--AGAGCGGCGGCCUUCUAAGCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...AAAUCCCA.........UCGGGCCCGCCA
+#=GR pyroOgun2_chr.trna34-ArgTCT   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroOgun2_chr.trna35-TyrGTA           CGGGCCGUAGCUCAGC--GGUUGAGAGCGCCCGGCUGUAGACCGGGCG-------...........................-----..........-------GUCC.CGGGUUC...GAAUCCCG.........GCGGCCCGA---
+#=GR pyroOgun2_chr.trna35-TyrGTA   PP ****************..******************************........................................................****.*******...********.........*********...
+pyroOgun2_chr.trna36-ValCAC           GGGCCCGUAGUCUAGC--GGU--AUGAUGCCCGCCUCACGCGCGGGUG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGGCCCA---
+#=GR pyroOgun2_chr.trna36-ValCAC   PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyroOgun2_chr.trna37-SerTGA           GCCGGGGUGGCCGAGC--GGC--AAGGCGCGGGACUUGAGAUCCCGUC----CCC...........................GUCC-..........GGG----G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCGCCA
+#=GR pyroOgun2_chr.trna37-SerTGA   PP ****************..***..************************6....555...........................***9...........555....6.**.*******...********.........************
+pyroOgun2_chr.trna38-AlaCGC           GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCCUCGCGCGCGGGAG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGGUCCA---
+#=GR pyroOgun2_chr.trna38-AlaCGC   PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyroOgun2_chr.trna39-GlyTCC           GCGGCGGUAGUCUAGCC-GGU--AGGAUGGCGGCCUUCCAAGCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGCCGCA---
+#=GR pyroOgun2_chr.trna39-GlyTCC   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroOgun2_chr.trna40-HisGTG           GCCGCCGUAGUCUAGC--GGU--AGGAUGGCGGGUUGUGGUCCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCGGCC---
+#=GR pyroOgun2_chr.trna40-HisGTG   PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyroOgun2_chr.trna41-ProGGG           GGGGCCGUAGUCUAGCC-GGC--AGGAUGCCGGCCUGGGGCGCCGGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCCCCA---
+#=GR pyroOgun2_chr.trna41-ProGGG   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroOgun2_chr.trna42-GlnCTG           AGCCCGGUGGUCUAGC--GGC--AGGAUGCGGGGCUCUGGACCCCGUG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGCUA---
+#=GR pyroOgun2_chr.trna42-GlnCTG   PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyroOgun2_chr.trna43-LeuTAG           GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUUAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR pyroOgun2_chr.trna43-LeuTAG   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........************
+pyroOgun2_chr.trna44-SerGGA           GCCGGGGUGGCCGAGC--GGC--AAGGCGCGGGACUGGAGAUCCCGUC----CCC...........................GUUC-..........GGG----G-CC.CGGGUUC...AAAUCCCG.........GCCCCGGCG---
+#=GR pyroOgun2_chr.trna44-SerGGA   PP ****************..***..************************6....555...........................***9...........555....7.**.*******...********.........*********...
+pyroOgun2_chr.trna45-SerGCT           GCCGGGGUGGCCGAGUU-GGU--AAGGCGCGGGCCUGCUAAGCCCGUC----CCC...........................GUUC-..........GGG----G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCG---
+#=GR pyroOgun2_chr.trna45-SerGCT   PP *****************.***..************************6....555...........................***9...........555....7.**.*******...********.........*********...
+pyroOgun2_chr.trna46-ProTGG           GGGGCCGUAGUCUAGCC-GGC--AGGAUGCGUGGCUUGGGCCCACGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCCCCA---
+#=GR pyroOgun2_chr.trna46-ProTGG   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroOgun2_chr.trna47-AsnGTT           GCCGCCGUAGCUCAGCC-GGU--AGAGCGGCGGGCUGUUAACCCGUAG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGCGGCG---
+#=GR pyroOgun2_chr.trna47-AsnGTT   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyroOgun2_chr.trna48-ArgTCG           GGGCCCGUGGCUCAGCC-GGU--AGAGCGGCGGCCUUCGGAGCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...AAAUCCCA.........CCGGGCCCGCCA
+#=GR pyroOgun2_chr.trna48-ArgTCG   PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyroOgun2_chr.trna49-LeuCAG           GCGGGGGUGCCCGAGCCAGGUCAAAGGGGCAGGGUUCAGGUCCCUGUG---GCGUaaaucccagcccuggcgcuuuucucuc-----ggcaacccacACGC-----CGc-------cacAAAGGCGCgggucauagCCCCCCGCU---
+#=GR pyroOgun2_chr.trna49-LeuCAG   PP ************************************************...**********999999999888877766655.....55667789999999.....***.......*****************************...
+pyro1860_1_chr.trna1-ValCAC           GGGCCCGUAGUCUAGC--GGU--AUGAUGCCCGCCUCACGCGCGGGUG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGGCCCA---
+#=GR pyro1860_1_chr.trna1-ValCAC   PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+pyro1860_1_chr.trna2-Ile2CAT          GCCGCCGUUGCACAGCCUGGUU-AGUGCGCCCGGCUCAUAACCGGGAG-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCGGCGGCACCA
+#=GR pyro1860_1_chr.trna2-Ile2CAT  PP **********************.*************************........................................................****.*******...********.........************
+pyro1860_1_chr.trna3-LeuCAG           GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUCAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR pyro1860_1_chr.trna3-LeuCAG   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........************
+pyro1860_1_chr.trna4-AspGTC           GCCCCGGUAGUCUAGUCUGGUCUAGGAUGCGGGCCUGUCGAGCCCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCGCCA
+#=GR pyro1860_1_chr.trna4-AspGTC   PP ************************************************........................................................*.**.*******...********.........************
+pyro1860_1_chr.trna5-ArgCCT           GGGCCCGUAGCUCAGUCAGGAU-AGAGCGGCGGCCUCCUAAGCCGUAG-------...........................-----..........-------GUCC.CGGGUUC...GAAUCCCG.........GCGGGCCCGCCA
+#=GR pyro1860_1_chr.trna5-ArgCCT   PP **********************.*************************........................................................****.*******...********.........************
+pyro1860_1_chr.trna6-AlaGGC           GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCUUGGCGUGCGGGAG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGGUCCACCA
+#=GR pyro1860_1_chr.trna6-AlaGGC   PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyro1860_1_chr.trna7-LysTTT           GGGCCCGUAGCUCAGCCCGGUU-AGAGCGGCGGGCUUUUAACCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...GAAUCCCA.........CCGGGCCCGCCA
+#=GR pyro1860_1_chr.trna7-LysTTT   PP **********************.*************************........................................................****.*******...********.........************
+pyro1860_1_chr.trna8-GlnTTG           AGCCCGGUCGUCUAGC--GGCCAAGGAUGCGGGGCUUUGGACCCCGUG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGCUACCA
+#=GR pyro1860_1_chr.trna8-GlnTTG   PP ****************..******************************........................................................*.**.*******...********.........************
+pyro1860_1_chr.trna9-ThrCGT           GCCCCGGUAGCUCAGCCCGGUU-GGAGCGCCCGCCUCGUAAGCGGGAG-------...........................-----..........-------GUCC.CGGGUUC...GAAUCCCG.........GCCGGGGCU---
+#=GR pyro1860_1_chr.trna9-ThrCGT   PP **********************.*************************........................................................****.*******...********.........*********...
+pyro1860_1_chr.trna10-ThrTGT          GCCCCGGUAGCUCAGCUCGGUC-GGAGCGCCCGCCUUGUAAGCGGGAG-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCCGGGGCUCCA
+#=GR pyro1860_1_chr.trna10-ThrTGT  PP **********************.*************************........................................................****.*******...********.........************
+pyro1860_1_chr.trna11-CysGCA          GCCCCGGUAGCUCAGUCCGGU--AGAGCGGCGGGCUGCAGACCCGUAG-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCCGGGGCUCCA
+#=GR pyro1860_1_chr.trna11-CysGCA  PP *********************..*************************........................................................****.*******...********.........************
+pyro1860_1_chr.trna12-GlyCCC          GCGGCGGUAGUCUAGCC-GGU--AGGAUGGCGGCCUCCCAAGCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGCCGCACCA
+#=GR pyro1860_1_chr.trna12-GlyCCC  PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyro1860_1_chr.trna13-TrpCCA          GGGGCCGUAGCUCAGCCAGGC--AGAGCGGCGGGCUCCAGACCCGUAG-------...........................-----..........-------GGCG.GGGGUUC...AAAUCCCU.........CCGGCCCCACCA
+#=GR pyro1860_1_chr.trna13-TrpCCA  PP *********************..*************************........................................................****.*******...********.........************
+pyro1860_1_chr.trna14-ArgCCG          GGGCCCGUAGCUCAGUC-GGA--AGAGCGGCGGCCUCCGGAGCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...AAAUCCCA.........CCGGGCCCGCCA
+#=GR pyro1860_1_chr.trna14-ArgCCG  PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyro1860_1_chr.trna15-GlnCTG          AGCCCGGUCGUCUAGC--GGCCAAGGAUGCGGGGCUCUGGACCCCGUG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGCUACCA
+#=GR pyro1860_1_chr.trna15-GlnCTG  PP ****************..******************************........................................................*.**.*******...********.........************
+pyro1860_1_chr.trna16-ThrGGT          GCCCCGGUAGCUCAGCCUGGU--GGAGCGCCUCACUGGUAAUGAGGAG-------...........................-----..........-------GUCC.CGGGUUC...GAAUCCCG.........GCCGGGGCUCCA
+#=GR pyro1860_1_chr.trna16-ThrGGT  PP *********************..*************************........................................................****.*******...********.........************
+pyro1860_1_chr.trna17-PheGAA          GCGGCCGUAGCUCAGC--GGG--AGAGCGCCCGGCUGAAGACCGGGCG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGCCGCACCA
+#=GR pyro1860_1_chr.trna17-PheGAA  PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyro1860_1_chr.trna18-ProCGG          AGGGCCGUAGUCUAGCCUGGU--AGGAUGCGCGGUUCGGGUCCGCGUG-------...........................-----..........-------ACCC.CGGGUUC...AAAUCCCG.........GCGGCCCCACCA
+#=GR pyro1860_1_chr.trna18-ProCGG  PP *********************..*************************........................................................****.*******...********.........************
+pyro1860_1_chr.trna19-GluTTC          GCCCCGGUAGUCUAGCCCGGUCAAGGAUGUGGGCCUUUCGAGCCCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCA---
+#=GR pyro1860_1_chr.trna19-GluTTC  PP ************************************************........................................................*.**.*******...********.........*********...
+pyro1860_1_chr.trna20-Ile2CAT         GGGCCCGUAGCUCAGCCAGGU--GGAGCGCCCGGCUCAUAACCGGGCG-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCGGGCCCACCA
+#=GR pyro1860_1_chr.trna20-Ile2CAT PP *********************..*************************........................................................****.*******...********.........************
+pyro1860_1_chr.trna21-ArgTCT          GGGCCCGUAGCUCAGCC-GGA--AGAGCGGCGGCCUUCUAAGCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...AAAUCCCA.........UCGGGCCCGCCA
+#=GR pyro1860_1_chr.trna21-ArgTCT  PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyro1860_1_chr.trna22-GluCTC          GCCCCGGUAGUCUAGCCCGGUCAAGGAUGCGGGCCUCUCGAGCCCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCA---
+#=GR pyro1860_1_chr.trna22-GluCTC  PP ************************************************........................................................*.**.*******...********.........*********...
+pyro1860_1_chr.trna23-LeuCAA          GCGGGGGUGCCCGAGCCAGGCCAAAGGGGCAGGGCUCAAGACCCUGU-GGC----...........................GUAG-..........----GCCUGCG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR pyro1860_1_chr.trna23-LeuCAA  PP ***********************************************.***...............................8888...............*******.*******...********.........************
+pyro1860_1_chr.trna24-TyrGTA          CGGCCCGUAGCUCAGC--GGUCCAGAGCGCCCGGCUGUAGACCGGGCG-------...........................-----..........-------GUCC.CGGGUUC...GAAUCCCG.........GCGGGCCGACCA
+#=GR pyro1860_1_chr.trna24-TyrGTA  PP ****************..******************************........................................................****.*******...********.........************
+pyro1860_1_chr.trna25-ArgGCG          GGGCCCGUAGCGCAGUCAGGAC-AGCGCGGCGGCCUGCGGAGCCGUAG-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCGGGCCCGCCA
+#=GR pyro1860_1_chr.trna25-ArgGCG  PP **********************.*************************........................................................****.*******...********.........************
+pyro1860_1_chr.trna26-SerCGA          GCCGGGGUGGCCGAGC--GGC--AAGGCGCGGGACUCGAGAUCCCGUC----CCC...........................GCAC-..........GGG----G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCGCCA
+#=GR pyro1860_1_chr.trna26-SerCGA  PP ****************..***..************************6....555...........................9999...........555....7.**.*******...********.........************
+pyro1860_1_chr.trna27-AlaCGC          GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCCUCGCGCGCGGGAG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGGUCCACCA
+#=GR pyro1860_1_chr.trna27-AlaCGC  PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyro1860_1_chr.trna28-iMetCAT         AGCGGGGUAGGCCAGCCUGGU--AGGCCGCGGGGCUCAUAACCCCGAG-------...........................-----..........-------GUCC.CCGGUUC...AAAUCCGG.........GCCCCGCUA---
+#=GR pyro1860_1_chr.trna28-iMetCAT PP *********************..*************************........................................................****.*******...********.........*********...
+pyro1860_1_chr.trna29-GlyTCC          GCGGCGGUAGUCUAGCC-GGU--AGGAUGGCGGCCUUCCAAGCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGCCGCA---
+#=GR pyro1860_1_chr.trna29-GlyTCC  PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyro1860_1_chr.trna30-ProGGG          GGGGCCGUAGUCUAGCC-GGC--AGGAUGCCGGCCUGGGGCGCCGGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCCCCACCA
+#=GR pyro1860_1_chr.trna30-ProGGG  PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyro1860_1_chr.trna31-ValGAC          GGGCCCGUAGUCUAGC--GGU--AGGAUGCCCGCCUGACGCGCGGGUG-------...........................-----..........-------AUCC.CGGGUUC...AAAUCCCG.........GCGGGCCCA---
+#=GR pyro1860_1_chr.trna31-ValGAC  PP ****************..***..*************************........................................................****.*******...********.........*********...
+pyro1860_1_chr.trna32-LysCTT          GGGCCCGUAGCUCAGCCUGGU--AGAGCGGCGGGCUCUUAACCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...GAAUCCCA.........CCGGGCCCGCCA
+#=GR pyro1860_1_chr.trna32-LysCTT  PP *********************..*************************........................................................****.*******...********.........************
+pyro1860_1_chr.trna33-GlyGCC          GCGGCGGUAGUCUAGCC-GGU--AGGAUGGCGGCCUGCCAAGCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGCCGCACCA
+#=GR pyro1860_1_chr.trna33-GlyGCC  PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyro1860_1_chr.trna34-LeuTAG          GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUUAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCA---
+#=GR pyro1860_1_chr.trna34-LeuTAG  PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........*********...
+pyro1860_1_chr.trna35-SerGGA          GCCGGGGUGGCCGAGC--GGC--AAGGCGCGGGACUGGAGAUCCCGUC----CCC...........................GUCA-..........GGG----G-CC.CGGGUUC...AAAUCCCG.........GCCCCGGCG---
+#=GR pyro1860_1_chr.trna35-SerGGA  PP ****************..***..************************6....555...........................***9...........555....6.**.*******...********.........*********...
+pyro1860_1_chr.trna36-SerGCT          GCCGGGGUGGCCGAGUU-GGU--AAGGCGCGGGCCUGCUAAGCCCGUC----CCC...........................GUUC-..........GGG----G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCG---
+#=GR pyro1860_1_chr.trna36-SerGCT  PP *****************.***..************************6....555...........................***9...........555....7.**.*******...********.........*********...
+pyro1860_1_chr.trna37-LeuTAA          GCGGGGGUGCCCGAGCCAGGUCAAAGGGGCAGGGCUUAAGACCCUGU-GGC----...........................GUAG-..........----GCCUGCG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR pyro1860_1_chr.trna37-LeuTAA  PP ***********************************************.***...............................8888...............*******.*******...********.........************
+pyro1860_1_chr.trna38-LeuGAG          GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUGAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCA---
+#=GR pyro1860_1_chr.trna38-LeuGAG  PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........*********...
+pyro1860_1_chr.trna39-AlaTGC          GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCCUUGCACGCGGGCG-------...........................-----..........-------GUCC.CGGGUUC...GAAUCCCG.........GCCGGUCCACCA
+#=GR pyro1860_1_chr.trna39-AlaTGC  PP ****************..***..*************************........................................................****.*******...********.........************
+pyro1860_1_chr.trna40-HisGTG          GCCGCCGUAGUCUAGC--GGUU-AGGAUGGCGGGUUGUGGUCCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCGGCCCCA
+#=GR pyro1860_1_chr.trna40-HisGTG  PP ****************..****.*************************........................................................*.**.*******...********.........************
+pyro1860_1_chr.trna41-AsnGTT          GCCGCCGUAGCUCAGCC-GGU--AGAGCGGCGGGCUGUUAACCCGUAG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGCGGCGCCA
+#=GR pyro1860_1_chr.trna41-AsnGTT  PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyro1860_1_chr.trna42-ValTAC          GGGCCCGUAGUCUAGC--GGU--AUGAUGCCCGCCUUACACGCGGGUG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCGGGCCCACCA
+#=GR pyro1860_1_chr.trna42-ValTAC  PP ****************..***..*************************........................................................*.**.*******...********.........************
+pyro1860_1_chr.trna43-ProTGG          GGGGCCGUAGUCUAGCC-GGU--AGGAUGCGUGGCUUGGGCCCACGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCCCCACCA
+#=GR pyro1860_1_chr.trna43-ProTGG  PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyro1860_1_chr.trna44-IleGAT          GGGCCCGUGGCUUAGCC-GGU--AGAGCGCCCGGCUGAUAUCCGGGAG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGGCCCACCA
+#=GR pyro1860_1_chr.trna44-IleGAT  PP *****************.***..*************************........................................................*.**.*******...********.........************
+pyro1860_1_chr.trna46-ArgTCG          GGGCCCGUGGCUCAGCC-GGU--AGAGCGGCGGCCUUCGGAGCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...AAAUCCCA.........CCGGGCCCG---
+#=GR pyro1860_1_chr.trna46-ArgTCG  PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+pyro1860_1_chr.trna47-SerTGA          GCCGGGGUGGCCGAGC--GGC--AAGGCGCGGGACUUGAGAUCCCGUCCCCGC--...........................-----..........--GAGGGG-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCG---
+#=GR pyro1860_1_chr.trna47-SerTGA  PP ****************..***..************************999988..............................................889999.**.*******...********.........*********...
+therNeut1_chr.trna1-TyrGTA            CGGCCCGUAGCUCAGC--GGUCGAGAGCGCCCGGCUGUAGACCGGGCG-------...........................-----..........-------GUCC.CGGGUUC...GAAUCCCG.........GCGGGCCGA---
+#=GR therNeut1_chr.trna1-TyrGTA    PP ****************..******************************........................................................****.*******...********.........*********...
+therNeut1_chr.trna2-GlnTTG            AGCCCGGUCGUCUAGC--GGCCAAGGAUGCGGGGCUUUGGACCCCGUG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGCUACCA
+#=GR therNeut1_chr.trna2-GlnTTG    PP ****************..******************************........................................................*.**.*******...********.........************
+therNeut1_chr.trna3-LeuTAG            GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUUAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCA---
+#=GR therNeut1_chr.trna3-LeuTAG    PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........*********...
+therNeut1_chr.trna4-CysGCA            GCCCCGGUAGCUCAGUC-GGC--AGAGCGGCGGGCUGCAGACCCGUAG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCUCCA
+#=GR therNeut1_chr.trna4-CysGCA    PP *****************.***..*************************........................................................*.**.*******...********.........************
+therNeut1_chr.trna5-ArgTCG            GGGCCCGUAGCUCAGUC-GGU--AGAGCGGCGGCCUUCGGAGCCGUAG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGGCCCGCCA
+#=GR therNeut1_chr.trna5-ArgTCG    PP *****************.***..*************************........................................................*.**.*******...********.........************
+therNeut1_chr.trna6-ThrCGT            GCCCCGGUAGCUCAGCCCGGUC-GGAGCGCCCGCCUCGUAAGCGGGAG-------...........................-----..........-------GUCC.CGGGUUC...GAAUCCCG.........GCCGGGGCU---
+#=GR therNeut1_chr.trna6-ThrCGT    PP **********************.*************************........................................................****.*******...********.........*********...
+therNeut1_chr.trna7-ArgCCT            GGGCCCGUAGCUCAGUCAGGAU-AGAGCGGCGGCCUCCUAAGCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...GAAUCCCA.........CCGGGCCCGCCA
+#=GR therNeut1_chr.trna7-ArgCCT    PP **********************.*************************........................................................****.*******...********.........************
+therNeut1_chr.trna8-AlaGGC            GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCUUGGCGUGCGGGAG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGGUCCA---
+#=GR therNeut1_chr.trna8-AlaGGC    PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+therNeut1_chr.trna9-LysTTT            GGGCCCGUAGCUCAGCCCGGUU-AGAGCGGCGGGCUUUUAACCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...GAAUCCCA.........CCGGGCCCGCCA
+#=GR therNeut1_chr.trna9-LysTTT    PP **********************.*************************........................................................****.*******...********.........************
+therNeut1_chr.trna10-SerGGA           GCCGGGGUGGCCGAGC--GGC--AAGGCGCGGGACUGGAGAUCCCGUC----CCC...........................GUCU-..........GGG----G-CC.CGGGUUC...AAAUCCCG.........GCCCCGGCGCCA
+#=GR therNeut1_chr.trna10-SerGGA   PP ****************..***..************************7....555...........................9999...........555....7.**.*******...********.........************
+therNeut1_chr.trna11-SerGCT           GCCGGGGUGGCCGAGUU-GGU--AAGGCGCGGGCCUGCUAAGCCCGUC----CCC...........................GUUC-..........GGG----G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCGCCA
+#=GR therNeut1_chr.trna11-SerGCT   PP *****************.***..************************6....555...........................***9...........555....7.**.*******...********.........************
+therNeut1_chr.trna12-GlyCCC           GCGGCGGUAGUCUAGCC-GGU--AGGAUGGCGGCCUCCCAAGCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGCCGCA---
+#=GR therNeut1_chr.trna12-GlyCCC   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+therNeut1_chr.trna13-LeuTAA           GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGCUUAAGACCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCA---
+#=GR therNeut1_chr.trna13-LeuTAA   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........*********...
+therNeut1_chr.trna14-GlyGCC           GCGGCGGUAGUCUAGCCUGGUUUAGGAUGGCGGCCUGCCAAGCCGUUG-------...........................-----..........-------AUCC.CGGGUUC...AAAUCCCG.........GCCGCCGCACCA
+#=GR therNeut1_chr.trna14-GlyGCC   PP ************************************************........................................................****.*******...********.........************
+therNeut1_chr.trna15-ArgCCG           GGGCCCGUAGCUCAGUC-GGA--AGAGCGGCGGCCUCCGGAGCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...AAAUCCCA.........CCGGGCCCGCCA
+#=GR therNeut1_chr.trna15-ArgCCG   PP *****************.***..*************************........................................................*.**.*******...********.........************
+therNeut1_chr.trna16-TrpCCA           GGGGCCGUAGCUCAGCCAGGC--AGAGCGGCGGGCUCCAGACCCGUAG-------...........................-----..........-------GGCG.GGGGUUC...AAAUCCCU.........CCGGCCCCACCA
+#=GR therNeut1_chr.trna16-TrpCCA   PP *********************..*************************........................................................****.*******...********.........************
+therNeut1_chr.trna17-LysCTT           GGGCCCGUAGCUCAGCC-GGU--AGAGCGGCGGGCUCUUAACCCGUAG-------...........................-----..........-------G-CG.UGGGUUC...GAAUCCCA.........CCGGGCCCG---
+#=GR therNeut1_chr.trna17-LysCTT   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+therNeut1_chr.trna18-ValGAC           GGGCCCGUAGUCUAGC--GGU--AGGAUGCCCGCCUGACGCGCGGGUG-------...........................-----..........-------ACCC.CGGGUUC...AAAUCCCG.........GCGGGCCCA---
+#=GR therNeut1_chr.trna18-ValGAC   PP ****************..***..*************************........................................................****.*******...********.........*********...
+therNeut1_chr.trna19-GlnCTG           AGCCCGGUCGUCUAGC--GGCCAAGGAUGCGGGGCUCUGGACCCCGUG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGCUACCA
+#=GR therNeut1_chr.trna19-GlnCTG   PP ****************..******************************........................................................*.**.*******...********.........************
+therNeut1_chr.trna20-ProGGG           GGGGCCGUAGUCUAGCC-GGC--AGGAUGCCGGCCUGGGGCGCCGGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCCCCA---
+#=GR therNeut1_chr.trna20-ProGGG   PP *****************.***..*************************........................................................*.**.*******...********.........*********...
+therNeut1_chr.trna21-ThrGGT           GCCCCGGUAGCUCAGCCUGGU--GGAGCGCCUCACUGGUAAUGAGGAG-------...........................-----..........-------GUCC.CGGGUUC...GAAUCCCG.........GCCGGGGCU---
+#=GR therNeut1_chr.trna21-ThrGGT   PP *********************..*************************........................................................****.*******...********.........*********...
+therNeut1_chr.trna22-PheGAA           GCGGCCGUAGCUCAGC--GGG--AGAGCGCCCGGCUGAAGACCGGGCG-------...........................-----..........-------GGCC.CGGGUUC...AAAUCCCG.........GCGGCCGCACCA
+#=GR therNeut1_chr.trna22-PheGAA   PP ****************..***..*************************........................................................****.*******...********.........************
+therNeut1_chr.trna23-iMetCAT          AGCGGGGUAGGCCAGCC-GGU--AGGCCGCGGGGCUCAUAACCCCGAG-------...........................-----..........-------G-CC.CCGGUUC...AAAUCCGG.........GCCCCGCUACCA
+#=GR therNeut1_chr.trna23-iMetCAT  PP *****************.***..*************************........................................................*.**.*******...********.........************
+therNeut1_chr.trna24-AlaCGC           GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCCUCGCGCGCGGGAG-------...........................-----..........-------AUCC.CGGGUUC...GAAUCCCG.........GCCGGUCCACCA
+#=GR therNeut1_chr.trna24-AlaCGC   PP ****************..***..*************************........................................................****.*******...********.........************
+therNeut1_chr.trna25-SerCGA           GCCGGGGUGGCCGAGC--GGC--AAGGCGCGGGACUCGAGAUCCCGUC----CCC...........................GUCA-..........GGG----G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCGCCA
+#=GR therNeut1_chr.trna25-SerCGA   PP ****************..***..************************6....555...........................***9...........555....6.**.*******...********.........************
+therNeut1_chr.trna26-ProCGG           GGGGCCGUCGUUCAGCCUGGU--AGGAUGCGCGGUUCGGGUCCGCGUG-------...........................-----..........-------AGCC.CGGGUUC...AAAUCCCG.........GCGGCCCCACCA
+#=GR therNeut1_chr.trna26-ProCGG   PP *********************..*************************........................................................****.*******...********.........************
+therNeut1_chr.trna27-GlyTCC           GCGGCGGUCGUCUAGCU-GGACUAGGAUGGCGGCCUUCCAAGCCGUUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGCCGCA---
+#=GR therNeut1_chr.trna27-GlyTCC   PP *****************.******************************........................................................*.**.*******...********.........*********...
+therNeut1_chr.trna28-LeuGAG           GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUGAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR therNeut1_chr.trna28-LeuGAG   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........************
+therNeut1_chr.trna29-IleGAT           GGGCCCGUGGCUUAGCC-GGU--AGAGCGCCCGGCUGAUAACCGGGAG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGGCCCACCA
+#=GR therNeut1_chr.trna29-IleGAT   PP *****************.***..*************************........................................................*.**.*******...********.........************
+therNeut1_chr.trna30-ValTAC           GGGCCCGUAGUCUAGC--GGC--AUGAUGCCCGCCUUACACGCGGGUG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCGGGCCCACCA
+#=GR therNeut1_chr.trna30-ValTAC   PP ****************..***..*************************........................................................*.**.*******...********.........************
+therNeut1_chr.trna31-ProTGG           GGGGCCGUCGUCUAGCC-GGU--AGGAUGCGUGGCUUGGGCCCACGUG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGCCCCACCA
+#=GR therNeut1_chr.trna31-ProTGG   PP *****************.***..*************************........................................................*.**.*******...********.........************
+therNeut1_chr.trna32-LeuCAG           GCGGGGGUGCCCGAGCC-GGU--AAGGGGCAGGGUUCAGGUCCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR therNeut1_chr.trna32-LeuCAG   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........************
+therNeut1_chr.trna33-MetCAT           GCGGCGGUAGCUCAGCCUGGUU-AGAGCGCUCGGCUCAUAACCGGGAA-------...........................-----..........-------GCCC.CGGGUUC...AAAUCCCG.........GCCGCCGCA---
+#=GR therNeut1_chr.trna33-MetCAT   PP **********************.*************************........................................................****.*******...********.........*********...
+therNeut1_chr.trna34-AspGTC           GCCCCGGUAGUAUAGCCCGGACUAGUAUGCGGGCCUGUCGAGCCCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCGCCA
+#=GR therNeut1_chr.trna34-AspGTC   PP ************************************************........................................................*.**.*******...********.........************
+therNeut1_chr.trna35-ThrTGT           GCCCCGGUAGCUCAGC--GGG--GGAGCGCCCGCCUUGUAAGCGGGAG-------...........................-----..........-------G-CC.CGGGUUC...GAAUCCCG.........GCCGGGGCU---
+#=GR therNeut1_chr.trna35-ThrTGT   PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+therNeut1_chr.trna36-AlaTGC           GGGCCGGUAGUCUAGC--GGA--AGGAUGCCCGCCUUGCACGCGGGAG-------...........................-----..........-------A-CC.CGGGUUC...GAAUCCCG.........GCCGGUCCACCA
+#=GR therNeut1_chr.trna36-AlaTGC   PP ****************..***..*************************........................................................*.**.*******...********.........************
+therNeut1_chr.trna37-HisGTG           GCCGCCGUAGUCUAGC--GGU--AGGAUGGCGGGUUGUGGUCCCGCUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCGGCGGCC---
+#=GR therNeut1_chr.trna37-HisGTG   PP ****************..***..*************************........................................................*.**.*******...********.........*********...
+therNeut1_chr.trna38-AsnGTT           GCCGCCGUAGCUCAGCUCGGUUCAGAGCGGCGGGCUGUUAACCCGUAG-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCGGCGGCG---
+#=GR therNeut1_chr.trna38-AsnGTT   PP ************************************************........................................................****.*******...********.........*********...
+therNeut1_chr.trna39-ValCAC           GGGCCCGUAGUCUAGC--GGU--AUGAUGCCCGCCUCACGCGCGGGUG-------...........................-----..........-------G-CC.CGGGUUC...AAAUCCCG.........GCGGGCCCACCA
+#=GR therNeut1_chr.trna39-ValCAC   PP ****************..***..*************************........................................................*.**.*******...********.........************
+therNeut1_chr.trna40-SerTGA           GCCGGGGUGGCCGAGC--GGCCCAAGGCGCGGGACUUGAGAUCCCGU----CCCC...........................GUCAA..........GGGG---G-CG.UGGGUUC...AAAUCCCA.........CCCCCGGCGCCA
+#=GR therNeut1_chr.trna40-SerTGA   PP ****************..*****************************....9999...........................*****..........9999...9.**.*******...********.........************
+therNeut1_chr.trna41-LeuCAA           GCGGGGGUGCCCGAGCC-GGC--AAGGGGCAGGGCUCAAGACCCUGU-GGC----...........................GUAG-..........----GCCU-CG.UGGGUUC...AAAUCCCA.........CCCCCCGCACCA
+#=GR therNeut1_chr.trna41-LeuCAA   PP *****************.***..************************.566...............................9999...............6665.**.*******...********.........************
+therNeut1_chr.trna42-GluCTC           GCCCCGGUAGUCUAGCCCGGUCAAGGAUGCGGGCCUCUCGAGCCCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCACCA
+#=GR therNeut1_chr.trna42-GluCTC   PP ************************************************........................................................*.**.*******...********.........************
+therNeut1_chr.trna43-ArgTCT           GGGCCCGUAGCUCAGCCUGGAU-AGAGCGGCGGCCUUCUAAGCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...GAAUCCCA.........UCGGGCCCGCCA
+#=GR therNeut1_chr.trna43-ArgTCT   PP **********************.*************************........................................................****.*******...********.........************
+therNeut1_chr.trna44-Ile2CAT          GGGCCCGUAGCUUAGCCCGGC--AGAGCGCCCGGCUCAUAACCGGGAA-------...........................-----..........-------GUCC.CGGGUUC...AAAUCCCG.........GCGGGCCCA---
+#=GR therNeut1_chr.trna44-Ile2CAT  PP *********************..*************************........................................................****.*******...********.........*********...
+therNeut1_chr.trna45-GluTTC           GCCCCGGUAGUCUAGCCCGGUCAAGGAUGUGGGCCUUUCGAGCCCGUG-------...........................-----..........-------A-CC.CGGGUUC...AAAUCCCG.........GCCGGGGCACCA
+#=GR therNeut1_chr.trna45-GluTTC   PP ************************************************........................................................*.**.*******...********.........************
+therNeut1_chr.trna46-ArgGCG           GGGCCCGUAGCUCAGCCUGGAU-GGAGCGGCGGCCUGCGGAGCCGUAG-------...........................-----..........-------GUCG.UGGGUUC...AAAUCCCA.........CCGGGCCCG---
+#=GR therNeut1_chr.trna46-ArgGCG   PP **********************.*************************........................................................****.*******...********.........*********...
+#=GC SS_cons                          (((((((,,<<<<___________>>>>,<<<<<_______>>>>>,,<<<<<<<..........................._____..........>>>>>>>,,,<.<<<<___...____>>>>.........>)))))))::::
+#=GC RF                               =======++====+++++++++++====+=====++***++=====++=======...........................+++++..........=======+++=.====+++...++++====.........========+***
+//

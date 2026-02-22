@@ -1,0 +1,15 @@
+python3 -c "
+rows = [
+      ['dbname','taxid','name','domain','kingdom','subkingdom','phylum','subphylum','class','subclass','order','family','genus','species','assembly'],
+      ['pyrAer1','178306','Pyrobaculum aerophilum str. IM2','2157','','','28889','','183924','','2266','2267','2276','13773','178306'],
+      ['pyroArse1','340102','Pyrobaculum arsenaticum DSM 13514','2157','','','28889','','183924','','2266','2267','2276','121277','340102'],
+      ['pyroCali1','410359','Pyrobaculum calidifontis JCM 11548','2157','','','28889','','183924','','2266','2267','2276','181486','410359'],
+      ['pyroIsla1','384616','Pyrobaculum islandicum DSM 4184','2157','','','28889','','183924','','2266','2267','2276','2277','384616'],
+      ['pyroOgun2','99007','Pyrobaculum oguniense TE7','2157','','','28889','','183924','','2266','2267','2276','99007','99007'],
+      ['pyro1860_1','1104324','Pyrobaculum sp. 1860','2157','','','28889','','183924','','2266','2267','2276','1104324','1104324'],
+      ['therNeut1','444157','Thermoproteus neutrophilus V24Sta','2157','','','28889','','183924','','2266','2267','2276','70771','444157'],
+]
+with open('genomes.tsv','w') as f:
+  for r in rows:
+  f.write('\t'.join(r)+'\n')
+"
