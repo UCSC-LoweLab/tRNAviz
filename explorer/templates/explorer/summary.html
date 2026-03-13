@@ -45,42 +45,58 @@ $(document).ready(function() {
 {% block plotjs %}
 <script type = "text/javascript">
 var coords_path = "{% url 'explorer:coords' %}"
+var clade_name = "{{ clade }}".replace(/\s*\(.*\)/, '');
+var isotype_name = "{{ isotype }}";
 $(document).ready(function() {
 	d3.json('{% url "explorer:cloverleaf" clade_txid=clade_txid isotype=isotype %}', function(plot_data) {
-	  if ("server_error" in plot_data) d3.select('#cloverleaf-area').html(plot_data['server_error']);
-		else {
+	  if ("server_error" in plot_data) {
+	    d3.select('#cloverleaf-area .loading-overlay').style('display', 'none');
+	    d3.select('#cloverleaf-base-distro-area .loading-overlay').style('display', 'none');
+	    d3.select('#cloverleaf-area').html('<p class="text-muted p-3">' + plot_data['server_error'] + '</p>');
+	    d3.select('#cloverleaf-base-distro-area').html('<p class="text-muted p-3">' + plot_data['server_error'] + '</p>');
+	  } else {
 		  d3.select('#cloverleaf-area .loading-overlay').style('display', 'none');
 			d3.select('#cloverleaf-base-distro-area .loading-overlay').style('display', 'none');
 			draw_cloverleaf(plot_data, "{{ isotype }}");
 			draw_base_distro(plot_data, 'cloverleaf');
-		  $('#cloverleaf-download-pdf').click(function() { download_pdf('cloverleaf'); });
-		  $('#cloverleaf-download-png').click(function() { download_png('cloverleaf'); });
-		  $('#cloverleaf-base-distro-download-pdf').click(function() { download_pdf('cloverleaf-base-distro'); });
+		  $('#cloverleaf-download-pdf').click(function() { download_pdf('cloverleaf', clade_name + '_' + isotype_name + '_cloverleaf'); });
+		  $('#cloverleaf-download-png').click(function() { download_png('cloverleaf', clade_name + '_' + isotype_name + '_cloverleaf'); });
+		  $('#cloverleaf-download-svg').click(function() { download_svg('cloverleaf', clade_name + '_' + isotype_name + '_cloverleaf'); });
+		  $('#cloverleaf-base-distro-download-png').click(function() { download_png('cloverleaf-base-distro', clade_name + '_' + isotype_name + '_cloverleaf-base-distro'); });
+		  $('#cloverleaf-base-distro-download-pdf').click(function() { download_pdf('cloverleaf-base-distro', clade_name + '_' + isotype_name + '_cloverleaf-base-distro'); });
+		  $('#cloverleaf-base-distro-download-svg').click(function() { download_svg('cloverleaf-base-distro', clade_name + '_' + isotype_name + '_cloverleaf-base-distro'); });
 		}
 	});
 	d3.json('{% url "explorer:tilemap" clade_txid=clade_txid %}', function(plot_data) {
-	  if ("server_error" in plot_data) d3.select('#tilemap-area').html(plot_data['server_error']);
-		else {
+	  if ("server_error" in plot_data) {
+	    d3.select('#tilemap-area .loading-overlay').style('display', 'none');
+	    d3.select('#tilemap-base-distro-area .loading-overlay').style('display', 'none');
+	    d3.select('#tilemap-area').html('<p class="text-muted p-3">' + plot_data['server_error'] + '</p>');
+	    d3.select('#tilemap-base-distro-area').html('<p class="text-muted p-3">' + plot_data['server_error'] + '</p>');
+	  } else {
 		  d3.select('#tilemap-area .loading-overlay').style('display', 'none');
 			d3.select('#tilemap-base-distro-area .loading-overlay').style('display', 'none');
 			draw_tilemap(plot_data);
 			draw_base_distro(plot_data, 'tilemap');
-		  $('#tilemap-download-pdf').click(function() { download_pdf('tilemap'); });
-		  $('#tilemap-download-png').click(function() { download_png('tilemap'); });
-		  $('#tilemap-base-distro-download-pdf').click(function() { download_pdf('tilemap-base-distro'); });
+		  $('#tilemap-download-pdf').click(function() { download_pdf('tilemap', clade_name + '_' + isotype_name + '_tilemap'); });
+		  $('#tilemap-download-png').click(function() { download_png('tilemap', clade_name + '_' + isotype_name + '_tilemap'); });
+		  $('#tilemap-download-svg').click(function() { download_svg('tilemap', clade_name + '_' + isotype_name + '_tilemap'); });
+		  $('#tilemap-base-distro-download-png').click(function() { download_png('tilemap-base-distro', clade_name + '_' + isotype_name + '_tilemap-base-distro'); });
+		  $('#tilemap-base-distro-download-pdf').click(function() { download_pdf('tilemap-base-distro', clade_name + '_' + isotype_name + '_tilemap-base-distro'); });
+		  $('#tilemap-base-distro-download-svg').click(function() { download_svg('tilemap-base-distro', clade_name + '_' + isotype_name + '_tilemap-base-distro'); });
 		}
 	});
 	d3.json('{% url "explorer:taxonomy_summary" clade_txid=clade_txid isotype=isotype %}', function(table_data) {
-	  if ("server_error" in table_data) d3.select('#taxonomy-summary-area').html(table_data['server_error']);
+	  d3.select('#taxonomy-summary-area .loading-overlay').style('display', 'none');
+	  if ("server_error" in table_data) d3.select('#taxonomy-summary-area').html('<p class="text-muted p-3">' + table_data['server_error'] + '</p>');
 		else {
-		  d3.select('#taxonomy-summary-area .loading-overlay').style('display', 'none');
 			$('#taxonomy-summary-area').html(tax_json_to_table(table_data))
 		}
 	});
 	d3.json('{% url "explorer:domain_features" clade_txid=clade_txid isotype=isotype %}', function(table_data) {
-	  if ("server_error" in table_data) d3.select('#domain-features-area').html(table_data['server_error']);
+	  d3.select('#domain-features-area .loading-overlay').style('display', 'none');
+	  if ("server_error" in table_data) d3.select('#domain-features-area').html('<p class="text-muted p-3">' + table_data['server_error'] + '</p>');
 		else {
-		  d3.select('#domain-features-area .loading-overlay').style('display', 'none');
 			$('#domain-features-area').html(cons_json_to_table(table_data))
 		}
 	});
@@ -234,6 +250,7 @@ Consensus sequence features and frequency distributions at a glance <sup><small>
 	  			<div class="dropdown-menu">
 	    			<a class="dropdown-item" href="#" id='cloverleaf-download-png'>PNG</a>
 	    			<a class="dropdown-item" href="#" id='cloverleaf-download-pdf'>PDF</a>
+	    			<a class="dropdown-item" href="#" id='cloverleaf-download-svg'>SVG</a>
 	  			</div>
 	  		</div>
 				<h5>Cloverleaf</h5>
@@ -249,7 +266,9 @@ Consensus sequence features and frequency distributions at a glance <sup><small>
 				<div class="download-box dropdown">
 	  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
 	  			<div class="dropdown-menu">
+	    			<a class="dropdown-item" href="#" id='cloverleaf-base-distro-download-png'>PNG</a>
 	    			<a class="dropdown-item" href="#" id='cloverleaf-base-distro-download-pdf'>PDF</a>
+	    			<a class="dropdown-item" href="#" id='cloverleaf-base-distro-download-svg'>SVG</a>
 	  			</div>
 	  		</div>
 				<h5>Nucleotide distribution by position</h5>
@@ -277,6 +296,7 @@ Consensus sequence features and frequency distributions at a glance <sup><small>
 	  			<div class="dropdown-menu">
 	    			<a class="dropdown-item" href="#" id='tilemap-download-pdf'>PDF</a>
 	    			<a class="dropdown-item" href="#" id='tilemap-download-png'>PNG</a>
+	    			<a class="dropdown-item" href="#" id='tilemap-download-svg'>SVG</a>
 	  			</div>
 	  		</div>
 				<h5>Tilemap</h5>
@@ -292,7 +312,9 @@ Consensus sequence features and frequency distributions at a glance <sup><small>
 				<div class="download-box dropdown">
 	  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
 	  			<div class="dropdown-menu">
+	    			<a class="dropdown-item" href="#" id='tilemap-base-distro-download-png'>PNG</a>
 	    			<a class="dropdown-item" href="#" id='tilemap-base-distro-download-pdf'>PDF</a>
+	    			<a class="dropdown-item" href="#" id='tilemap-base-distro-download-svg'>SVG</a>
 	  			</div>
 	  		</div>
 				<h5>Nucleotide distribution by position / isotype</h5>

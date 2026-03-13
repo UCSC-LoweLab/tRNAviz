@@ -96,9 +96,15 @@ def bitchart(request, formset_json):
     plot_data = format_bits_for_viz(bits)
     return JsonResponse(plot_data, safe = False)
   
-  except Exception:
+  except FileNotFoundError as e:
+    logger.exception('File not found in bitchart view')
+    return JsonResponse({'server_error': 'Data file not found. Please submit the form again.'})
+  except IndexError:
+    logger.exception('IndexError in bitchart view')
+    return JsonResponse({'server_error': 'No tRNA data found for this selection. Try a different clade or isotype.'})
+  except Exception as e:
     logger.exception('Error in bitchart view')
-    return JsonResponse({'server_error': 'Unknown error'})
+    return JsonResponse({'server_error': 'Server error: {}'.format(str(e))})
 
 def read_all_trnas():
   seqs = []
@@ -150,11 +156,15 @@ def build_reference_model(formset_data, trna_fasta_files):
   num_model = NUMBERING_MODELS[models.Taxonomy.objects.filter(taxid = clade_tax.domain).get().name]
   res = subprocess.run(
     [os.path.join(INFERNAL_BIN, 'cmalign'), '-g', '--notrunc', '--matchonly', '-o', ref_align_fh.name, num_model, ref_fasta],
-    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+  if res.returncode != 0:
+    raise RuntimeError('cmalign failed for reference alignment: {}'.format(res.stderr.decode().strip()))
   ref_model_fh = NamedTemporaryFile()
   res = subprocess.run(
     [os.path.join(INFERNAL_BIN, 'cmbuild'), '--hand', '--enone', '-F', ref_model_fh.name, ref_align_fh.name],
-    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+  if res.returncode != 0:
+    raise RuntimeError('cmbuild failed for reference model: {}'.format(res.stderr.decode().strip()))
   return ref_model_fh
 
 def calculate_normalizing_scores(ref_model_fh):
@@ -167,22 +177,30 @@ def calculate_normalizing_scores(ref_model_fh):
   with open(cons_align_fh.name, 'w') as stdout_file:
     res = subprocess.run(
       [os.path.join(INFERNAL_BIN, 'cmemit'), '--exp', '5', '-N', '1000', '-a', ref_model_fh.name],
-      stdout=stdout_file, stderr=subprocess.DEVNULL)
+      stdout=stdout_file, stderr=subprocess.PIPE)
+  if res.returncode != 0:
+    raise RuntimeError('cmemit failed: {}'.format(res.stderr.decode().strip()))
   res = subprocess.run(
     [os.path.join(INFERNAL_BIN, 'cmbuild'), '--enone', '-F', cons_model_fh.name, cons_align_fh.name],
-    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+  if res.returncode != 0:
+    raise RuntimeError('cmbuild failed for consensus model: {}'.format(res.stderr.decode().strip()))
 
   # Emit a consensus sequence and format
   res = subprocess.run(
     [os.path.join(INFERNAL_BIN, 'cmemit'), '-c', cons_model_fh.name],
-    stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  if res.returncode != 0:
+    raise RuntimeError('cmemit consensus failed: {}'.format(res.stderr.decode().strip()))
   cons_fasta_fh.write(res.stdout.upper())
   cons_fasta_fh.flush()
 
   # Align to reference model, and get normalizing bits
   res = subprocess.run(
     [os.path.join(INFERNAL_BIN, 'cmalign'), '-g', '--notrunc', '--matchonly', '--tfile', cons_parsetree_fh.name, ref_model_fh.name, cons_fasta_fh.name],
-    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+  if res.returncode != 0:
+    raise RuntimeError('cmalign failed for consensus alignment: {}'.format(res.stderr.decode().strip()))
   ref_bits = pd.DataFrame(parse_parsetree(cons_parsetree_fh))
   ref_bits.group_name = 'Reference consensus'
   ref_bits.group = 'ref-cons'
@@ -197,7 +215,9 @@ def align_trnas_collect_bit_scores(trna_fasta, num_model, ref_model):
   # Remove introns from all tRNAs (except reference). First, align to numbering model to purge insertions
   res = subprocess.run(
     [os.path.join(INFERNAL_BIN, 'cmalign'), '-g', '--notrunc', '--matchonly', '-o', num_model_align_fh.name, num_model, trna_fasta],
-    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+  if res.returncode != 0:
+    raise RuntimeError('cmalign failed for numbering alignment: {}'.format(res.stderr.decode().strip()))
 
   # remove introns using alignment and rewrite tRNAs to new file
   for line in num_model_align_fh:
@@ -209,7 +229,9 @@ def align_trnas_collect_bit_scores(trna_fasta, num_model, ref_model):
   # realign to reference model and parse parsetree output
   res = subprocess.run(
     [os.path.join(INFERNAL_BIN, 'cmalign'), '-g', '--notrunc', '--matchonly', '--tfile', parsetree_fh.name, '-o', os.devnull, ref_model, processed_fasta_fh.name],
-    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+  if res.returncode != 0:
+    raise RuntimeError('cmalign failed for bit score alignment: {}'.format(res.stderr.decode().strip()))
   bits = pd.DataFrame(parse_parsetree(parsetree_fh))
   
   # For selections with mutliple tRNAs, summarize by average score and modal feature

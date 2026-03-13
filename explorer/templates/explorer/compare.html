@@ -42,6 +42,16 @@ $(document).ready(function() {
 	  	sorter: select2_sorter
 		});
 	$('#id_form-0-isotype').select2({width: "100%", allowClear: true, placeholder: "Select reference isotype", sorter: select2_sorter});
+
+	// Auto-fill query isotype selects when reference isotype changes
+	$('#id_form-0-isotype').on('change.select2', function() {
+		var ref_isotype = $(this).val();
+		$('.form-row select[id$="-isotype"]').each(function() {
+			if (this.id === 'id_form-0-isotype') return;
+			$(this).val(ref_isotype).trigger('change.select2');
+		});
+	});
+
 	for (var i = 2, form_rows = $('.form-row'); i < form_rows.length + 2; i++) {
 		$('#clade-select-' + i).select2({
 			width: "100%", 
@@ -134,6 +144,9 @@ $(document).on('click', '.add-form-row', function(e){
 	  	sorter: select2_sorter
 		});
   	isotype_select.select2({width: "100%", allowClear: true, placeholder: "Select isotype", sorter: select2_sorter});
+  	// Pre-fill with reference isotype
+  	var ref_isotype = $('#id_form-0-isotype').val();
+  	if (ref_isotype) isotype_select.val(ref_isotype).trigger('change.select2');
   });
 });
 
@@ -200,7 +213,9 @@ $(document).ready(function () {
 			}
 		);
 
-		$('#bitchart-download-pdf').click(function() { download_pdf('bitchart'); });
+		$('#bitchart-download-png').click(function() { download_png('bitchart', 'compare_bitchart'); });
+		$('#bitchart-download-pdf').click(function() { download_pdf('bitchart', 'compare_bitchart'); });
+		$('#bitchart-download-svg').click(function() { download_svg('bitchart', 'compare_bitchart'); });
   }
 })
 
@@ -420,7 +435,9 @@ d3.json("{% url 'explorer:coords' %}", function(coords) {
 				<div class="download-box dropdown">
 	  			<a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Download</a>
 	  			<div class="dropdown-menu">
+	    			<a class="dropdown-item" href="#" id='bitchart-download-png'>PNG</a>
 	    			<a class="dropdown-item" href="#" id='bitchart-download-pdf'>PDF</a>
+	    			<a class="dropdown-item" href="#" id='bitchart-download-svg'>SVG</a>
 	  			</div>
 	  		</div>
 				<h5>Nucleotide distribution by position / isotype</h5>

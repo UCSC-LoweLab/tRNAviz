@@ -180,7 +180,9 @@ d3.json('{% url "explorer:species_distribution" clade_txids=clade_groups|clade_g
 		draw_species_distribution(plot_data);
 
 		// intialize download onclicks
-		$('#distribution-download-pdf').click(function() { download_pdf('distribution'); });
+		$('#distribution-download-png').click(function() { download_png('distribution', 'species_distribution'); });
+		$('#distribution-download-pdf').click(function() { download_pdf('distribution', 'species_distribution'); });
+		$('#distribution-download-svg').click(function() { download_svg('distribution', 'species_distribution'); });
 		$('#distribution-download-json').click(function() { download_json(plot_data); });
 	}
 });

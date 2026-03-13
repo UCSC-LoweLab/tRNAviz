@@ -352,8 +352,8 @@ var draw_base_distro = function(freq_data, plot_type) {
       .attr('id', function(d) {return 'cloverleaf-rect-' + d['key'].replace(':', '-') + '-' + d['value'];})
       .attr('height', function(d) { return base_distro_height - (plot_type == 'cloverleaf' ? base_freq_scale(d['value']) : isotype_base_freq_scale(d['value'])); })
       .attr('width', function() { return base_feature_scale.bandwidth(); })
-      .attr('stroke', '#666666')
-      .attr('stroke-width', '1')
+      .attr('stroke', function(d) { return d['value'] > 0 ? '#666666' : 'none'; })
+      .attr('stroke-width', function(d) { return d['value'] > 0 ? '1' : '0'; })
       .style('fill', function(d) { return feature_scale(d['key']); })
       .style('fill-opacity', 0.7);
   }
@@ -446,7 +446,7 @@ var draw_tilemap = function(tilemap_data) {
     .data(tilemap_data)
     .enter()
     .append('rect')
-    .attr('id', d => 'tile-' + d['isotype'] + '-' + d['position'].replace(':', '-'))
+    .attr('id', d => 'tile-' + d['isotype'] + '-' + d['position'].replace(':', '-') + (d['type'] == 'left' ? '-L' : d['type'] == 'right' ? '-R' : ''))
     .attr('x', d => { 
         var x = position_scale(positions.findIndex(position => position == d['position']));
         if (d['type'] == 'right') { return x + tile_width / 2; } 
@@ -491,7 +491,7 @@ var draw_tilemap = function(tilemap_data) {
       }
     });
   function highlight(d) {
-    d3.selectAll('#tile-' + d['isotype'] + '-' + d['position'].replace(':', '-'))
+    d3.selectAll('[id^="tile-' + d['isotype'] + '-' + d['position'].replace(':', '-') + '"]')
       .classed('tile-focus', true)
       .attr('stroke', '#ff0000')
       .attr('stroke-width', '2.5');

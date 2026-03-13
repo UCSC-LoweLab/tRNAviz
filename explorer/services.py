@@ -128,7 +128,7 @@ def cloverleaf(request, clade_txid, isotype):
     return JsonResponse(plot_data)
 
   except IndexError:
-    return JsonResponse({'server_error': 'Server error - most likely, tRNAs for your selection do not exist in the tRNAviz database. Try a different selection.'})
+    return JsonResponse({'server_error': 'No tRNA data found for this clade/isotype combination. This isotype may not exist in the selected clade. Try a different selection.'})
   except Exception:
     logger.exception('Error in cloverleaf view')
     return JsonResponse({'server_error': 'Unknown server error'})

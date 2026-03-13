@@ -36,7 +36,9 @@ d3.json('{% url "explorer:distribution" clade_txids=clade_groups|clade_groups_to
 		draw_distribution(plot_data);
 
 		// intialize download onclicks
-		$('#distribution-download-pdf').click(function() { download_pdf('distribution'); });
+		$('#distribution-download-png').click(function() { download_png('distribution', 'clade_distribution'); });
+		$('#distribution-download-pdf').click(function() { download_pdf('distribution', 'clade_distribution'); });
+		$('#distribution-download-svg').click(function() { download_svg('distribution', 'clade_distribution'); });
 		$('#distribution-download-json').click(function() { download_json(plot_data); });
 	}
 })
