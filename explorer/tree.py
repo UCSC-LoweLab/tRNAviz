@@ -92,12 +92,16 @@ class _LazyTree:
 full_tree = _LazyTree()
 
 
+def _sanitize_newick_label(name):
+  """Replace characters that are reserved in Newick format."""
+  return name.replace(':', '-').replace('(', '_').replace(')', '_').replace(',', '_').replace(';', '_')
+
 def convertNewick(newick, node):
   if len(node.children) > 0:
     children_newick = []
     for child in node.children:
       children_newick.append(convertNewick(newick, child))
     if len(children_newick) > 0:
-      label = node.tax.name if node.tax != 'root' else ''
+      label = _sanitize_newick_label(node.tax.name) if node.tax != 'root' else ''
       return('(' + ','.join(children_newick) + ')' + label)
-  return(node.tax.name)
+  return(_sanitize_newick_label(node.tax.name))
