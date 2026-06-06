@@ -1,4 +1,4 @@
-biopython==1.83
+biopython==1.85
 certifi>=2024.7.4
 chardet==5.2.0
 coverage==7.4.0
